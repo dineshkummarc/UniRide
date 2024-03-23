@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "228240041465",
+    "project_id": "uni-rider-diu",
+    "storage_bucket": "uni-rider-diu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228240041465:android:1b0cffc1f110436de44928",
+        "android_client_info": {
+          "package_name": "com.drdisagree.uniride"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTVZaW-wFoaxF7XmINSe6cHcypeSjNvpw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

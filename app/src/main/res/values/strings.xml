@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">UniRide</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_routes">Routes</string>
+    <string name="nav_schedule">Schedule</string>
+    <string name="nav_more">More</string>
+    <string name="my_location">My Location</string>
+    <string name="find_my_location">Find my current location</string>
+</resources>

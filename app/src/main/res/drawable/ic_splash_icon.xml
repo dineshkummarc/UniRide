@@ -1,0 +1,18 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="160dp"
+        android:height="160dp"
+        android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+    <item
+        android:width="70dp"
+        android:height="80dp"
+        android:gravity="center">
+        <bitmap
+            android:src="@drawable/ic_launcher_icon"
+            android:tint="@color/white" />
+    </item>
+</layer-list>
