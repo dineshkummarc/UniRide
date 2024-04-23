@@ -142,4 +142,7 @@ dependencies {
 
     // Splash screen
     implementation(libs.androidx.core.splashscreen)
+
+    // Text Flow
+    implementation(libs.textflow)
 }

@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +42,7 @@ import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlin.random.Random
 
 @ScheduleNavGraph(start = true)
 @Destination(style = FadeInOutTransition::class)
@@ -96,7 +98,11 @@ private fun ScheduleContent(
             item(key = index) {
                 ScheduleListItem(
                     index = index,
-                    routeNo = "Dolphin-${index + 1}",
+                    routeNo = "${
+                        remember {
+                            listOf("Surjomukhi", "Dolpin", "Rojonigondha").random()
+                        }
+                    }-${Random.nextInt(1, 15)}",
                     routeName = "DSC to Dhanmondi",
                     onClick = {
                     }
@@ -141,7 +147,7 @@ private fun ScheduleListItem(
                 painter = painterResource(id = R.drawable.ic_bus),
                 contentDescription = "Map with marker image",
                 modifier = Modifier
-                    .padding(end = 16.dp)
+                    .padding(end = 16.dp, top = 2.dp)
                     .size(28.dp)
             )
 
@@ -191,8 +197,11 @@ private fun ScheduleListItem(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
+
                 Text(
-                    text = "Common",
+                    text = remember {
+                        listOf("Common", "Employee", "Fixed", "Friday").random()
+                    },
                     color = Dark,
                     fontSize = 14.sp
                 )

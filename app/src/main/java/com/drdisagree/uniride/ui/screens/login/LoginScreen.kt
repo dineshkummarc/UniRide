@@ -343,7 +343,7 @@ private fun ForgotPasswordSection(
 ) {
     var email by remember { mutableStateOf("") }
     var isCorrectEmail by rememberSaveable { mutableStateOf(true) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isSheetOpen by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -395,7 +395,11 @@ private fun ForgotPasswordSection(
                 modifier = Modifier
                     .padding(bottom = MaterialTheme.spacing.medium3)
                     .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spacing.medium3)
+                    .padding(
+                        start = MaterialTheme.spacing.medium3,
+                        end = MaterialTheme.spacing.medium3,
+                        bottom = MaterialTheme.spacing.medium3
+                    )
             ) {
                 Text(
                     text = "Reset Password",

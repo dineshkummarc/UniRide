@@ -13,9 +13,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -71,19 +70,24 @@ private fun MoreContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues = paddingValues)
-            .padding(vertical = MaterialTheme.spacing.medium1)
-            .verticalScroll(rememberScrollState())
     ) {
         Text(
             text = "Quick Actions",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = MaterialTheme.spacing.medium1)
+            modifier = Modifier.padding(
+                start = MaterialTheme.spacing.medium1,
+                top = MaterialTheme.spacing.medium1
+            )
         )
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             contentPadding = PaddingValues(MaterialTheme.spacing.medium1),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium1)
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium1),
+            verticalItemSpacing = MaterialTheme.spacing.medium1
         ) {
             items(
                 count = 4,
