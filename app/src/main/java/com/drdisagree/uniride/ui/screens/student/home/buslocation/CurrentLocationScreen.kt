@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.drdisagree.uniride.ui.components.navigation.RoutesNavGraph
+import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.extension.Container
@@ -25,7 +25,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@RoutesNavGraph
+@HomeNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
 fun CurrentLocationScreen(
