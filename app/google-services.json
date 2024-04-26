@@ -12,7 +12,20 @@
           "package_name": "com.drdisagree.uniride"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "228240041465-ab3hbs2ufmomuqqd0953vjqmabklog0b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.drdisagree.uniride",
+            "certificate_hash": "bc219ddd0de08c97fb6c7ceba58601c48ef97ad9"
+          }
+        },
+        {
+          "client_id": "228240041465-ul73jd983ueobdu081ub29aa3b7q2unn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCTVZaW-wFoaxF7XmINSe6cHcypeSjNvpw"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "228240041465-ul73jd983ueobdu081ub29aa3b7q2unn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

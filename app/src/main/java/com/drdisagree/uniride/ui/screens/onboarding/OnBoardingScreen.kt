@@ -1,5 +1,10 @@
 package com.drdisagree.uniride.ui.screens.onboarding
 
+import android.app.Activity.RESULT_OK
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,10 +15,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
@@ -34,10 +46,14 @@ import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.HomeContainerDestination
 import com.drdisagree.uniride.ui.screens.destinations.InfoScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.LoginScreenDestination
+import com.drdisagree.uniride.ui.screens.student.account.GoogleAuthUiClient
+import com.drdisagree.uniride.ui.screens.student.account.SignInViewModel
 import com.drdisagree.uniride.ui.theme.spacing
+import com.google.android.gms.auth.api.identity.Identity
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
+import kotlinx.coroutines.launch
 
 @MainScreenGraph(start = true)
 @Destination(style = SlideInOutTransition::class)
@@ -182,6 +198,47 @@ private fun OnBoardingScreenContent(
             contentDescription = "Go to settings"
         )
 
+        val studentSignInViewModel = viewModel<SignInViewModel>()
+        val state by studentSignInViewModel.state.collectAsStateWithLifecycle()
+        val coroutineScope = rememberCoroutineScope()
+        val context = LocalContext.current
+        val googleAuthUiClient by remember(context) {
+            lazy {
+                GoogleAuthUiClient(
+                    context = context.applicationContext,
+                    oneTapClient = Identity.getSignInClient(context.applicationContext)
+                )
+            }
+        }
+
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartIntentSenderForResult(),
+            onResult = { result ->
+                if (result.resultCode == RESULT_OK) {
+                    coroutineScope.launch {
+                        val signInResult = googleAuthUiClient.signInWithIntent(
+                            intent = result.data ?: return@launch
+                        )
+                        studentSignInViewModel.onSignInResult(signInResult)
+                    }
+                }
+            }
+        )
+
+        LaunchedEffect(
+            key1 = state.isSuccessful,
+            key2 = state.signInError
+        ) {
+            if (state.isSuccessful) {
+                navigateToStudentScreen(navigator)
+                studentSignInViewModel.resetState()
+            }
+
+            state.signInError?.let {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }
+        }
+
         ButtonPrimary(
             modifier = Modifier
                 .padding(
@@ -193,11 +250,13 @@ private fun OnBoardingScreenContent(
                 .layoutId("studentBtn"),
             text = "I am a student",
             onClick = {
-                navigator.navigate(
-                    HomeContainerDestination()
-                ) {
-                    popUpTo(NavGraphs.root.startRoute) { inclusive = true }
-                    launchSingleTop = true
+                coroutineScope.launch {
+                    val signInIntentSender = googleAuthUiClient.signIn()
+                    launcher.launch(
+                        IntentSenderRequest.Builder(
+                            signInIntentSender ?: return@launch
+                        ).build()
+                    )
                 }
             }
         )
@@ -220,5 +279,14 @@ private fun OnBoardingScreenContent(
                 }
             }
         )
+    }
+}
+
+private fun navigateToStudentScreen(navigator: DestinationsNavigator) {
+    navigator.navigate(
+        HomeContainerDestination()
+    ) {
+        popUpTo(NavGraphs.root.startRoute) { inclusive = true }
+        launchSingleTop = true
     }
 }

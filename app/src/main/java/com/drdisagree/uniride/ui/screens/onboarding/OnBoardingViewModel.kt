@@ -18,8 +18,6 @@ class OnBoardingViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
-    // TODO: https://youtube.com/watch?v=YQ0fJUiOYbY
-
     private val _login = MutableSharedFlow<Resource<FirebaseUser>>()
     val login = _login.asSharedFlow()
 
@@ -84,41 +82,5 @@ class OnBoardingViewModel @Inject constructor(
         val emailValidation = validateEmail(email)
         val passwordValidation = password.isNotEmpty() && password.length >= 8
         return emailValidation is LoginValidation.Valid && passwordValidation
-    }
-
-    fun resetPassword(email: String) {
-        viewModelScope.launch {
-            _resetPassword.emit(Resource.Loading())
-        }
-
-        firebaseAuth.sendPasswordResetEmail(email)
-            .addOnSuccessListener {
-                viewModelScope.launch {
-                    _resetPassword.emit(Resource.Success("Password reset email sent"))
-                }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    _resetPassword.emit(Resource.Error(it.message.toString()))
-                }
-            }
-    }
-
-    fun resendVerificationMail() {
-        viewModelScope.launch {
-            _authenticated.emit(Resource.Loading())
-        }
-
-        firebaseAuth.currentUser?.sendEmailVerification()
-            ?.addOnSuccessListener {
-                viewModelScope.launch {
-                    _authenticated.emit(Resource.Success("Verification email sent"))
-                }
-            }
-            ?.addOnFailureListener {
-                viewModelScope.launch {
-                    _authenticated.emit(Resource.Error(it.message.toString()))
-                }
-            }
     }
 }

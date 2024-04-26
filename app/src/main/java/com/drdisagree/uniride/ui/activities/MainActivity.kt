@@ -1,18 +1,19 @@
 package com.drdisagree.uniride.ui.activities
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.drdisagree.uniride.ui.screens.NavGraphs
+import com.drdisagree.uniride.ui.screens.destinations.HomeContainerDestination
 import com.drdisagree.uniride.ui.theme.UniRideTheme
+import com.drdisagree.uniride.utils.Constants.STUDENT_MAIL_SUFFIX
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,9 +30,23 @@ class MainActivity : ComponentActivity() {
                 val engine = rememberAnimatedNavHostEngine()
                 val navController = engine.rememberNavController()
 
+                val isLoggedIn = Firebase.auth.currentUser != null
+                val startRoute = if (!isLoggedIn) {
+                    NavGraphs.root.startRoute
+                } else {
+                    val isStudent =
+                        Firebase.auth.currentUser!!.email?.endsWith(STUDENT_MAIL_SUFFIX) == true
+
+                    if (isStudent) {
+                        HomeContainerDestination
+                    } else {
+                        NavGraphs.root.startRoute
+                    }
+                }
+
                 DestinationsNavHost(
                     navGraph = NavGraphs.root,
-                    startRoute = NavGraphs.root.startRoute,
+                    startRoute = startRoute,
                     navController = navController,
                     modifier = Modifier.fillMaxSize()
                 )

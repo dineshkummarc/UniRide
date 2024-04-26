@@ -33,7 +33,6 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.drdisagree.uniride.ui.components.navigation.BottomBarDestination
-import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.extension.Container
 import com.drdisagree.uniride.ui.screens.NavGraphs
@@ -42,17 +41,22 @@ import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.NoRippleTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popBackStack
 import com.ramcosta.composedestinations.rememberNavHostEngine
 
-@MainScreenGraph
+private lateinit var rootNavigator: DestinationsNavigator
+
+@RootNavGraph
 @Destination(style = SlideInOutTransition::class)
 @Composable
 fun HomeContainer(
     navigator: DestinationsNavigator
 ) {
+    rootNavigator = navigator
+
     val engine = rememberNavHostEngine()
     val navController = engine.rememberNavController()
 
@@ -173,3 +177,5 @@ private fun BottomNavBar(
 private fun NavBackStackEntry?.isRouteOnBackStack(route: String): Boolean {
     return if (this == null) false else destination.hierarchy.any { it.route == route }
 }
+
+fun getRootNavigator(): DestinationsNavigator = rootNavigator

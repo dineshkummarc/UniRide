@@ -6,4 +6,6 @@
     <string name="nav_more">More</string>
     <string name="my_location">My Location</string>
     <string name="find_my_location">Find my current location</string>
+
+    <string name="web_client_id" translatable="false">228240041465-ul73jd983ueobdu081ub29aa3b7q2unn.apps.googleusercontent.com</string>
 </resources>

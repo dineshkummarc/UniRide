@@ -8,7 +8,7 @@ import com.drdisagree.uniride.data.database.ScheduleDatabase
 import com.drdisagree.uniride.data.utils.Constant
 import com.drdisagree.uniride.domain.repository.ScheduleRepository
 import com.drdisagree.uniride.domain.repository.ScheduleRepositoryImpl
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -25,7 +25,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseAuth() = FirebaseAuth.getInstance()
+    fun provideFirebaseAuth() = Firebase.auth
 
     @Provides
     @Singleton
