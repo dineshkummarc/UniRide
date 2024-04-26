@@ -15,4 +15,5 @@
 local.properties
 /app/release/*
 /app/debug/*
+/app/google-services.json
 /backend/node_modules
