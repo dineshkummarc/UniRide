@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.onboarding
+package com.drdisagree.uniride.ui.screens.driver.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,11 +14,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class OnBoardingViewModel @Inject constructor(
+class LoginViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
-
-    // TODO: https://youtube.com/watch?v=YQ0fJUiOYbY
 
     private val _login = MutableSharedFlow<Resource<FirebaseUser>>()
     val login = _login.asSharedFlow()
