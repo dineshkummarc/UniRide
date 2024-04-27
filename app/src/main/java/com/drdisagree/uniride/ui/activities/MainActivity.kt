@@ -7,10 +7,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.drdisagree.uniride.data.utils.Constant.STUDENT_MAIL_SUFFIX
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.HomeContainerDestination
 import com.drdisagree.uniride.ui.theme.UniRideTheme
-import com.drdisagree.uniride.utils.Constants.STUDENT_MAIL_SUFFIX
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase

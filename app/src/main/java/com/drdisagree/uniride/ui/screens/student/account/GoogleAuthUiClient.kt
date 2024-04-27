@@ -6,7 +6,7 @@ import android.content.IntentSender
 import android.util.Log
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.models.Student
-import com.drdisagree.uniride.utils.Constants.STUDENT_MAIL_SUFFIX
+import com.drdisagree.uniride.data.utils.Constant.STUDENT_MAIL_SUFFIX
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
