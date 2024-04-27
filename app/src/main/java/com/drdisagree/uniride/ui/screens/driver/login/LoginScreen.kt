@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -294,7 +293,7 @@ private fun LoginFields(
                 }
 
                 is Resource.Error -> {
-                    val message = result.message.toString()
+                    var message = result.message.toString()
                     val messageLower = message.lowercase(Locale.ROOT)
 
                     if (messageLower.contains("email") &&
@@ -307,15 +306,22 @@ private fun LoginFields(
                     } else {
                         var errorShown = false
 
-                        if (messageLower.contains("email")) {
+                        if (messageLower.contains("email") &&
+                            !messageLower.contains("please verify your email")
+                        ) {
                             isCorrectEmail = false
                             emailErrorMessage = message
                             errorShown = true
                         }
-                        if (messageLower.contains("password")) {
+
+                        if (messageLower.contains("password") &&
+                            !messageLower.contains("credential is incorrect")
+                        ) {
                             isCorrectPassword = false
                             passwordErrorMessage = message
                             errorShown = true
+                        } else if (messageLower.contains("credential is incorrect")) {
+                            message = "Invalid email or password"
                         }
 
                         if (!errorShown) {
@@ -477,31 +483,33 @@ private fun ForgotPasswordSection(
             }
         }
 
-        val resetPasswordState by loginViewModel.resetPassword.collectAsState(initial = Resource.Unspecified())
+        LaunchedEffect(key1 = loginViewModel) {
+            loginViewModel.resetPassword.collect {
+                when (it) {
+                    is Resource.Loading -> {
+                        Unit
+                    }
 
-        when (val result = resetPasswordState) {
-            is Resource.Loading -> {
-                Unit
-            }
+                    is Resource.Success -> {
+                        Toast.makeText(
+                            context,
+                            it.data.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
-            is Resource.Success -> {
-                Toast.makeText(
-                    LocalContext.current,
-                    result.data.toString(),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+                    is Resource.Error -> {
+                        Toast.makeText(
+                            context,
+                            "Error: ${it.data.toString()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
-            is Resource.Error -> {
-                Toast.makeText(
-                    LocalContext.current,
-                    "Error: ${result.data.toString()}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            else -> {
-                Unit
+                    else -> {
+                        Unit
+                    }
+                }
             }
         }
     }
