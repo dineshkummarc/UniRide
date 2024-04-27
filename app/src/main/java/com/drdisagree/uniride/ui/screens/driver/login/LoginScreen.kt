@@ -179,8 +179,8 @@ private fun LoginFields(
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isCorrectEmail by rememberSaveable { mutableStateOf(true) }
     var isCorrectPassword by rememberSaveable { mutableStateOf(true) }
@@ -341,7 +341,7 @@ private fun LoginFields(
 private fun ForgotPasswordSection(
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
-    var email by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
     var isCorrectEmail by rememberSaveable { mutableStateOf(true) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isSheetOpen by remember { mutableStateOf(false) }

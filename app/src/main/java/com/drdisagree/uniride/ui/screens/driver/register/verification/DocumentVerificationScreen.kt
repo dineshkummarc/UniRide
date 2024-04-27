@@ -25,9 +25,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,10 +50,17 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.utils.Constant.DRIVING_LICENSE_BACK
+import com.drdisagree.uniride.data.utils.Constant.DRIVING_LICENSE_FRONT
+import com.drdisagree.uniride.data.utils.Constant.NID_CARD_BACK
+import com.drdisagree.uniride.data.utils.Constant.NID_CARD_FRONT
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
+import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.extension.Container
+import com.drdisagree.uniride.ui.screens.destinations.LoginScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.register.RegisterViewModel
 import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -65,8 +74,7 @@ fun DocumentVerificationScreen(
     navigator: DestinationsNavigator,
     name: String,
     email: String,
-    password: String,
-    registerViewModel: RegisterViewModel = hiltViewModel()
+    password: String
 ) {
     Container {
         Box(
@@ -81,7 +89,13 @@ fun DocumentVerificationScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 HeaderSection()
-                VerificationContent()
+
+                VerificationContent(
+                    navigator = navigator,
+                    name = name,
+                    email = email,
+                    password = password
+                )
             }
         }
     }
@@ -140,8 +154,19 @@ private fun HeaderSection() {
 }
 
 @Composable
-private fun VerificationContent() {
+private fun VerificationContent(
+    navigator: DestinationsNavigator,
+    name: String,
+    email: String,
+    password: String,
+    registerViewModel: RegisterViewModel = hiltViewModel()
+) {
     val context = LocalContext.current as Activity
+
+    var nidFrontImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var nidBackImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var drivingLicenseFrontImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var drivingLicenseBackImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
 
     Row(
         modifier = Modifier
@@ -183,7 +208,6 @@ private fun VerificationContent() {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        var nidFrontImageUri by remember { mutableStateOf<Uri?>(null) }
         val nidFrontImagePickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -254,7 +278,6 @@ private fun VerificationContent() {
             }
         }
 
-        var nidBackImageUri by remember { mutableStateOf<Uri?>(null) }
         val nidBackImagePickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -369,7 +392,6 @@ private fun VerificationContent() {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        var drivingLicenseFrontImageUri by remember { mutableStateOf<Uri?>(null) }
         val drivingLicenseFrontImagePickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -440,7 +462,6 @@ private fun VerificationContent() {
             }
         }
 
-        var drivingLicenseBackImageUri by remember { mutableStateOf<Uri?>(null) }
         val drivingLicenseBackImagePickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -523,6 +544,79 @@ private fun VerificationContent() {
             .fillMaxWidth(),
         text = "Register"
     ) {
-        /* TODO */
+        if (nidFrontImageUri == null ||
+            nidBackImageUri == null ||
+            drivingLicenseFrontImageUri == null ||
+            drivingLicenseBackImageUri == null
+        ) {
+            Toast.makeText(
+                context,
+                "Please provide all documents",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        }
+
+        val imagesByteArray = registerViewModel.getImageByteArray(
+            listOf(
+                Pair(drivingLicenseFrontImageUri!!, DRIVING_LICENSE_FRONT),
+                Pair(drivingLicenseBackImageUri!!, DRIVING_LICENSE_BACK),
+                Pair(nidFrontImageUri!!, NID_CARD_FRONT),
+                Pair(nidBackImageUri!!, NID_CARD_BACK)
+            )
+        )
+
+        registerViewModel.createUserWithEmailAndPassword(
+            name = name,
+            email = email,
+            password = password,
+            documents = imagesByteArray
+        )
+    }
+
+    var showLoadingDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = registerViewModel) {
+        registerViewModel.register.collect {
+            when (it) {
+                is Resource.Loading -> {
+                    showLoadingDialog = true
+                }
+
+                is Resource.Success -> {
+                    showLoadingDialog = false
+
+                    navigator.popBackStack(
+                        LoginScreenDestination.route,
+                        inclusive = false
+                    )
+
+                    Toast.makeText(
+                        context,
+                        "Please check your email and verify your account",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                is Resource.Error -> {
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        "Error: ${it.message.toString()}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {
+                    showLoadingDialog = false
+                }
+            }
+        }
+    }
+
+    if (showLoadingDialog) {
+        LoadingDialog(onDismissRequest = { showLoadingDialog = false })
     }
 }

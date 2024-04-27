@@ -164,11 +164,11 @@ private fun DriverRegisterFields(
     navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
-    var fullName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var fullName by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    var repeatPassword by remember { mutableStateOf("") }
+    var repeatPassword by rememberSaveable { mutableStateOf("") }
     var isRepeatPasswordVisible by remember { mutableStateOf(false) }
     var isCorrectEmail by rememberSaveable { mutableStateOf(true) }
     var isCorrectPassword by rememberSaveable { mutableStateOf(true) }
@@ -367,6 +367,9 @@ private fun DriverRegisterFields(
         } else if (password.length < 8) {
             isCorrectPassword = false
             passwordErrorMessage = "Password must be at least 8 characters long"
+        } else if (password.contains(" ")) {
+            isCorrectPassword = false
+            passwordErrorMessage = "Password cannot contain spaces"
         }
 
         if (repeatPassword.isEmpty()) {
@@ -383,8 +386,8 @@ private fun DriverRegisterFields(
 
         navigator.navigate(
             DocumentVerificationScreenDestination(
-                name = fullName,
-                email = email,
+                name = fullName.trim(),
+                email = email.trim(),
                 password = password
             )
         ) {

@@ -8,14 +8,12 @@ import kotlinx.parcelize.Parcelize
 @Stable
 @Parcelize
 data class Driver(
+    val id: String,
     val name: String,
-    val phone: String,
+    val phone: String? = null,
     val email: String,
-    val profileImage: String = "",
-    val drivingLicenseFrontImage: String = "",
-    val drivingLicenseBackImage: String = "",
-    val nidCardFrontImage: String = "",
-    val nidCardBackImage: String = "",
+    val profileImage: String? = null,
+    val documents: List<String>,
     val accountStatus: AccountStatus = AccountStatus.PENDING
 ) : Parcelable {
     constructor() : this(
@@ -24,9 +22,7 @@ data class Driver(
         "",
         "",
         "",
-        "",
-        "",
-        "",
+        emptyList(),
         AccountStatus.PENDING
     )
 }
