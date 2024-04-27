@@ -103,9 +103,7 @@ private fun ScheduleContent(
                             listOf("Surjomukhi", "Dolpin", "Rojonigondha").random()
                         }
                     }-${Random.nextInt(1, 15)}",
-                    routeName = "DSC to Dhanmondi",
-                    onClick = {
-                    }
+                    routeName = "DSC to Dhanmondi"
                 )
             }
         }
@@ -117,15 +115,11 @@ private fun ScheduleListItem(
     modifier: Modifier = Modifier,
     index: Int,
     routeNo: String,
-    routeName: String,
-    onClick: (() -> Unit)? = null
+    routeName: String
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .clickable {
-                onClick?.invoke()
-            }
     ) {
         if (index != 0) {
             HorizontalDivider(
