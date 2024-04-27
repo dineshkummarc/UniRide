@@ -9,14 +9,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -117,6 +116,7 @@ fun MoreScreen(
             content = { paddingValues ->
                 MoreContent(
                     paddingValues = paddingValues,
+                    navigator = navigator,
                     student = googleAuthUiClient.getSignedInUser()
                 )
             }
@@ -127,6 +127,7 @@ fun MoreScreen(
 @Composable
 private fun MoreContent(
     paddingValues: PaddingValues,
+    navigator: DestinationsNavigator,
     student: Student?
 ) {
     Column(
@@ -136,36 +137,7 @@ private fun MoreContent(
             .verticalScroll(rememberScrollState())
     ) {
         ProfileSection(student = student)
-
-        Text(
-            text = "Quick Actions",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(
-                start = MaterialTheme.spacing.medium1,
-                top = MaterialTheme.spacing.medium1
-            )
-        )
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(MaterialTheme.spacing.medium1),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium1),
-            verticalItemSpacing = MaterialTheme.spacing.medium1
-        ) {
-            items(
-                count = 4,
-                key = { it }
-            ) {
-                MoreListItem(
-                    icon = R.drawable.ic_map,
-                    title = R.string.my_location,
-                    subtitle = R.string.find_my_location
-                )
-            }
-        }
+        QuickActionsSection(navigator = navigator)
     }
 }
 
@@ -228,7 +200,71 @@ private fun ProfileSection(
 }
 
 @Composable
-private fun MoreListItem(
+private fun QuickActionsSection(
+    navigator: DestinationsNavigator
+) {
+    Text(
+        text = "Quick Actions",
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(
+            start = MaterialTheme.spacing.medium1,
+            top = MaterialTheme.spacing.medium1,
+            bottom = MaterialTheme.spacing.medium1
+        )
+    )
+
+    Row(
+        modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium1)
+    ) {
+        QuickActionsItem(
+            icon = R.drawable.ic_map,
+            title = R.string.my_location_title,
+            subtitle = R.string.my_location_summary,
+            modifier = Modifier
+                .padding(start = MaterialTheme.spacing.medium1)
+                .weight(1f)
+        )
+
+        Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium1))
+
+        QuickActionsItem(
+            icon = R.drawable.ic_warning,
+            title = R.string.emergency_title,
+            subtitle = R.string.emergency_summary,
+            modifier = Modifier
+                .padding(end = MaterialTheme.spacing.medium1)
+                .weight(1f)
+        )
+    }
+
+    Row(
+        modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium1)
+    ) {
+        QuickActionsItem(
+            icon = R.drawable.ic_message,
+            title = R.string.chat_box_title,
+            subtitle = R.string.chat_box_summary,
+            modifier = Modifier
+                .padding(start = MaterialTheme.spacing.medium1)
+                .weight(1f)
+        )
+
+        Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium1))
+
+        QuickActionsItem(
+            icon = R.drawable.ic_settings,
+            title = R.string.settings_title,
+            subtitle = R.string.settings_summary,
+            modifier = Modifier
+                .padding(end = MaterialTheme.spacing.medium1)
+                .weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun QuickActionsItem(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int,
     @StringRes title: Int,
@@ -237,7 +273,6 @@ private fun MoreListItem(
 ) {
     Column(
         modifier = modifier
-            .width(160.dp)
             .heightIn(min = 80.dp)
             .clip(MaterialTheme.shapes.medium)
             .background(LightGray)
