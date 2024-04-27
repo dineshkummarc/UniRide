@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import com.drdisagree.uniride.data.database.ScheduleDatabase
-import com.drdisagree.uniride.data.utils.Constant
+import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
 import com.drdisagree.uniride.domain.repository.ScheduleRepository
 import com.drdisagree.uniride.domain.repository.ScheduleRepositoryImpl
 import com.google.firebase.auth.ktx.auth
@@ -47,7 +47,7 @@ class AppModule {
         return Room.databaseBuilder(
             app,
             ScheduleDatabase::class.java,
-            Constant.SCHEDULE_COLLECTION
+            SCHEDULE_COLLECTION
         ).build()
     }
 

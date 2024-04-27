@@ -3,7 +3,7 @@ package com.drdisagree.uniride.ui.screens.student.schedule
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.utils.Constant
+import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
 import com.drdisagree.uniride.domain.models.Schedule
 import com.drdisagree.uniride.domain.repository.ScheduleRepository
 import com.google.firebase.firestore.FirebaseFirestore
@@ -32,7 +32,7 @@ class ScheduleViewModel @Inject constructor(
             _allSchedules.emit(Resource.Loading())
         }
 
-        firestore.collection(Constant.SCHEDULE_COLLECTION)
+        firestore.collection(SCHEDULE_COLLECTION)
             .orderBy("timestamp", Query.Direction.ASCENDING)
             .get()
             .addOnSuccessListener {
@@ -56,7 +56,7 @@ class ScheduleViewModel @Inject constructor(
                 }
             }
 
-        firestore.collection(Constant.SCHEDULE_COLLECTION)
+        firestore.collection(SCHEDULE_COLLECTION)
             .orderBy("timestamp", Query.Direction.ASCENDING)
             .addSnapshotListener { value, error ->
                 if (error != null) {

@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.drdisagree.uniride.data.entities.ScheduleEntity
-import com.drdisagree.uniride.data.utils.Constant
+import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,11 +18,11 @@ interface ScheduleDao {
     @Delete
     suspend fun deleteSchedule(schedule: ScheduleEntity)
 
-    @Query("SELECT * FROM ${Constant.SCHEDULE_COLLECTION}")
+    @Query("SELECT * FROM $SCHEDULE_COLLECTION")
     fun getAllSchedules(): Flow<List<ScheduleEntity>>
 
     @Query(
-        "SELECT * FROM ${Constant.SCHEDULE_COLLECTION} WHERE (:busCategory = '' OR busCategory = :busCategory) " +
+        "SELECT * FROM $SCHEDULE_COLLECTION WHERE (:busCategory = '' OR busCategory = :busCategory) " +
                 "AND (:departureFrom = '' OR departureFrom = :departureFrom) " +
                 "AND (:departureFor = '' OR departureFor = :departureFor)"
     )

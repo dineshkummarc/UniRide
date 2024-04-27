@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Route
-import com.drdisagree.uniride.data.utils.Constant
+import com.drdisagree.uniride.data.utils.Constant.ROUTE_COLLECTION
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +30,7 @@ class RouteViewModel @Inject constructor(
             _allRoutes.emit(Resource.Loading())
         }
 
-        firestore.collection(Constant.ROUTE_COLLECTION)
+        firestore.collection(ROUTE_COLLECTION)
             .orderBy("routeNo", Query.Direction.ASCENDING)
             .get()
             .addOnSuccessListener {
@@ -54,7 +54,7 @@ class RouteViewModel @Inject constructor(
                 }
             }
 
-        firestore.collection(Constant.ROUTE_COLLECTION)
+        firestore.collection(ROUTE_COLLECTION)
             .orderBy("routeNo", Query.Direction.ASCENDING)
             .addSnapshotListener { value, error ->
                 if (error != null) {

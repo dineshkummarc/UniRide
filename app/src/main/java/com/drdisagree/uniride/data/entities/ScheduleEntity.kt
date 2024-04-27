@@ -4,12 +4,12 @@ import android.os.Parcelable
 import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.drdisagree.uniride.data.utils.Constant
+import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
 import kotlinx.parcelize.Parcelize
 
 @Stable
 @Parcelize
-@Entity(tableName = Constant.SCHEDULE_COLLECTION)
+@Entity(tableName = SCHEDULE_COLLECTION)
 class ScheduleEntity(
     @PrimaryKey val id: Int? = null,
     val busName: String,
