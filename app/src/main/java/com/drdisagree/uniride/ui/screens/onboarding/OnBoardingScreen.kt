@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.onboarding
 
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -16,14 +17,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,6 +66,14 @@ import kotlinx.coroutines.launch
 fun OnBoardingScreen(
     navigator: DestinationsNavigator
 ) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.navigationBarColor = Color.Transparent.toArgb()
+        }
+    }
+
     val constraints = ConstraintSet {
         val studentButton = createRefFor("studentBtn")
         val driverButton = createRefFor("driverBtn")
