@@ -2,7 +2,6 @@ package com.drdisagree.uniride.data.utils
 
 object Constant {
     const val WEB_CLIENT_ID = "228240041465-ul73jd983ueobdu081ub29aa3b7q2unn.apps.googleusercontent.com"
-    const val STUDENT_COLLECTION = "student_list"
     const val DRIVER_COLLECTION = "driver_list"
     const val ROUTE_COLLECTION = "route_list"
     const val SCHEDULE_COLLECTION = "schedule_list"
