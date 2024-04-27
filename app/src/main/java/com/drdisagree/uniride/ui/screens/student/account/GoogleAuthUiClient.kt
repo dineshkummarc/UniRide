@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
-import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.models.Student
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_MAIL_SUFFIX
+import com.drdisagree.uniride.data.utils.Constant.WEB_CLIENT_ID
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -112,9 +112,7 @@ class GoogleAuthUiClient(
                 GoogleIdTokenRequestOptions.Builder()
                     .setSupported(true)
                     .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(
-                        context.getString(R.string.web_client_id)
-                    )
+                    .setServerClientId(WEB_CLIENT_ID)
                     .build()
             )
             .setAutoSelectEnabled(true)
