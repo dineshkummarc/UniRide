@@ -148,6 +148,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
+    // Accompanist permissions
+    implementation(libs.google.accompanist.permissions)
+
     // Text Flow
     implementation(libs.textflow)
 }
