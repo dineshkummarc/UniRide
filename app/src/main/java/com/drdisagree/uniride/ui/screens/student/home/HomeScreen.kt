@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.student.home
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
+import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.extension.Container
 import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDestination
@@ -82,6 +85,17 @@ private fun HomeContent(
     navigator: DestinationsNavigator,
     paddingValues: PaddingValues
 ) {
+    val context = LocalContext.current
+    RequestLocationPermission(
+        onPermissionGranted = { /*TODO*/ },
+        onPermissionDenied = { /*TODO*/ }) {
+        Toast.makeText(
+            context,
+            "Please grant location permission",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

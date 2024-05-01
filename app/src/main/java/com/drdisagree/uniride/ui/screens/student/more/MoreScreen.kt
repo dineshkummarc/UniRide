@@ -24,10 +24,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -37,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
@@ -47,6 +52,8 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.extension.Container
 import com.drdisagree.uniride.ui.screens.NavGraphs
+import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.screens.destinations.AdminPanelDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.student.account.GoogleAuthUiClient
 import com.drdisagree.uniride.ui.screens.student.main.getRootNavigator
@@ -201,7 +208,8 @@ private fun ProfileSection(
 
 @Composable
 private fun QuickActionsSection(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
     Text(
         text = "Quick Actions",
@@ -253,13 +261,47 @@ private fun QuickActionsSection(
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium1))
 
         QuickActionsItem(
-            icon = R.drawable.ic_settings,
-            title = R.string.settings_title,
-            subtitle = R.string.settings_summary,
+            icon = R.drawable.ic_sms_edit,
+            title = R.string.report_title,
+            subtitle = R.string.report_summary,
             modifier = Modifier
                 .padding(end = MaterialTheme.spacing.medium1)
                 .weight(1f)
         )
+    }
+
+    val isAdministrator by rememberSaveable {
+        mutableStateOf(accountStatusViewModel.isUserAdmin())
+    }
+
+    if (isAdministrator == true || isAdministrator == null) { // TODO: Show only if admin
+        Row(
+            modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium1)
+        ) {
+            QuickActionsItem(
+                icon = R.drawable.ic_category,
+                title = R.string.admin_panel_title,
+                subtitle = R.string.admin_panel_summary,
+                modifier = Modifier
+                    .padding(start = MaterialTheme.spacing.medium1)
+                    .weight(1f),
+                onClick = {
+                    navigator.navigate(AdminPanelDestination)
+                }
+            )
+
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium1))
+
+            QuickActionsItem(
+                icon = R.drawable.ic_sms_edit,
+                title = R.string.report_title,
+                subtitle = R.string.report_summary,
+                modifier = Modifier
+                    .padding(end = MaterialTheme.spacing.medium1)
+                    .weight(1f)
+                    .alpha(0f) // Hide the item, reveal in future when new item needed
+            )
+        }
     }
 }
 

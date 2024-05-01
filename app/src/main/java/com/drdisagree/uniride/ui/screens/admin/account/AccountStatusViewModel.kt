@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin
+package com.drdisagree.uniride.ui.screens.admin.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
