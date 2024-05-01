@@ -10,6 +10,12 @@
     <string name="emergency_summary">Report emergency situation</string>
     <string name="chat_box_title">Chat Box</string>
     <string name="chat_box_summary">Chat with other students</string>
-    <string name="settings_title">Settings</string>
-    <string name="settings_summary">Manage your account</string>
+    <string name="report_title">Report Issue</string>
+    <string name="report_summary">Report an issue or incident</string>
+    <string name="admin_panel_title">Admin Panel</string>
+    <string name="admin_panel_summary">Monitor and control everything</string>
+    <string name="post_notice">Post announcement</string>
+    <string name="add_new_bus_route">Add new bus route</string>
+    <string name="add_new_bus_schedule">Add new bus schedule</string>
+    <string name="view_driver_list">View driver list</string>
 </resources>
