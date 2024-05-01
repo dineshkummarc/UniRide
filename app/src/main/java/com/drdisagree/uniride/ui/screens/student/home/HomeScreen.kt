@@ -144,6 +144,7 @@ private fun NearbyBuses(
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(
+            top = MaterialTheme.spacing.medium1,
             start = MaterialTheme.spacing.medium1,
             bottom = MaterialTheme.spacing.medium1
         )
