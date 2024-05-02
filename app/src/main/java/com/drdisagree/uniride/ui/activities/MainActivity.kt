@@ -34,8 +34,12 @@ class MainActivity : ComponentActivity() {
                 val startRoute = if (!isLoggedIn) {
                     NavGraphs.root.startRoute
                 } else {
-                    val isStudent =
-                        Firebase.auth.currentUser!!.email?.endsWith(STUDENT_MAIL_SUFFIX) == true
+                    val currentUserEmail = Firebase.auth.currentUser?.email
+                    val isStudent = currentUserEmail?.let { email ->
+                        STUDENT_MAIL_SUFFIX.any { suffix ->
+                            email.endsWith(suffix)
+                        }
+                    } ?: false
 
                     if (isStudent) {
                         HomeContainerDestination

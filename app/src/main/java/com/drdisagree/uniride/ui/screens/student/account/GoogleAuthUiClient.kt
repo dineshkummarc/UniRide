@@ -49,7 +49,7 @@ class GoogleAuthUiClient(
             null
         )
 
-        if (!credential.id.endsWith(STUDENT_MAIL_SUFFIX)) {
+        if (!STUDENT_MAIL_SUFFIX.any { suffix -> credential.id.endsWith(suffix) }) {
             firebaseAuth.currentUser?.delete()
             return SignInResult(
                 data = null,

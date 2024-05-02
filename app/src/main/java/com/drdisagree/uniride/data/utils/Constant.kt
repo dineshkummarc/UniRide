@@ -7,7 +7,10 @@ object Constant {
     const val ROUTE_COLLECTION = "route_list"
     const val SCHEDULE_COLLECTION = "schedule_list"
     const val DRIVER_DOCUMENT_COLLECTION = "driver_documents_list"
-    const val STUDENT_MAIL_SUFFIX = "@diu.edu.bd"
+    val STUDENT_MAIL_SUFFIX = listOf(
+        "@diu.edu.bd",
+        "@daffodilvarsity.edu.bd"
+    )
     const val DRIVING_LICENSE_FRONT = "driving_license_front"
     const val DRIVING_LICENSE_BACK = "driving_license_back"
     const val NID_CARD_FRONT = "nid_card_front"
