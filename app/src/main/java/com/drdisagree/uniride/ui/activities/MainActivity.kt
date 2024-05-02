@@ -7,8 +7,12 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.drdisagree.uniride.data.utils.Constant.STUDENT_MAIL_SUFFIX
+import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
+import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.screens.NavGraphs
+import com.drdisagree.uniride.ui.screens.destinations.DriverHomeDestination
 import com.drdisagree.uniride.ui.screens.destinations.HomeContainerDestination
 import com.drdisagree.uniride.ui.theme.UniRideTheme
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -34,17 +38,20 @@ class MainActivity : ComponentActivity() {
                 val startRoute = if (!isLoggedIn) {
                     NavGraphs.root.startRoute
                 } else {
-                    val currentUserEmail = Firebase.auth.currentUser?.email
-                    val isStudent = currentUserEmail?.let { email ->
-                        STUDENT_MAIL_SUFFIX.any { suffix ->
-                            email.endsWith(suffix)
-                        }
-                    } ?: false
+                    val currentCollection = Prefs.getString(WHICH_USER_COLLECTION)
 
-                    if (isStudent) {
-                        HomeContainerDestination
-                    } else {
-                        NavGraphs.root.startRoute
+                    when (currentCollection) {
+                        STUDENT_COLLECTION -> {
+                            HomeContainerDestination
+                        }
+
+                        DRIVER_COLLECTION -> {
+                            DriverHomeDestination
+                        }
+
+                        else -> {
+                            NavGraphs.root.startRoute
+                        }
                     }
                 }
 

@@ -5,6 +5,7 @@ object Constant {
     const val ADMIN_COLLECTION = "admin_list"
     const val STUDENT_COLLECTION = "student_list"
     const val DRIVER_COLLECTION = "driver_list"
+    const val WHICH_USER_COLLECTION = "which_user_list"
     const val ROUTE_COLLECTION = "route_list"
     const val SCHEDULE_COLLECTION = "schedule_list"
     const val DRIVER_DOCUMENT_COLLECTION = "driver_documents_list"

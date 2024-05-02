@@ -49,6 +49,8 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.models.Student
+import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
+import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
@@ -118,6 +120,7 @@ fun MoreScreen(
                                 popUpTo(NavGraphs.root.startRoute)
                                 launchSingleTop = true
                             }
+                            Prefs.clearPref(WHICH_USER_COLLECTION)
                         }
                     }
                 )

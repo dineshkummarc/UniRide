@@ -40,6 +40,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
+import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
@@ -95,6 +98,7 @@ private fun HomeContent(
             Toast.LENGTH_SHORT
         ).show()
     }
+    Prefs.putString(WHICH_USER_COLLECTION, STUDENT_COLLECTION)
 
     Column(
         modifier = Modifier

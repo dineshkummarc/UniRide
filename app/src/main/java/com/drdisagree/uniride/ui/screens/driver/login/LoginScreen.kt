@@ -58,6 +58,8 @@ import com.drdisagree.uniride.ui.components.views.ButtonSecondary
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.extension.Container
+import com.drdisagree.uniride.ui.screens.NavGraphs
+import com.drdisagree.uniride.ui.screens.destinations.DriverHomeDestination
 import com.drdisagree.uniride.ui.screens.destinations.RegisterScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.login.utils.LoginValidation
 import com.drdisagree.uniride.ui.screens.driver.login.utils.validateEmail
@@ -66,6 +68,7 @@ import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -289,7 +292,12 @@ private fun LoginFields(
                 }
 
                 is Resource.Success -> {
-                    /* TODO */
+                    navigator.navigate(
+                        DriverHomeDestination()
+                    ) {
+                        popUpTo(NavGraphs.root.startRoute) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
 
                 is Resource.Error -> {
