@@ -7,7 +7,6 @@ import android.hardware.Sensor.TYPE_MAGNETIC_FIELD
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -24,12 +23,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -93,8 +94,9 @@ private fun MapView(
     var marker: LatLng? by rememberSaveable { mutableStateOf(null) }
     val location by viewModel.locationFlow.collectAsState()
     location?.let {
-        marker = LatLng(it.latitude, it.longitude)
-        Log.d("MyLocation", "MyLocation: $marker")
+        if (marker == null || marker != LatLng(it.latitude, it.longitude)) {
+            marker = LatLng(it.latitude, it.longitude)
+        }
     }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(23.8041, 90.4152), 15f)
@@ -125,6 +127,7 @@ private fun MapView(
     val mOrientationAngles = FloatArray(3)
     var degrees by rememberSaveable { mutableIntStateOf(0) }
     var currentTime by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
+    var zoomLevel by rememberSaveable { mutableFloatStateOf(15f) }
 
     val sensorEventListener = remember {
         object : SensorEventListener {
@@ -224,7 +227,6 @@ private fun MapView(
 
     LaunchedEffect(key1 = marker, key2 = degrees) {
         marker?.let {
-            Log.d("MyLocation", "LaunchedEffect: $degrees")
             val cameraPosition = CameraPosition.Builder()
                 .target(
                     LatLng(
@@ -232,8 +234,8 @@ private fun MapView(
                         it.longitude
                     )
                 )
+                .zoom(zoomLevel)
                 .bearing(degrees.toFloat())
-                .zoom(15f)
                 .build()
 
             cameraPositionState.animate(
@@ -241,6 +243,15 @@ private fun MapView(
                 1_000
             )
         }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { cameraPositionState.position.zoom }
+            .collect { zoom ->
+                if (zoomLevel != zoom) {
+                    zoomLevel = zoom
+                }
+            }
     }
 
     GoogleMap(
