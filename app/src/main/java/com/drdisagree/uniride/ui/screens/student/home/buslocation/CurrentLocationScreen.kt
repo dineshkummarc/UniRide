@@ -78,7 +78,7 @@ private fun MapViewContent(
         Marker(
             state = MarkerState(position = marker),
             title = "Position",
-            snippet = "This is a description of this Marker",
+            snippet = "Bus is currently at this location",
             draggable = true
         )
     }

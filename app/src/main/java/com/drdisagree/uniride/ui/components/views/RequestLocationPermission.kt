@@ -3,6 +3,7 @@ package com.drdisagree.uniride.ui.components.views
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.app.ActivityCompat
@@ -63,4 +64,12 @@ fun areLocationPermissionsGranted(context: Context): Boolean {
                 context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED)
+}
+
+fun isLocationEnabled(context: Context): Boolean {
+    val locationManager = context.getSystemService(
+        Context.LOCATION_SERVICE
+    ) as LocationManager
+
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 }
