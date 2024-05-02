@@ -1,10 +1,10 @@
 package com.drdisagree.uniride.ui.screens.student.account
 
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
 import com.drdisagree.uniride.data.models.Student
+import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_MAIL_SUFFIX
 import com.drdisagree.uniride.data.utils.Constant.WEB_CLIENT_ID
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -12,17 +12,18 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdToken
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
 
 @Suppress("deprecation")
 class GoogleAuthUiClient(
-    private val context: Context,
     private val oneTapClient: SignInClient
 ) {
     private val tag = GoogleAuthUiClient::class.java.simpleName
     private val firebaseAuth = Firebase.auth
+    private val firestore = FirebaseFirestore.getInstance()
 
     suspend fun signIn(): IntentSender? {
         val result = try {
@@ -58,16 +59,21 @@ class GoogleAuthUiClient(
         }
 
         return try {
-            val user = firebaseAuth.signInWithCredential(googleCredentials).await().user
+            val user = firebaseAuth.signInWithCredential(googleCredentials).await().user!!
+            val studentCollection = firestore.collection(STUDENT_COLLECTION)
+            val student = Student(
+                userId = user.uid,
+                userName = user.displayName,
+                email = user.email,
+                profilePictureUrl = user.photoUrl?.toString()
+            )
 
-            return SignInResult(
-                data = user?.run {
-                        Student(
-                            userId = uid,
-                            userName = displayName,
-                            profilePictureUrl = photoUrl?.toString()
-                        )
-                    },
+            studentCollection.document(user.uid)
+                .set(student)
+                .await()
+
+            SignInResult(
+                data = student,
                 errorMessage = null
             )
         } catch (exception: Exception) {
@@ -76,6 +82,7 @@ class GoogleAuthUiClient(
             } else {
                 throw exception
             }
+
             SignInResult(
                 null,
                 exception.message
@@ -96,11 +103,14 @@ class GoogleAuthUiClient(
         }
     }
 
-    fun getSignedInUser(): Student? = firebaseAuth.currentUser?.run {
-        Student(
-            userId = uid,
-            userName = displayName,
-            profilePictureUrl = photoUrl?.toString()
+    fun getSignedInUser(): Student {
+        val currentUser = firebaseAuth.currentUser!!
+
+        return Student(
+            userId = currentUser.uid,
+            userName = currentUser.displayName,
+            email = currentUser.email,
+            profilePictureUrl = currentUser.photoUrl?.toString()
         )
     }
 

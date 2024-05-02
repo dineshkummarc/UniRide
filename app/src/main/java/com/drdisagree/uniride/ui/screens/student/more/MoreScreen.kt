@@ -84,7 +84,6 @@ fun MoreScreen(
     val googleAuthUiClient by remember(context) {
         lazy {
             GoogleAuthUiClient(
-                context = context.applicationContext,
                 oneTapClient = Identity.getSignInClient(context.applicationContext)
             )
         }
