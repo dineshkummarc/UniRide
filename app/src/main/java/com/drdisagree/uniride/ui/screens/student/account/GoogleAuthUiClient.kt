@@ -49,27 +49,27 @@ class GoogleAuthUiClient(
             null
         )
 
+        if (!credential.id.endsWith(STUDENT_MAIL_SUFFIX)) {
+            firebaseAuth.currentUser?.delete()
+            return SignInResult(
+                data = null,
+                errorMessage = "You are not a student of DIU"
+            )
+        }
+
         return try {
             val user = firebaseAuth.signInWithCredential(googleCredentials).await().user
 
-            if (user?.email?.endsWith(STUDENT_MAIL_SUFFIX) == true) {
-                return SignInResult(
-                    data = user.run {
+            return SignInResult(
+                data = user?.run {
                         Student(
                             userId = uid,
                             userName = displayName,
                             profilePictureUrl = photoUrl?.toString()
                         )
                     },
-                    errorMessage = null
+                errorMessage = null
                 )
-            }
-
-            firebaseAuth.currentUser?.delete()
-            SignInResult(
-                data = null,
-                errorMessage = "You are not a student of DIU"
-            )
         } catch (exception: Exception) {
             if (exception !is CancellationException) {
                 Log.e(tag, "signInWithIntent:", exception)
