@@ -78,14 +78,13 @@ class RegisterViewModel @Inject constructor(
         documents: List<Pair<ByteArray, String>>
     ) {
         viewModelScope.launch {
+            val userStorageRef = storage.child(DRIVER_DOCUMENT_COLLECTION).child(userUid)
+
             try {
                 val imagesUrlsDeferred = withContext(Dispatchers.IO) {
                     documents.map { (byteArray, documentName) ->
                         async {
-                            val imageStorageRef = storage.child(DRIVER_DOCUMENT_COLLECTION)
-                                .child(userUid)
-                                .child(documentName)
-
+                            val imageStorageRef = userStorageRef.child(documentName)
                             val uploadTask = imageStorageRef.putBytes(byteArray)
                             val result = uploadTask.await()
 
@@ -110,11 +109,11 @@ class RegisterViewModel @Inject constructor(
                 }.addOnSuccessListener {
                     _register.value = Resource.Success(driver)
                 }.addOnFailureListener {
-                    firebaseAuth.currentUser?.delete()
+                    userStorageRef.delete()
                     _register.value = Resource.Error(it.message.toString())
                 }
             } catch (e: Exception) {
-                firebaseAuth.currentUser?.delete()
+                userStorageRef.delete().await()
                 _register.value = Resource.Error(e.message.toString())
             }
         }
