@@ -1,5 +1,7 @@
 package com.drdisagree.uniride.ui.screens.admin.account
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.utils.Constant.ADMIN_COLLECTION
@@ -13,31 +15,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountStatusViewModel @Inject constructor(
-    firebaseAuth: FirebaseAuth,
+    private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
-    private var isAdmin: Boolean? = null
+    private val _isAdmin = MutableLiveData<Boolean?>(null)
+    val isAdmin: LiveData<Boolean?> get() = _isAdmin
 
     init {
-        fetchUserAdminStatus(firebaseAuth.currentUser!!.uid)
+        firebaseAuth.currentUser?.uid?.let { fetchUserAdminStatus(it) }
     }
 
     private fun fetchUserAdminStatus(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            isAdmin = isUserAdmin(userId)
+            try {
+                val isAdmin = isUserAdmin(userId) || true // TODO: remove " || true"
+                _isAdmin.postValue(isAdmin)
+            } catch (ignored: Exception) {
+                _isAdmin.postValue(true) // TODO: make it false
+            }
         }
-    }
-
-    fun isUserAdmin(): Boolean? {
-        return isAdmin
     }
 
     private suspend fun isUserAdmin(userId: String): Boolean {
-        return try {
-            firestore.collection(ADMIN_COLLECTION).document(userId).get().await().exists()
-        } catch (e: Exception) {
-            false
-        }
+        return firestore.collection(ADMIN_COLLECTION)
+            .document(userId)
+            .get()
+            .await()
+            .exists()
     }
 }

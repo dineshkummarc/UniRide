@@ -24,11 +24,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Observer
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
@@ -274,11 +276,21 @@ private fun QuickActionsSection(
         )
     }
 
-    val isAdministrator by rememberSaveable {
-        mutableStateOf(accountStatusViewModel.isUserAdmin())
+    var isAdminState by remember { mutableStateOf<Boolean?>(null) }
+
+    DisposableEffect(key1 = accountStatusViewModel.isAdmin) {
+        val isAdminLiveData = accountStatusViewModel.isAdmin
+        val observer = Observer<Boolean?> { isAdmin ->
+            isAdminState = isAdmin
+        }
+        isAdminLiveData.observeForever(observer)
+
+        onDispose {
+            isAdminLiveData.removeObserver(observer)
+        }
     }
 
-    if (isAdministrator == true || isAdministrator == null) { // TODO: Show only if admin
+    if (isAdminState == true) {
         Row(
             modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium1)
         ) {
