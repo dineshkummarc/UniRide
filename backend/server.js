@@ -48,11 +48,11 @@ wsServer.on('connection', (ws) => {
 // HTTP endpoint to receive location data
 app.post('/location', verifyToken, (req, res) => {
     // Extract location data from request body
-    const { latitude, longitude, uuid } = req.body;
+    const { latitude, longitude, rotation, uuid } = req.body;
 
     // Save location data to JSON file
     const filename = path.join(__dirname, 'locations', `location_${uuid}.json`);
-    const data = { latitude, longitude, timestamp: new Date() };
+    const data = { latitude, longitude, rotation, timestamp: new Date() };
 
     // Write location data to file (replacing existing file)
     fs.writeFile(filename, JSON.stringify(data) + '\n', (err) => {
