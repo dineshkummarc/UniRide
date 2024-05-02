@@ -137,7 +137,7 @@ fun MoreScreen(
 private fun MoreContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
-    student: Student?
+    student: Student
 ) {
     Column(
         modifier = Modifier
@@ -152,7 +152,7 @@ private fun MoreContent(
 
 @Composable
 private fun ProfileSection(
-    student: Student?
+    student: Student
 ) {
     Column(
         modifier = Modifier
@@ -162,7 +162,7 @@ private fun ProfileSection(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val placeholder = R.drawable.img_profile_pic_default
-        val imageUrl = student?.profilePictureUrl
+        val imageUrl = student.profilePictureUrl
 
         val imageRequest = ImageRequest.Builder(LocalContext.current)
             .data(imageUrl)
@@ -194,7 +194,7 @@ private fun ProfileSection(
         }
 
         Text(
-            text = student?.userName ?: "Anonymous",
+            text = student.userName ?: "Unknown",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
