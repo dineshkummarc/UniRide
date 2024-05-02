@@ -327,7 +327,7 @@ private fun LoginFields(
                         if (!errorShown) {
                             Toast.makeText(
                                 context,
-                                "Error: $message",
+                                message,
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -501,7 +501,7 @@ private fun ForgotPasswordSection(
                     is Resource.Error -> {
                         Toast.makeText(
                             context,
-                            "Error: ${it.data.toString()}",
+                            "${it.data.toString()}",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

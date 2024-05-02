@@ -604,7 +604,7 @@ private fun VerificationContent(
 
                     Toast.makeText(
                         context,
-                        "Error: ${it.message.toString()}",
+                        it.message.toString(),
                         Toast.LENGTH_LONG
                     ).show()
                 }
