@@ -102,6 +102,7 @@ private fun MapView(
     val uiSettings = remember {
         MapUiSettings(
             zoomControlsEnabled = false,
+            compassEnabled = false,
             myLocationButtonEnabled = false
         )
     }
