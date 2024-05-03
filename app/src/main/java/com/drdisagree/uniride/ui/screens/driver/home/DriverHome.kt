@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
@@ -24,6 +25,7 @@ import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.extension.Container
+import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -57,11 +59,15 @@ fun DriverHome(
 @Composable
 private fun DriverHomeContent(
     paddingValues: PaddingValues,
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    gpsStateManager: GpsStateManager = hiltViewModel()
 ) {
     val context = LocalContext.current
     var permissionGranted by remember {
         mutableStateOf(false)
+    }
+    val gpsRequested by remember {
+        mutableStateOf(gpsStateManager.gpsRequested.value)
     }
 
     LaunchedEffect(Unit) {
@@ -79,7 +85,7 @@ private fun DriverHomeContent(
         ).show()
     }
 
-    if (permissionGranted) {
+    if (permissionGranted && !gpsRequested) {
         RequestGpsEnable(
             context = context,
             onGpsEnabled = { },
@@ -91,5 +97,7 @@ private fun DriverHomeContent(
                 ).show()
             }
         )
+
+        gpsStateManager.setGpsRequested(true)
     }
 }
