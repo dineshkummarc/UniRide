@@ -43,7 +43,6 @@ import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.extension.Container
-import com.drdisagree.uniride.utils.MapStyle
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -112,7 +111,10 @@ private fun MapView(
         mutableStateOf(
             MapProperties(
                 isMyLocationEnabled = false,
-                mapStyleOptions = MapStyleOptions(MapStyle.json)
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.map_style
+                )
             )
         )
     }

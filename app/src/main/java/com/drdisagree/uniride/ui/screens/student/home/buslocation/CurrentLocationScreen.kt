@@ -7,11 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.extension.Container
-import com.drdisagree.uniride.utils.MapStyle
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -56,6 +57,7 @@ fun CurrentLocationScreen(
 private fun MapViewContent(
     modifier: Modifier
 ) {
+    val context = LocalContext.current
     val cameraState = rememberCameraPositionState()
     val marker = LatLng(23.8041, 90.4152)
     val uiSettings = remember {
@@ -72,7 +74,10 @@ private fun MapViewContent(
         uiSettings = uiSettings,
         properties = MapProperties(
             isMyLocationEnabled = true,
-            mapStyleOptions = MapStyleOptions(MapStyle.json)
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                context,
+                R.raw.map_style
+            )
         )
     ) {
         Marker(
