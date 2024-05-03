@@ -41,7 +41,7 @@ import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
-import com.drdisagree.uniride.ui.components.views.isLocationEnabled
+import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.extension.Container
 import com.drdisagree.uniride.utils.MapStyle
 import com.drdisagree.uniride.utils.toBitmapDescriptor
@@ -207,7 +207,7 @@ private fun MapView(
         key1 = true
     ) {
         val locationPermissionGranted = areLocationPermissionsGranted(context)
-        val locationEnabled = isLocationEnabled(context)
+        val locationEnabled = isGpsEnabled(context)
 
         if (!locationPermissionGranted) {
             Toast.makeText(

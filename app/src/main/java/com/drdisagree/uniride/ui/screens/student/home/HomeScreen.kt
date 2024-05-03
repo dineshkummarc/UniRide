@@ -22,7 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +52,7 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
+import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.extension.Container
 import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDestination
 import com.drdisagree.uniride.ui.theme.Dark
@@ -90,27 +95,38 @@ private fun HomeContent(
     paddingValues: PaddingValues
 ) {
     val context = LocalContext.current
+    var permissionGranted by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        Prefs.putString(WHICH_USER_COLLECTION, STUDENT_COLLECTION)
+        permissionGranted = areLocationPermissionsGranted(context)
+    }
+
     RequestLocationPermission(
-        onPermissionGranted = { /*TODO*/ },
-        onPermissionDenied = { /*TODO*/ }) {
+        onPermissionGranted = { permissionGranted = true },
+        onPermissionDenied = { permissionGranted = false }) {
         Toast.makeText(
             context,
             "Please grant location permission",
             Toast.LENGTH_SHORT
         ).show()
     }
-    RequestGpsEnable(
-        context = context,
-        onGpsEnabled = { },
-        onGpsDisabled = {
-            Toast.makeText(
-                context,
-                "Please enable GPS",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    )
-    Prefs.putString(WHICH_USER_COLLECTION, STUDENT_COLLECTION)
+
+    if (permissionGranted) {
+        RequestGpsEnable(
+            context = context,
+            onGpsEnabled = { },
+            onGpsDisabled = {
+                Toast.makeText(
+                    context,
+                    "Please enable GPS",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
