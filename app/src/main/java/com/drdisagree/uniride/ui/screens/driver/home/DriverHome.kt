@@ -59,7 +59,13 @@ fun DriverHome(
 @Composable
 private fun DriverHomeContent(
     paddingValues: PaddingValues,
-    navigator: DestinationsNavigator,
+    navigator: DestinationsNavigator
+) {
+    HandlePermissions()
+}
+
+@Composable
+private fun HandlePermissions(
     gpsStateManager: GpsStateManager = hiltViewModel()
 ) {
     val context = LocalContext.current

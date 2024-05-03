@@ -94,7 +94,25 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     navigator: DestinationsNavigator,
-    paddingValues: PaddingValues,
+    paddingValues: PaddingValues
+) {
+    HandlePermissions()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues = paddingValues)
+            .verticalScroll(rememberScrollState())
+    ) {
+        NoticeBoard(
+            notice = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dictum tristique dolor a elementum. Nulla augue ante, ultricies in tortor sit amet, tincidunt sollicitudin felis. Sed egestas mauris vitae ipsum iaculis, sit amet venenatis nisl vehicula. In gravida sagittis convallis. Pellentesque eget velit ut nisi vehicula pretium a in magna. Praesent eget magna urna. Vestibulum fermentum elementum ex sit amet bibendum. Aenean congue sagittis turpis, sit amet dictum sapien."
+        )
+        NearbyBuses(navigator = navigator)
+    }
+}
+
+@Composable
+private fun HandlePermissions(
     gpsStateManager: GpsStateManager = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -134,18 +152,6 @@ private fun HomeContent(
         )
 
         gpsStateManager.setGpsRequested(true)
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues = paddingValues)
-            .verticalScroll(rememberScrollState())
-    ) {
-        NoticeBoard(
-            notice = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dictum tristique dolor a elementum. Nulla augue ante, ultricies in tortor sit amet, tincidunt sollicitudin felis. Sed egestas mauris vitae ipsum iaculis, sit amet venenatis nisl vehicula. In gravida sagittis convallis. Pellentesque eget velit ut nisi vehicula pretium a in magna. Praesent eget magna urna. Vestibulum fermentum elementum ex sit amet bibendum. Aenean congue sagittis turpis, sit amet dictum sapien."
-        )
-        NearbyBuses(navigator = navigator)
     }
 }
 
