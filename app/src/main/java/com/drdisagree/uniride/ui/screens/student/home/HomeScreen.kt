@@ -45,6 +45,7 @@ import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
+import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.extension.Container
@@ -98,6 +99,17 @@ private fun HomeContent(
             Toast.LENGTH_SHORT
         ).show()
     }
+    RequestGpsEnable(
+        context = context,
+        onGpsEnabled = { },
+        onGpsDisabled = {
+            Toast.makeText(
+                context,
+                "Please enable GPS",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    )
     Prefs.putString(WHICH_USER_COLLECTION, STUDENT_COLLECTION)
 
     Column(

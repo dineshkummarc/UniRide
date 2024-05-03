@@ -1,8 +1,10 @@
 package com.drdisagree.uniride.ui.screens.driver.home
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -12,6 +14,8 @@ import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
+import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
+import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.extension.Container
 import com.ramcosta.composedestinations.annotation.Destination
@@ -49,6 +53,26 @@ private fun DriverHomeContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator
 ) {
+    val context = LocalContext.current
+    RequestLocationPermission(
+        onPermissionGranted = { /*TODO*/ },
+        onPermissionDenied = { /*TODO*/ }) {
+        Toast.makeText(
+            context,
+            "Please grant location permission",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+    RequestGpsEnable(
+        context = context,
+        onGpsEnabled = { },
+        onGpsDisabled = {
+            Toast.makeText(
+                context,
+                "Please enable GPS",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    )
     Prefs.putString(WHICH_USER_COLLECTION, DRIVER_COLLECTION)
-
 }
