@@ -58,7 +58,7 @@ import com.drdisagree.uniride.ui.components.views.ButtonSecondary
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
-import com.drdisagree.uniride.ui.extension.Container
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.DriverHomeDestination
 import com.drdisagree.uniride.ui.screens.destinations.RegisterScreenDestination

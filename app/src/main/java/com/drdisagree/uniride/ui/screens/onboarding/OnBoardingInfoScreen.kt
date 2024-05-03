@@ -40,7 +40,7 @@ import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.ui.extension.Container
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.Gray

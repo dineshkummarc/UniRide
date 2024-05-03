@@ -59,7 +59,7 @@ import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
-import com.drdisagree.uniride.ui.extension.Container
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.screens.destinations.LoginScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.register.RegisterViewModel
 import com.drdisagree.uniride.ui.theme.DarkGray

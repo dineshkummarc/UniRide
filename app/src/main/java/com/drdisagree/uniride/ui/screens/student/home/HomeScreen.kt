@@ -54,7 +54,7 @@ import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
-import com.drdisagree.uniride.ui.extension.Container
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray

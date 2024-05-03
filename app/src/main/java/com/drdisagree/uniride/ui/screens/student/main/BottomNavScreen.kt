@@ -34,7 +34,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.drdisagree.uniride.ui.components.navigation.BottomBarDestination
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
-import com.drdisagree.uniride.ui.extension.Container
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.LightGray

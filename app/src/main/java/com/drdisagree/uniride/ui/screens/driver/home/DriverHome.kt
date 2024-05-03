@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,11 +58,11 @@ import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
+import com.drdisagree.uniride.ui.components.views.ContainerNavDrawer
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithNavDrawerIcon
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
-import com.drdisagree.uniride.ui.extension.ContainerNavDrawer
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
@@ -72,6 +73,7 @@ import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -82,12 +84,15 @@ fun DriverHome(
     navigator: DestinationsNavigator
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
     ContainerNavDrawer(
         drawerState = drawerState,
         drawerContent = {
-            NavigationDrawer()
+            NavigationDrawer(
+                drawerState = drawerState,
+                coroutineScope = coroutineScope
+            )
         }
     ) {
         Scaffold(
@@ -98,7 +103,7 @@ fun DriverHome(
                     fontWeight = FontWeight.W600,
                     fontFamily = FontFamily.Cursive,
                     onNavigationIconClick = {
-                        scope.launch {
+                        coroutineScope.launch {
                             drawerState.open()
                         }
                     }
@@ -115,7 +120,10 @@ fun DriverHome(
 }
 
 @Composable
-private fun NavigationDrawer() {
+private fun NavigationDrawer(
+    drawerState: DrawerState,
+    coroutineScope: CoroutineScope
+) {
     DrawerHeader()
     Spacer(
         modifier = Modifier
@@ -134,19 +142,34 @@ private fun NavigationDrawer() {
                 id = "home",
                 title = "Home",
                 contentDescription = "Go to home screen",
-                icon = Icons.Default.Home
+                icon = Icons.Default.Home,
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
+                }
             ),
             MenuItem(
                 id = "settings",
                 title = "Settings",
                 contentDescription = "Go to settings screen",
-                icon = Icons.Default.Settings
+                icon = Icons.Default.Settings,
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
+                }
             ),
             MenuItem(
                 id = "help",
                 title = "Help",
                 contentDescription = "Get help",
-                icon = Icons.Default.Info
+                icon = Icons.Default.Info,
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
+                }
             ),
         )
     )

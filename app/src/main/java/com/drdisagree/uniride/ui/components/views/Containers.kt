@@ -1,15 +1,13 @@
-package com.drdisagree.uniride.ui.extension
+package com.drdisagree.uniride.ui.components.views
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,7 +31,7 @@ fun Container(
 @Composable
 fun ContainerNavDrawer(
     modifier: Modifier = Modifier,
-    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    drawerState: DrawerState,
     shadow: Boolean = true,
     drawerContent: @Composable () -> Unit,
     content: @Composable () -> Unit
