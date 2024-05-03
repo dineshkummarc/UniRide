@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -23,6 +25,7 @@ import com.drdisagree.uniride.ui.theme.spacing
 
 @Composable
 fun LoadingDialog(
+    text: String = "Please wait",
     dialogProperties: DialogProperties = DialogProperties(
         dismissOnBackPress = false,
         dismissOnClickOutside = false
@@ -52,11 +55,14 @@ fun LoadingDialog(
                 modifier = Modifier.size(40.dp)
             )
             Text(
-                text = "Please wait",
+                text = text,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
+                modifier = Modifier
+                    .padding(top = MaterialTheme.spacing.small2)
+                    .widthIn(max = 120.dp),
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
