@@ -17,6 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -38,10 +41,12 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
+import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.extension.Container
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.HomeContainerDestination
@@ -207,8 +212,9 @@ private fun OnBoardingScreenContent(
             contentDescription = "Go to settings"
         )
 
-        val state by studentSignInViewModel.state.collectAsStateWithLifecycle()
+        val state by studentSignInViewModel.loginState.collectAsStateWithLifecycle()
         val context = LocalContext.current
+        var showLoadingDialog by remember { mutableStateOf(false) }
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartIntentSenderForResult(),
             onResult = { result ->
@@ -232,6 +238,18 @@ private fun OnBoardingScreenContent(
             state.signInError?.let {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 studentSignInViewModel.resetState()
+            }
+
+            studentSignInViewModel.loadingState.collect {
+                showLoadingDialog = when (it) {
+                    is Resource.Loading -> {
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
             }
         }
 
@@ -268,6 +286,10 @@ private fun OnBoardingScreenContent(
                 }
             }
         )
+
+        if (showLoadingDialog) {
+            LoadingDialog()
+        }
     }
 }
 

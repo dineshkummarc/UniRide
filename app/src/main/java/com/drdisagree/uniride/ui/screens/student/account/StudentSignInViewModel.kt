@@ -9,6 +9,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Student
 import com.drdisagree.uniride.data.utils.Constant
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -17,8 +18,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,8 +38,11 @@ class StudentSignInViewModel @Inject constructor(
 
     private val tag = StudentSignInViewModel::class.java.simpleName
 
-    private val _state = MutableStateFlow(SignInState())
-    val state = _state.asStateFlow()
+    private val _loadingState = MutableSharedFlow<Resource<String>>()
+    val loadingState = _loadingState.asSharedFlow()
+
+    private val _loginState = MutableStateFlow(SignInState())
+    val loginState = _loginState.asStateFlow()
 
     fun signInWithGoogle(launcher: ActivityResultLauncher<IntentSenderRequest>) {
         viewModelScope.launch {
@@ -79,6 +84,8 @@ class StudentSignInViewModel @Inject constructor(
     fun handleSignInResult(result: ActivityResult) {
         if (result.resultCode == Activity.RESULT_OK) {
             viewModelScope.launch {
+                _loadingState.emit(Resource.Loading())
+
                 val signInResult = signInWithIntent(result.data ?: return@launch)
                 onSignInResult(signInResult)
             }
@@ -86,14 +93,26 @@ class StudentSignInViewModel @Inject constructor(
     }
 
     fun resetState() {
-        _state.update { SignInState() }
+        _loginState.update { SignInState() }
     }
 
     private fun onSignInResult(result: SignInResult) {
-        _state.update {
+        val isSuccessful = result.data != null
+
+        _loginState.update {
             it.copy(
-                isSuccessful = result.data != null,
+                isSuccessful = isSuccessful,
                 signInError = result.errorMessage
+            )
+        }
+
+        viewModelScope.launch {
+            _loadingState.emit(
+                if (isSuccessful) {
+                    Resource.Loading()
+                } else {
+                    Resource.Error("Login failed")
+                }
             )
         }
     }
