@@ -109,7 +109,7 @@ class StudentSignInViewModel @Inject constructor(
         viewModelScope.launch {
             _loadingState.emit(
                 if (isSuccessful) {
-                    Resource.Loading()
+                    Resource.Unspecified()
                 } else {
                     Resource.Error("Login failed")
                 }
