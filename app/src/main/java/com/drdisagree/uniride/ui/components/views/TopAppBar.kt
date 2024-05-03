@@ -3,6 +3,7 @@ package com.drdisagree.uniride.ui.components.views
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,7 +19,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.time.format.TextStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,6 +98,41 @@ fun TopAppBarWithBackButtonAndEndIcon(
             IconButton(onClick = { endIconClick() }) {
                 endIcon()
             }
+        },
+        modifier = Modifier.shadow(elevation = 2.dp)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBarWithNavDrawerIcon(
+    title: String,
+    fontSize: TextUnit = 18.sp,
+    fontWeight: FontWeight? = FontWeight.Bold,
+    fontFamily: FontFamily? = null,
+    onNavigationIconClick: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                fontSize = fontSize,
+                fontWeight = fontWeight,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+                fontFamily = fontFamily
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { onNavigationIconClick() }) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Toggle drawer"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { /* Do nothing */ }) { }
         },
         modifier = Modifier.shadow(elevation = 2.dp)
     )

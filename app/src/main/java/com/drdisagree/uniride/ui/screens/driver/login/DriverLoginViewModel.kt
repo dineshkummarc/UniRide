@@ -3,10 +3,13 @@ package com.drdisagree.uniride.ui.screens.driver.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.Driver
+import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.ui.screens.driver.login.utils.LoginValidation
 import com.drdisagree.uniride.ui.screens.driver.login.utils.validateEmail
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,8 +17,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+class DriverLoginViewModel @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
     private val _login = MutableSharedFlow<Resource<FirebaseUser>>()
@@ -26,6 +30,13 @@ class LoginViewModel @Inject constructor(
 
     private val _authenticated = MutableSharedFlow<Resource<String>>()
     val authenticated = _authenticated.asSharedFlow()
+
+    private val _getDriver = MutableSharedFlow<Resource<Driver>>()
+    val getDriver = _getDriver.asSharedFlow()
+
+    init {
+        getSignedInDriver()
+    }
 
     fun login(email: String, password: String) {
         if (checkValidation(email, password)) {
@@ -78,10 +89,28 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun checkValidation(email: String, password: String): Boolean {
-        val emailValidation = validateEmail(email)
-        val passwordValidation = password.isNotEmpty() && password.length >= 8
-        return emailValidation is LoginValidation.Valid && passwordValidation
+    fun getSignedInDriver() {
+        firestore.collection(DRIVER_COLLECTION)
+            .document(firebaseAuth.currentUser!!.uid)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    document.toObject(Driver::class.java)?.let { driver ->
+                        viewModelScope.launch {
+                            _getDriver.emit(Resource.Success(driver))
+                        }
+                    }
+                } else {
+                    viewModelScope.launch {
+                        _getDriver.emit(Resource.Error("Account information not found"))
+                    }
+                }
+            }
+            .addOnFailureListener {
+                viewModelScope.launch {
+                    _getDriver.emit(Resource.Error(it.message.toString()))
+                }
+            }
     }
 
     fun resetPassword(email: String) {
@@ -100,6 +129,12 @@ class LoginViewModel @Inject constructor(
                     _resetPassword.emit(Resource.Error(it.message.toString()))
                 }
             }
+    }
+
+    private fun checkValidation(email: String, password: String): Boolean {
+        val emailValidation = validateEmail(email)
+        val passwordValidation = password.isNotEmpty() && password.length >= 8
+        return emailValidation is LoginValidation.Valid && passwordValidation
     }
 
     fun resendVerificationMail() {

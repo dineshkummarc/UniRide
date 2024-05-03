@@ -179,7 +179,7 @@ private fun HeaderSection(
 @Composable
 private fun LoginFields(
     navigator: DestinationsNavigator,
-    loginViewModel: LoginViewModel = hiltViewModel()
+    loginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
@@ -364,7 +364,7 @@ private fun LoginFields(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ForgotPasswordSection(
-    loginViewModel: LoginViewModel = hiltViewModel()
+    driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var isCorrectEmail by rememberSaveable { mutableStateOf(true) }
@@ -494,7 +494,7 @@ private fun ForgotPasswordSection(
                             isCorrectEmail = validateEmail(email) is LoginValidation.Valid
 
                             if (isCorrectEmail) {
-                                loginViewModel.resetPassword(email)
+                                driverLoginViewModel.resetPassword(email)
                             }
                         }
                     )
@@ -502,8 +502,8 @@ private fun ForgotPasswordSection(
             }
         }
 
-        LaunchedEffect(key1 = loginViewModel) {
-            loginViewModel.resetPassword.collect {
+        LaunchedEffect(key1 = driverLoginViewModel) {
+            driverLoginViewModel.resetPassword.collect {
                 when (it) {
                     is Resource.Loading -> {
                         Unit
