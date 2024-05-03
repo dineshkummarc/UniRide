@@ -60,7 +60,7 @@ import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.AdminPanelDestination
 import com.drdisagree.uniride.ui.screens.destinations.MyLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
-import com.drdisagree.uniride.ui.screens.student.account.GoogleAuthUiClient
+import com.drdisagree.uniride.ui.screens.student.account.StudentSignInViewModel
 import com.drdisagree.uniride.ui.screens.student.main.getRootNavigator
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
@@ -79,7 +79,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MoreScreen(
     navigator: DestinationsNavigator,
-    googleAuthUiClient: GoogleAuthUiClient = hiltViewModel()
+    studentSignInViewModel: StudentSignInViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
 
@@ -102,7 +102,7 @@ fun MoreScreen(
                     },
                     endIconClick = {
                         scope.launch {
-                            googleAuthUiClient.signOut()
+                            studentSignInViewModel.signOut()
 
                             navigator.popBackStack()
                             getRootNavigator().popBackStack()
@@ -121,7 +121,7 @@ fun MoreScreen(
                 MoreContent(
                     paddingValues = paddingValues,
                     navigator = navigator,
-                    student = googleAuthUiClient.getSignedInUser()
+                    student = studentSignInViewModel.getSignedInStudent()
                 )
             }
         )
