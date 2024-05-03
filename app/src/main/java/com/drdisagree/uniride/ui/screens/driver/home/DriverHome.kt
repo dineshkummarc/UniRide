@@ -22,7 +22,7 @@ import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
-import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
+import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ContainerNavDrawer
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
@@ -35,7 +35,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 @RootNavGraph
-@Destination(style = FadeInOutTransition::class)
+@Destination(style = SlideInOutTransition::class)
 @Composable
 fun DriverHome(
     navigator: DestinationsNavigator
