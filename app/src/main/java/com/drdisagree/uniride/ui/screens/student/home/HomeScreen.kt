@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
@@ -58,6 +59,7 @@ import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDesti
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import eu.wewox.textflow.TextFlow
@@ -92,11 +94,15 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     navigator: DestinationsNavigator,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    gpsStateManager: GpsStateManager = hiltViewModel()
 ) {
     val context = LocalContext.current
     var permissionGranted by remember {
         mutableStateOf(false)
+    }
+    val gpsRequested by remember {
+        mutableStateOf(gpsStateManager.gpsRequested.value)
     }
 
     LaunchedEffect(Unit) {
@@ -114,7 +120,7 @@ private fun HomeContent(
         ).show()
     }
 
-    if (permissionGranted) {
+    if (permissionGranted && !gpsRequested) {
         RequestGpsEnable(
             context = context,
             onGpsEnabled = { },
@@ -126,6 +132,8 @@ private fun HomeContent(
                 ).show()
             }
         )
+
+        gpsStateManager.setGpsRequested(true)
     }
 
     Column(

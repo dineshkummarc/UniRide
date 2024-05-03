@@ -1,10 +1,8 @@
 package com.drdisagree.uniride.ui.screens.onboarding
 
 import android.app.Activity
-import android.app.Activity.RESULT_OK
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -19,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -40,7 +37,6 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
@@ -51,13 +47,12 @@ import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.HomeContainerDestination
 import com.drdisagree.uniride.ui.screens.destinations.InfoScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.LoginScreenDestination
-import com.drdisagree.uniride.ui.screens.student.account.GoogleAuthUiClient
-import com.drdisagree.uniride.ui.screens.student.account.SignInViewModel
+import com.drdisagree.uniride.ui.screens.student.account.StudentSignInViewModel
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
-import kotlinx.coroutines.launch
 
 @MainScreenGraph(start = true)
 @Destination(style = SlideInOutTransition::class)
@@ -142,7 +137,8 @@ fun OnBoardingScreen(
 private fun OnBoardingScreenContent(
     navigator: DestinationsNavigator,
     constraints: ConstraintSet,
-    googleAuthUiClient: GoogleAuthUiClient = hiltViewModel()
+    studentSignInViewModel: StudentSignInViewModel = hiltViewModel(),
+    gpsStateManager: GpsStateManager = hiltViewModel()
 ) {
     ConstraintLayout(
         constraintSet = constraints,
@@ -211,24 +207,18 @@ private fun OnBoardingScreenContent(
             contentDescription = "Go to settings"
         )
 
-        val studentSignInViewModel = viewModel<SignInViewModel>()
         val state by studentSignInViewModel.state.collectAsStateWithLifecycle()
-        val coroutineScope = rememberCoroutineScope()
         val context = LocalContext.current
-
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartIntentSenderForResult(),
             onResult = { result ->
-                if (result.resultCode == RESULT_OK) {
-                    coroutineScope.launch {
-                        val signInResult = googleAuthUiClient.signInWithIntent(
-                            intent = result.data ?: return@launch
-                        )
-                        studentSignInViewModel.onSignInResult(signInResult)
-                    }
-                }
+                studentSignInViewModel.handleSignInResult(result)
             }
         )
+
+        LaunchedEffect(Unit) {
+            gpsStateManager.setGpsRequested(false)
+        }
 
         LaunchedEffect(
             key1 = state.isSuccessful,
@@ -256,14 +246,7 @@ private fun OnBoardingScreenContent(
                 .layoutId("studentBtn"),
             text = "I am a student",
             onClick = {
-                coroutineScope.launch {
-                    val signInIntentSender = googleAuthUiClient.signIn()
-                    launcher.launch(
-                        IntentSenderRequest.Builder(
-                            signInIntentSender ?: return@launch
-                        ).build()
-                    )
-                }
+                studentSignInViewModel.signInWithGoogle(launcher)
             }
         )
 
