@@ -22,13 +22,16 @@ import androidx.compose.ui.window.DialogProperties
 import com.drdisagree.uniride.ui.theme.spacing
 
 @Composable
-fun LoadingDialog(onDismissRequest: () -> Unit) {
+fun LoadingDialog(
+    dialogProperties: DialogProperties = DialogProperties(
+        dismissOnBackPress = false,
+        dismissOnClickOutside = false
+    ),
+    onDismissRequest: () -> Unit = {}
+) {
     Dialog(
         onDismissRequest = onDismissRequest,
-        properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false
-        )
+        properties = dialogProperties
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

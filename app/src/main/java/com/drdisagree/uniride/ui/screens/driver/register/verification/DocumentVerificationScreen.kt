@@ -617,6 +617,6 @@ private fun VerificationContent(
     }
 
     if (showLoadingDialog) {
-        LoadingDialog(onDismissRequest = { showLoadingDialog = false })
+        LoadingDialog()
     }
 }

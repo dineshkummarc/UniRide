@@ -55,6 +55,7 @@ import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
+import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.extension.Container
@@ -284,14 +285,18 @@ private fun LoginFields(
         )
     }
 
+    var showLoadingDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         loginViewModel.login.collect { result ->
             when (result) {
                 is Resource.Loading -> {
-                    Unit
+                    showLoadingDialog = true
                 }
 
                 is Resource.Success -> {
+                    showLoadingDialog = false
+
                     navigator.navigate(
                         DriverHomeDestination()
                     ) {
@@ -301,6 +306,8 @@ private fun LoginFields(
                 }
 
                 is Resource.Error -> {
+                    showLoadingDialog = false
+
                     var message = result.message.toString()
                     val messageLower = message.lowercase(Locale.ROOT)
 
@@ -343,10 +350,14 @@ private fun LoginFields(
                 }
 
                 else -> {
-                    Unit
+                    showLoadingDialog = false
                 }
             }
         }
+    }
+
+    if (showLoadingDialog) {
+        LoadingDialog()
     }
 }
 
