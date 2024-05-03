@@ -1,7 +1,0 @@
-npm install express ws helmet jsonwebtoken path concurrently wait-on
-npm install -g nodemon
-
-or, npm ci
-
-npm init
-npm run dev

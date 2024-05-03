@@ -1,0 +1,14 @@
+Installation:
+$ npm install express ws helmet jsonwebtoken path concurrently wait-on
+$ npm install -g nodemon
+
+or,
+$ npm ci
+
+Run:
+$ npm init # first time only
+$ npm run dev
+
+Test:
+$ curl http://localhost:8888/generateToken # generate token
+$ curl -X POST http://localhost:8888/location -H 'Content-Type: application/json' -H 'Authorization: Bearer YOUR_JWT_TOKEN' -d '{"latitude": 40.7128, "longitude": -74.006, "rotation": 90, "uuid": "example_uuid"}'
