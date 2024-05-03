@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drdisagree.uniride.R
@@ -54,7 +54,6 @@ import com.drdisagree.uniride.ui.screens.destinations.LoginScreenDestination
 import com.drdisagree.uniride.ui.screens.student.account.GoogleAuthUiClient
 import com.drdisagree.uniride.ui.screens.student.account.SignInViewModel
 import com.drdisagree.uniride.ui.theme.spacing
-import com.google.android.gms.auth.api.identity.Identity
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -142,7 +141,8 @@ fun OnBoardingScreen(
 @Composable
 private fun OnBoardingScreenContent(
     navigator: DestinationsNavigator,
-    constraints: ConstraintSet
+    constraints: ConstraintSet,
+    googleAuthUiClient: GoogleAuthUiClient = hiltViewModel()
 ) {
     ConstraintLayout(
         constraintSet = constraints,
@@ -215,13 +215,6 @@ private fun OnBoardingScreenContent(
         val state by studentSignInViewModel.state.collectAsStateWithLifecycle()
         val coroutineScope = rememberCoroutineScope()
         val context = LocalContext.current
-        val googleAuthUiClient by remember(context) {
-            lazy {
-                GoogleAuthUiClient(
-                    oneTapClient = Identity.getSignInClient(context.applicationContext)
-                )
-            }
-        }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartIntentSenderForResult(),

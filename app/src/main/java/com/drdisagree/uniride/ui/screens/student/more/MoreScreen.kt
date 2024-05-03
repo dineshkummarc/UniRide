@@ -66,7 +66,6 @@ import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
-import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.annotation.Destination
@@ -79,17 +78,10 @@ import kotlinx.coroutines.launch
 @Destination(style = FadeInOutTransition::class)
 @Composable
 fun MoreScreen(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    googleAuthUiClient: GoogleAuthUiClient = hiltViewModel()
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val googleAuthUiClient by remember(context) {
-        lazy {
-            GoogleAuthUiClient(
-                oneTapClient = Identity.getSignInClient(context.applicationContext)
-            )
-        }
-    }
 
     Container(shadow = false) {
         Scaffold(

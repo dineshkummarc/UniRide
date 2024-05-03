@@ -8,6 +8,8 @@ import com.drdisagree.uniride.data.database.ScheduleDatabase
 import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
 import com.drdisagree.uniride.domain.repository.ScheduleRepository
 import com.drdisagree.uniride.domain.repository.ScheduleRepositoryImpl
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -55,5 +57,11 @@ class AppModule {
     @Provides
     fun provideScheduleRepository(db: ScheduleDatabase): ScheduleRepository {
         return ScheduleRepositoryImpl(db.dao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSignInClient(@ApplicationContext context: Context): SignInClient {
+        return Identity.getSignInClient(context)
     }
 }

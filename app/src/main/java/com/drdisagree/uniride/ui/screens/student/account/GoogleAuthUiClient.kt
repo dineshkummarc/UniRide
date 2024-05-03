@@ -3,6 +3,7 @@ package com.drdisagree.uniride.ui.screens.student.account
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
+import androidx.lifecycle.ViewModel
 import com.drdisagree.uniride.data.models.Student
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_MAIL_SUFFIX
@@ -10,20 +11,22 @@ import com.drdisagree.uniride.data.utils.Constant.WEB_CLIENT_ID
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
+import javax.inject.Inject
 
+@HiltViewModel
 @Suppress("deprecation")
-class GoogleAuthUiClient(
-    private val oneTapClient: SignInClient
-) {
+class GoogleAuthUiClient @Inject constructor(
+    private val oneTapClient: SignInClient,
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) : ViewModel() {
     private val tag = GoogleAuthUiClient::class.java.simpleName
-    private val firebaseAuth = Firebase.auth
-    private val firestore = FirebaseFirestore.getInstance()
 
     suspend fun signIn(): IntentSender? {
         val result = try {
@@ -51,7 +54,6 @@ class GoogleAuthUiClient(
         )
 
         if (!STUDENT_MAIL_SUFFIX.any { suffix -> credential.id.endsWith(suffix) }) {
-            firebaseAuth.currentUser?.delete()
             return SignInResult(
                 data = null,
                 errorMessage = "You are not a student of DIU"
@@ -60,14 +62,14 @@ class GoogleAuthUiClient(
 
         return try {
             val user = firebaseAuth.signInWithCredential(googleCredentials).await().user!!
-            val studentCollection = firestore.collection(STUDENT_COLLECTION)
+
             val student = Student(
                 userId = user.uid,
                 userName = user.displayName,
                 email = user.email,
                 profilePictureUrl = user.photoUrl?.toString()
             )
-
+            val studentCollection = firestore.collection(STUDENT_COLLECTION)
             studentCollection.document(user.uid)
                 .set(student)
                 .await()
