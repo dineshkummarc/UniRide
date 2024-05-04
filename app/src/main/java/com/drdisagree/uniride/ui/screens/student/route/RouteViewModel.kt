@@ -18,8 +18,8 @@ class RouteViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
-    private val _allRoutes = MutableStateFlow<Resource<List<Route>>>(Resource.Unspecified())
-    val allRoutes = _allRoutes.asStateFlow()
+    private val _routes = MutableStateFlow<Resource<List<Route>>>(Resource.Unspecified())
+    val routes = _routes.asStateFlow()
 
     init {
         getAllRoutes()
@@ -27,15 +27,15 @@ class RouteViewModel @Inject constructor(
 
     private fun getAllRoutes() {
         viewModelScope.launch {
-            _allRoutes.emit(Resource.Loading())
+            _routes.emit(Resource.Loading())
         }
 
         firestore.collection(ROUTE_COLLECTION)
-            .orderBy("routeNo", Query.Direction.ASCENDING)
+            .orderBy("timestamp", Query.Direction.ASCENDING)
             .get()
             .addOnSuccessListener {
                 viewModelScope.launch {
-                    _allRoutes.emit(
+                    _routes.emit(
                         Resource.Success(
                             it.toObjects(
                                 Route::class.java
@@ -46,7 +46,7 @@ class RouteViewModel @Inject constructor(
             }
             .addOnFailureListener {
                 viewModelScope.launch {
-                    _allRoutes.emit(
+                    _routes.emit(
                         Resource.Error(
                             it.message.toString()
                         )
@@ -55,11 +55,11 @@ class RouteViewModel @Inject constructor(
             }
 
         firestore.collection(ROUTE_COLLECTION)
-            .orderBy("routeNo", Query.Direction.ASCENDING)
+            .orderBy("timestamp", Query.Direction.ASCENDING)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     viewModelScope.launch {
-                        _allRoutes.emit(
+                        _routes.emit(
                             Resource.Error(
                                 error.message.toString()
                             )
@@ -68,7 +68,7 @@ class RouteViewModel @Inject constructor(
                 } else {
                     value?.let {
                         viewModelScope.launch {
-                            _allRoutes.emit(
+                            _routes.emit(
                                 Resource.Success(
                                     it.toObjects(
                                         Route::class.java

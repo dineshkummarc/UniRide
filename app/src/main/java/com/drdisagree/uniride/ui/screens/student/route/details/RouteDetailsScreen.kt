@@ -48,8 +48,8 @@ import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.models.Route
 import com.drdisagree.uniride.ui.components.navigation.RoutesNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
-import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -82,7 +82,9 @@ fun RouteDetailsScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(paddingValues = paddingValues)
                 ) {
-                    WebViewContent(route = route)
+                    route.routeWebUrl?.let {
+                        WebViewContent(route = route)
+                    }
                     DetailsSectionContainer(route)
                 }
             }
@@ -130,8 +132,8 @@ private fun WebViewContent(route: Route) {
                 setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                 setBackgroundColor(Color.Transparent.toArgb())
             }
-        }, update = {
-            it.loadUrl(route.routeWebUrl)
+        }, update = { webView ->
+            route.routeWebUrl?.let { url -> webView.loadUrl(url) }
         })
     }
 
@@ -216,7 +218,7 @@ private fun DetailsSectionContainer(route: Route) {
             iconDescription = "Clock",
             title = "Start Time (To DSC):",
             description = route.startTime,
-            divider = ","
+            divider = "$$"
         )
 
         HorizontalDivider(
@@ -229,7 +231,7 @@ private fun DetailsSectionContainer(route: Route) {
             iconDescription = "Clock",
             title = "Departure Time (From DSC):",
             description = route.departureTime,
-            divider = ","
+            divider = "$$"
         )
 
         HorizontalDivider(

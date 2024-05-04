@@ -12,7 +12,8 @@ data class Route(
     val routeDetails: String,
     val startTime: String,
     val departureTime: String,
-    val routeWebUrl: String
+    val routeWebUrl: String?,
+    val timestamp: Long = System.currentTimeMillis()
 ) : Parcelable {
     constructor() : this(
         "",

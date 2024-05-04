@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.student.route
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,28 +13,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Route
 import com.drdisagree.uniride.ui.components.navigation.RoutesNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
-import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.screens.destinations.RouteDetailsScreenDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -70,38 +79,73 @@ fun RouteScreen(
 @Composable
 private fun RouteContent(
     navigator: DestinationsNavigator,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    routeViewModel: RouteViewModel = hiltViewModel()
 ) {
-    val route = remember {
-        Route(
-            routeNo = "R1",
-            routeName = "Dhanmondi <> DSC",
-            routeDetails = "Dhanmondi - Sobhanbag <> Shyamoli Square <> Technical Mor <> Majar Road Gabtoli <> Konabari Bus Stop <> Eastern Housing <> Rupnagar <> Birulia Bus Stand <> Daffodil Smart City",
-            startTime = "7:20 AM, 10:00 AM, 2:00 PM",
-            departureTime = "1:00 PM (Only for Students bus), 3:20 PM, 4:10 PM",
-            routeWebUrl = "https://www.google.com/maps/d/embed?mid=1J8QtXb3iMgXJTsECsIzdzu3mIgDio5Al"
-        )
-    }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues = paddingValues)
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        repeat(15) { index ->
-            item(
-                key = index
-            ) {
-                RoutesListItem(
-                    index = index,
-                    routeNo = "Route ${index + 1}",
-                    routeName = "Dhanmondi <> DSC",
-                    onClick = {
-                        navigator.navigate(
-                            RouteDetailsScreenDestination(route)
-                        )
-                    }
-                )
+        val context = LocalContext.current
+        var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
+        val routes by routeViewModel.routes.collectAsState(initial = Resource.Unspecified())
+
+        when (routes) {
+            is Resource.Loading -> {
+                showLoadingDialog = true
             }
+
+            is Resource.Success -> {
+                showLoadingDialog = false
+
+                val routeList = (routes as Resource.Success<List<Route>>).data
+
+                if (routeList?.isNotEmpty() == true) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues = paddingValues)
+                    ) {
+                        items(routeList.size) { route ->
+                            RoutesListItem(
+                                index = routeList[route].timestamp.toInt(),
+                                routeNo = routeList[route].routeNo,
+                                routeName = routeList[route].routeName,
+                                onClick = {
+                                    navigator.navigate(
+                                        RouteDetailsScreenDestination(
+                                            routeList[route]
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
+                } else {
+                    Text(
+                        text = "List is empty"
+                    )
+                }
+            }
+
+            is Resource.Error -> {
+                showLoadingDialog = false
+
+                Toast.makeText(
+                    context,
+                    (routes as Resource.Error<List<Route>>).message,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            else -> {
+                Unit
+            }
+        }
+
+        if (showLoadingDialog) {
+            CircularProgressIndicator()
         }
     }
 }
@@ -156,10 +200,9 @@ private fun RoutesListItem(
                 verticalArrangement = Arrangement.Top
             ) {
                 Text(
-                    text = routeNo,
+                    text = "Route $routeNo",
                     fontSize = 16.sp,
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     style = TextStyle(
                         fontWeight = FontWeight.Bold
                     )
@@ -168,8 +211,7 @@ private fun RoutesListItem(
                     text = routeName,
                     color = Dark,
                     fontSize = 14.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
