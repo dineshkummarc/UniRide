@@ -32,9 +32,10 @@ class ScheduleViewModel @Inject constructor(
             _allSchedules.emit(Resource.Loading())
         }
 
-        firestore.collection(SCHEDULE_COLLECTION)
+        val query = firestore.collection(SCHEDULE_COLLECTION)
             .orderBy("timestamp", Query.Direction.ASCENDING)
-            .get()
+
+        query.get()
             .addOnSuccessListener {
                 viewModelScope.launch {
                     _allSchedules.emit(
@@ -56,9 +57,7 @@ class ScheduleViewModel @Inject constructor(
                 }
             }
 
-        firestore.collection(SCHEDULE_COLLECTION)
-            .orderBy("timestamp", Query.Direction.ASCENDING)
-            .addSnapshotListener { value, error ->
+        query.addSnapshotListener { value, error ->
                 if (error != null) {
                     viewModelScope.launch {
                         _allSchedules.emit(
