@@ -49,7 +49,9 @@ fun StyledTextField(
     isError: Boolean = false,
     errorIconOnClick: (() -> Unit)? = null,
     placeholder: String = "",
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE
 ) {
     BasicTextField(
         modifier = modifier
@@ -63,6 +65,8 @@ fun StyledTextField(
             )
             .padding(horizontal = MaterialTheme.spacing.small2),
         singleLine = singleLine,
+        minLines = minLines,
+        maxLines = maxLines,
         value = inputText,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
