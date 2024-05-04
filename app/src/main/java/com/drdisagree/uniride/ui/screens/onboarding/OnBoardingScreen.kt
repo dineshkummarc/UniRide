@@ -43,11 +43,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
-import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
+import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
-import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.HomeContainerDestination
 import com.drdisagree.uniride.ui.screens.destinations.InfoScreenDestination
@@ -60,7 +60,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
 
 @MainScreenGraph(start = true)
-@Destination(style = SlideInOutTransition::class)
+@Destination(style = FadeInOutTransition::class)
 @Composable
 fun OnBoardingScreen(
     navigator: DestinationsNavigator
