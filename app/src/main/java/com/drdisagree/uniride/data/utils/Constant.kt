@@ -17,4 +17,60 @@ object Constant {
     const val DRIVING_LICENSE_BACK = "driving_license_back"
     const val NID_CARD_FRONT = "nid_card_front"
     const val NID_CARD_BACK = "nid_card_back"
+    val SCHEDULE_CATEGORY = listOf(
+        "Select Category",
+        "Common",
+        "Employee",
+        "Fixed",
+        "Friday"
+    )
+    val SCHEDULE_FROM = listOf(
+        "Select From",
+        "Baipail",
+        "Dhamrai Bus Stand",
+        "Dhanmondi",
+        "Dhanmondi (Female students)",
+        "DSC",
+        "ECB",
+        "Green Model Town-Mugdha Model Thana-Malibag",
+        "Konabari Pukur Par",
+        "Mirpur",
+        "Mirpur-1",
+        "Mirpur-1, Sony Cinema Hall",
+        "Mirpur-10",
+        "Mirpur-14",
+        "Narayanganj Chasara",
+        "Savar",
+        "Shyamoli",
+        "Tongi",
+        "Tongi College Gate",
+        "Uttara",
+        "Uttara Aazampur",
+        "Uttara Moylar Mor"
+    )
+    val SCHEDULE_TO = listOf(
+        "Select To",
+        "Baipail",
+        "Dhanmondi",
+        "Dhanmondi (Female students)",
+        "DSC",
+        "ECB",
+        "Green Model Town-Mugdha Model Thana-Malibag",
+        "Konabari Pukur Par",
+        "Mirpur",
+        "Mirpur-1, Sony Cinema Hall",
+        "Mirpur-10",
+        "Mirpur-14",
+        "Nabinagar",
+        "Narayanganj Chasara",
+        "Savar",
+        "Shyamoli",
+        "Tongi",
+        "Tongi College Gate",
+        "Uttara",
+        "Uttara Aazampur",
+        "Uttara Azampur",
+        "Uttara Moylar Mor",
+        "Zirabo"
+    )
 }

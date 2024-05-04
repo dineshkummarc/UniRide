@@ -23,12 +23,15 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_CATEGORY
+import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_FROM
+import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_TO
 import com.drdisagree.uniride.ui.components.navigation.ScheduleNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -80,32 +83,9 @@ private fun ScheduleSearchContent(
 private fun ScheduleSearchFields() {
     val context = LocalContext.current
 
-    val category = arrayOf(
-        "Select Category",
-        "Common",
-        "Employee",
-        "Fixed",
-        "Friday"
-    )
-    var selectedCategory by remember { mutableStateOf(category[0]) }
-
-    val placeFrom = arrayOf(
-        "Select From",
-        "Baipail",
-        "Dhamrai Bus Stand",
-        "Dhanmondi",
-        "Dhanmondi (Female)"
-    )
-    var selectedPlaceFrom by remember { mutableStateOf(placeFrom[0]) }
-
-    val placeTo = arrayOf(
-        "Select To",
-        "Baipail",
-        "Dhamrai Bus Stand",
-        "Dhanmondi",
-        "Dhanmondi (Female)"
-    )
-    var selectedPlaceTo by remember { mutableStateOf(placeTo[0]) }
+    var selectedCategory by remember { mutableStateOf(SCHEDULE_CATEGORY[0]) }
+    var selectedPlaceFrom by remember { mutableStateOf(SCHEDULE_FROM[0]) }
+    var selectedPlaceTo by remember { mutableStateOf(SCHEDULE_TO[0]) }
 
     val density = LocalDensity.current
     var componentWidth by remember { mutableStateOf(0.dp) }
@@ -123,7 +103,7 @@ private fun ScheduleSearchFields() {
                 }
             },
         selectedText = selectedCategory,
-        itemList = category,
+        itemList = SCHEDULE_CATEGORY.toTypedArray(),
         onItemSelected = {
             selectedCategory = it
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -135,7 +115,7 @@ private fun ScheduleSearchFields() {
     StyledDropDownMenu(
         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1),
         selectedText = selectedPlaceFrom,
-        itemList = placeFrom,
+        itemList = SCHEDULE_FROM.toTypedArray(),
         onItemSelected = {
             selectedPlaceFrom = it
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -147,7 +127,7 @@ private fun ScheduleSearchFields() {
     StyledDropDownMenu(
         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1),
         selectedText = selectedPlaceTo,
-        itemList = placeTo,
+        itemList = SCHEDULE_TO.toTypedArray(),
         onItemSelected = {
             selectedPlaceTo = it
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
