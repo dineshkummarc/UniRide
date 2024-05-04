@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -34,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -48,28 +48,28 @@ import coil.request.ImageRequest
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Driver
+import com.drdisagree.uniride.data.utils.Constant
+import com.drdisagree.uniride.data.utils.Prefs
+import com.drdisagree.uniride.ui.screens.NavGraphs
+import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-data class MenuItemModel(
-    val id: String,
-    val title: String,
-    val contentDescription: String,
-    val icon: ImageVector,
-    val onClick: (() -> Unit)? = null
-)
-
 @Composable
 fun NavigationDrawer(
+    navigator: DestinationsNavigator,
     drawerState: DrawerState,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
     DrawerHeader()
     Spacer(
@@ -118,6 +118,27 @@ fun NavigationDrawer(
                     }
                 }
             ),
+            MenuItemModel(
+                id = "sign_out",
+                title = "Sign out",
+                contentDescription = "Sign out",
+                icon = Icons.AutoMirrored.Filled.Logout,
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+
+                        driverLoginViewModel.signOut()
+
+                        navigator.navigate(
+                            OnBoardingScreenDestination()
+                        ) {
+                            popUpTo(NavGraphs.root.startRoute)
+                            launchSingleTop = true
+                        }
+                        Prefs.clearPref(Constant.WHICH_USER_COLLECTION)
+                    }
+                }
+            )
         )
     )
 }
@@ -239,7 +260,12 @@ private fun DrawerBody(
     itemTextStyle: TextStyle = TextStyle(fontSize = 16.sp)
 ) {
     LazyColumn(modifier) {
-        items(items.size) { item ->
+        items(
+            count = items.size,
+            key = {
+                items[it].id
+            }
+        ) { item ->
             NavigationDrawerItem(
                 label = {
                     Text(

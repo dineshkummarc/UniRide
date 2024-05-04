@@ -28,6 +28,7 @@ import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithNavDrawerIcon
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
+import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -47,6 +48,7 @@ fun DriverHome(
         drawerState = drawerState,
         drawerContent = {
             NavigationDrawer(
+                navigator = navigator,
                 drawerState = drawerState,
                 coroutineScope = coroutineScope
             )

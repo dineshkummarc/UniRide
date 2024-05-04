@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.driver.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
@@ -14,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +23,8 @@ class DriverLoginViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
+
+    private val tag = DriverLoginViewModel::class.java.simpleName
 
     private val _login = MutableSharedFlow<Resource<FirebaseUser>>()
     val login = _login.asSharedFlow()
@@ -35,7 +39,9 @@ class DriverLoginViewModel @Inject constructor(
     val getDriver = _getDriver.asSharedFlow()
 
     init {
-        getSignedInDriver()
+        firebaseAuth.currentUser?.let {
+            getSignedInDriver()
+        }
     }
 
     fun login(email: String, password: String) {
@@ -84,6 +90,20 @@ class DriverLoginViewModel @Inject constructor(
                 }
                 if (!errorSent) {
                     _login.emit(Resource.Error("Invalid email or password"))
+                }
+            }
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            try {
+                firebaseAuth.signOut()
+            } catch (exception: Exception) {
+                if (exception !is CancellationException) {
+                    Log.e(tag, "signOut:", exception)
+                } else {
+                    throw exception
                 }
             }
         }
