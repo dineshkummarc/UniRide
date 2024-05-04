@@ -29,10 +29,10 @@ class AccountStatusViewModel @Inject constructor(
     private fun fetchUserAdminStatus(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val isAdmin = isUserAdmin(userId) || true // TODO: remove " || true"
+                val isAdmin = isUserAdmin(userId)
                 _isAdmin.postValue(isAdmin)
             } catch (ignored: Exception) {
-                _isAdmin.postValue(true) // TODO: make it false
+                _isAdmin.postValue(false)
             }
         }
     }
