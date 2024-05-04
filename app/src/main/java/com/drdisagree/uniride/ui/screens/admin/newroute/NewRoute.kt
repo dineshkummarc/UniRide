@@ -115,8 +115,8 @@ private fun NewRouteContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(MaterialTheme.spacing.medium1)
                     .verticalScroll(rememberScrollState())
+                    .padding(MaterialTheme.spacing.medium1)
             ) {
                 NewRouteFields()
             }
