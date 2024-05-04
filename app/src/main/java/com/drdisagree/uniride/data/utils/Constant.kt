@@ -9,6 +9,7 @@ object Constant {
     const val ROUTE_COLLECTION = "route_list"
     const val SCHEDULE_COLLECTION = "schedule_list"
     const val DRIVER_DOCUMENT_COLLECTION = "driver_documents_list"
+    const val ANNOUNCEMENT_COLLECTION = "announcement_list"
     val STUDENT_MAIL_SUFFIX = listOf(
         "@diu.edu.bd",
         "@daffodilvarsity.edu.bd"

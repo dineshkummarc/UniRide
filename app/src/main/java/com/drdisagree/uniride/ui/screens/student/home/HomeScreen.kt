@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,16 +46,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.Notice
+import com.drdisagree.uniride.data.models.Route
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
-import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -104,9 +108,7 @@ private fun HomeContent(
             .padding(paddingValues = paddingValues)
             .verticalScroll(rememberScrollState())
     ) {
-        NoticeBoard(
-            notice = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dictum tristique dolor a elementum. Nulla augue ante, ultricies in tortor sit amet, tincidunt sollicitudin felis. Sed egestas mauris vitae ipsum iaculis, sit amet venenatis nisl vehicula. In gravida sagittis convallis. Pellentesque eget velit ut nisi vehicula pretium a in magna. Praesent eget magna urna. Vestibulum fermentum elementum ex sit amet bibendum. Aenean congue sagittis turpis, sit amet dictum sapien."
-        )
+        NoticeBoard()
         NearbyBuses(navigator = navigator)
     }
 }
@@ -158,8 +160,10 @@ private fun HandlePermissions(
 @Composable
 private fun NoticeBoard(
     modifier: Modifier = Modifier,
-    notice: String
+    noticeBoardViewModel: NoticeBoardViewModel = hiltViewModel()
 ) {
+    val notices by noticeBoardViewModel.noticeBoard.collectAsState(initial = Resource.Unspecified())
+
     Text(
         text = "Notice Board",
         fontSize = 16.sp,
@@ -177,20 +181,48 @@ private fun NoticeBoard(
             .background(LightGray)
             .padding(MaterialTheme.spacing.medium1)
     ) {
-        TextFlow(
-            text = notice,
-            color = Dark,
-            fontSize = 14.sp,
-            textAlign = TextAlign.Justify,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Image(
-                painter = painterResource(R.drawable.img_announcement),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(end = MaterialTheme.spacing.small3)
-                    .width(80.dp)
-            )
+        when (notices) {
+            is Resource.Loading -> {
+                Text(
+                    text = "Loading...",
+                    color = Dark,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Justify
+                )
+            }
+
+            is Resource.Success -> {
+                (notices as Resource.Success<List<Notice>>).data?.get(0)?.let {
+                    TextFlow(
+                        text = it.announcement,
+                        color = Dark,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.img_announcement),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(end = MaterialTheme.spacing.small3)
+                                .width(80.dp)
+                        )
+                    }
+                }
+            }
+
+            is Resource.Error -> {
+                (notices as Resource.Error<List<Notice>>).message?.let {
+                    Text(
+                        text = it,
+                        color = Dark,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Justify
+                    )
+                }
+            }
+
+            else -> {}
         }
     }
 }
