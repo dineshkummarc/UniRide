@@ -1,10 +1,11 @@
-package com.drdisagree.uniride.ui.screens.admin.newroute
+package com.drdisagree.uniride.ui.screens.student.route.edit
 
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,7 +13,12 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,8 +47,9 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledTextField
-import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.screens.destinations.RouteScreenDestination
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -50,23 +57,45 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
-fun NewRoute(
-    navigator: DestinationsNavigator
+fun EditRoute(
+    navigator: DestinationsNavigator,
+    route: Route,
+    editRouteViewModel: EditRouteViewModel = hiltViewModel()
 ) {
+    var openDialog by remember { mutableStateOf(false) }
+
     Container(shadow = false) {
         Scaffold(
             topBar = {
-                TopAppBarWithBackButton(
-                    title = stringResource(R.string.new_route),
+                TopAppBarWithBackButtonAndEndIcon(
+                    title = stringResource(R.string.edit_route),
                     onBackClick = {
                         navigator.navigateUp()
+                    },
+                    endIcon = {
+                        Row {
+                            Icon(
+                                imageVector = Icons.Filled.DeleteForever,
+                                contentDescription = "Logout",
+                                tint = Color.Black.copy(alpha = 0.8f)
+                            )
+                        }
+                    },
+                    endIconClick = {
+                        openDialog = true
                     }
                 )
             },
             content = { paddingValues ->
-                NewRouteContent(
+                EditRouteContent(
                     paddingValues = paddingValues,
-                    navigator = navigator
+                    navigator = navigator,
+                    route = route,
+                    editRouteViewModel = editRouteViewModel,
+                    openDialog = openDialog,
+                    onCloseDialog = {
+                        openDialog = false
+                    }
                 )
             }
         )
@@ -74,9 +103,13 @@ fun NewRoute(
 }
 
 @Composable
-private fun NewRouteContent(
+private fun EditRouteContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
+    route: Route,
+    editRouteViewModel: EditRouteViewModel,
+    openDialog: Boolean,
+    onCloseDialog: () -> Unit,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
     var isAdminState by remember { mutableStateOf<Boolean?>(null) }
@@ -118,7 +151,13 @@ private fun NewRouteContent(
                     .verticalScroll(rememberScrollState())
                     .padding(MaterialTheme.spacing.medium1)
             ) {
-                NewRouteFields()
+                EditRouteFields(
+                    route = route,
+                    navigator = navigator,
+                    editRouteViewModel = editRouteViewModel,
+                    openDialog = openDialog,
+                    onCloseDialog = onCloseDialog
+                )
             }
         }
 
@@ -139,16 +178,20 @@ private fun NewRouteContent(
 }
 
 @Composable
-private fun NewRouteFields(
-    newRouteViewModel: NewRouteViewModel = hiltViewModel()
+private fun EditRouteFields(
+    route: Route,
+    navigator: DestinationsNavigator,
+    editRouteViewModel: EditRouteViewModel,
+    openDialog: Boolean,
+    onCloseDialog: () -> Unit
 ) {
     val context = LocalContext.current
-    var routeNo by rememberSaveable { mutableStateOf("") }
-    var startTime by rememberSaveable { mutableStateOf("") }
-    var routeName by rememberSaveable { mutableStateOf("") }
-    var routeDetails by rememberSaveable { mutableStateOf("") }
-    var departureTime by rememberSaveable { mutableStateOf("") }
-    var routeMap by rememberSaveable { mutableStateOf("") }
+    var routeNo by rememberSaveable { mutableStateOf(route.routeNo) }
+    var startTime by rememberSaveable { mutableStateOf(route.startTime) }
+    var routeName by rememberSaveable { mutableStateOf(route.routeName) }
+    var routeDetails by rememberSaveable { mutableStateOf(route.routeDetails) }
+    var departureTime by rememberSaveable { mutableStateOf(route.departureTime) }
+    var routeMap by rememberSaveable { mutableStateOf(route.routeWebUrl ?: "") }
 
     StyledTextField(
         placeholder = "Route No",
@@ -248,8 +291,8 @@ private fun NewRouteFields(
             return@ButtonPrimary
         }
 
-        newRouteViewModel.saveRoute(
-            Route(
+        editRouteViewModel.editRoute(
+            route.copy(
                 routeNo = routeNo,
                 startTime = startTime,
                 routeName = routeName,
@@ -263,7 +306,7 @@ private fun NewRouteFields(
     var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        newRouteViewModel.state.collect { result ->
+        editRouteViewModel.editState.collect { result ->
             when (result) {
                 is Resource.Loading -> {
                     showLoadingDialog = true
@@ -272,18 +315,55 @@ private fun NewRouteFields(
                 is Resource.Success -> {
                     showLoadingDialog = false
 
-                    routeNo = ""
-                    startTime = ""
-                    routeName = ""
-                    routeDetails = ""
-                    departureTime = ""
-                    routeMap = ""
+                    Toast.makeText(
+                        context,
+                        result.data,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    navigator.popBackStack(
+                        route = RouteScreenDestination,
+                        inclusive = false
+                    )
+                }
+
+                is Resource.Error -> {
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        result.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {
+                    showLoadingDialog = false
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        editRouteViewModel.deleteState.collect { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    showLoadingDialog = true
+                }
+
+                is Resource.Success -> {
+                    showLoadingDialog = false
 
                     Toast.makeText(
                         context,
                         result.data,
                         Toast.LENGTH_SHORT
                     ).show()
+
+                    navigator.popBackStack(
+                        route = RouteScreenDestination,
+                        inclusive = false
+                    )
                 }
 
                 is Resource.Error -> {
@@ -305,5 +385,36 @@ private fun NewRouteFields(
 
     if (showLoadingDialog) {
         LoadingDialog()
+    }
+
+    if (openDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                onCloseDialog()
+            },
+            title = {
+                Text(text = "Are you sure?")
+            },
+            text = {
+                Text("This action cannot be undone. Delete this route?")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onCloseDialog()
+                        editRouteViewModel.deleteRoute(route.uuid)
+                    }) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        onCloseDialog()
+                    }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }

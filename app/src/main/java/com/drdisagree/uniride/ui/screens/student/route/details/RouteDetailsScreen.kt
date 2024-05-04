@@ -3,6 +3,7 @@ package com.drdisagree.uniride.ui.screens.student.route.details
 import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.URLUtil
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.DrawableRes
@@ -22,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,6 +33,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,12 +51,17 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Observer
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.models.Route
 import com.drdisagree.uniride.ui.components.navigation.RoutesNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
+import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.screens.destinations.EditRouteDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -63,17 +75,57 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun RouteDetailsScreen(
     navigator: DestinationsNavigator,
-    route: Route
+    route: Route,
+    accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
+    var isAdminState by remember { mutableStateOf<Boolean?>(null) }
+
+    DisposableEffect(key1 = accountStatusViewModel.isAdmin) {
+        val isAdminLiveData = accountStatusViewModel.isAdmin
+        val observer = Observer<Boolean?> { isAdmin ->
+            isAdminState = isAdmin
+        }
+        isAdminLiveData.observeForever(observer)
+
+        onDispose {
+            isAdminLiveData.removeObserver(observer)
+        }
+    }
+
     Container(shadow = false) {
         Scaffold(
             topBar = {
-                TopAppBarWithBackButton(
-                    title = "Route Details",
-                    onBackClick = {
-                        navigator.navigateUp()
+                when (isAdminState) {
+                    true -> {
+                        TopAppBarWithBackButtonAndEndIcon(
+                            title = "Route Details",
+                            onBackClick = {
+                                navigator.navigateUp()
+                            },
+                            endIcon = {
+                                Row {
+                                    Icon(
+                                        imageVector = Icons.Filled.Edit,
+                                        contentDescription = "Logout",
+                                        tint = Color.Black.copy(alpha = 0.8f)
+                                    )
+                                }
+                            },
+                            endIconClick = {
+                                navigator.navigate(EditRouteDestination(route))
+                            }
+                        )
                     }
-                )
+
+                    else -> {
+                        TopAppBarWithBackButton(
+                            title = "Route Details",
+                            onBackClick = {
+                                navigator.navigateUp()
+                            }
+                        )
+                    }
+                }
             },
             content = { paddingValues ->
                 Column(
@@ -82,7 +134,7 @@ fun RouteDetailsScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(paddingValues = paddingValues)
                 ) {
-                    route.routeWebUrl?.let {
+                    if (route.routeWebUrl != null && URLUtil.isValidUrl(route.routeWebUrl)) {
                         WebViewContent(route = route)
                     }
                     DetailsSectionContainer(route)

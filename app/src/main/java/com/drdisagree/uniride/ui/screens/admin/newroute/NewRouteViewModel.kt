@@ -26,9 +26,15 @@ class NewRouteViewModel @Inject constructor(
             _state.emit(Resource.Loading())
         }
 
+        val uuid = UUID.randomUUID().toString()
+
         firestore.collection(ROUTE_COLLECTION)
-            .document(UUID.randomUUID().toString())
-            .set(route)
+            .document(uuid)
+            .set(
+                route.copy(
+                    uuid = uuid
+                )
+            )
             .addOnSuccessListener {
                 viewModelScope.launch {
                     _state.emit(Resource.Success("Route saved successfully"))
