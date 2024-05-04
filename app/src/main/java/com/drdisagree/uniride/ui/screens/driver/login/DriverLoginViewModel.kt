@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Driver
-import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.ui.screens.driver.login.utils.LoginValidation
 import com.drdisagree.uniride.ui.screens.driver.login.utils.validateEmail
 import com.google.firebase.auth.FirebaseAuth
@@ -34,15 +33,6 @@ class DriverLoginViewModel @Inject constructor(
 
     private val _authenticated = MutableSharedFlow<Resource<String>>()
     val authenticated = _authenticated.asSharedFlow()
-
-    private val _getDriver = MutableSharedFlow<Resource<Driver>>()
-    val getDriver = _getDriver.asSharedFlow()
-
-    init {
-        firebaseAuth.currentUser?.let {
-            getSignedInDriver()
-        }
-    }
 
     fun login(email: String, password: String) {
         if (checkValidation(email, password)) {
@@ -107,30 +97,6 @@ class DriverLoginViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun getSignedInDriver() {
-        firestore.collection(DRIVER_COLLECTION)
-            .document(firebaseAuth.currentUser!!.uid)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    document.toObject(Driver::class.java)?.let { driver ->
-                        viewModelScope.launch {
-                            _getDriver.emit(Resource.Success(driver))
-                        }
-                    }
-                } else {
-                    viewModelScope.launch {
-                        _getDriver.emit(Resource.Error("Account information not found"))
-                    }
-                }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    _getDriver.emit(Resource.Error(it.message.toString()))
-                }
-            }
     }
 
     fun resetPassword(email: String) {

@@ -145,14 +145,14 @@ fun NavigationDrawer(
 
 @Composable
 private fun DrawerHeader(
-    driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
+    driverHomeViewModel: DriverHomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var driver: Driver? by remember { mutableStateOf(null) }
-    driverLoginViewModel.getSignedInDriver()
+    driverHomeViewModel.getSignedInDriver()
 
-    LaunchedEffect(driverLoginViewModel.getDriver) {
-        driverLoginViewModel.getDriver.collect { result ->
+    LaunchedEffect(driverHomeViewModel.getDriver) {
+        driverHomeViewModel.getDriver.collect { result ->
             when (result) {
                 is Resource.Success -> {
                     driver = result.data
@@ -178,7 +178,9 @@ private fun DrawerHeader(
             .fillMaxWidth()
             .padding(
                 top = MaterialTheme.spacing.extraLarge1,
-                bottom = MaterialTheme.spacing.medium3
+                bottom = MaterialTheme.spacing.medium3,
+                start = MaterialTheme.spacing.medium1,
+                end = MaterialTheme.spacing.medium1
             ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
