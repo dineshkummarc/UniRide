@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,11 +48,12 @@ fun StyledTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     isError: Boolean = false,
     errorIconOnClick: (() -> Unit)? = null,
-    placeholder: String = ""
+    placeholder: String = "",
+    singleLine: Boolean = true
 ) {
     BasicTextField(
         modifier = modifier
-            .height(64.dp)
+            .heightIn(min = 64.dp)
             .clip(RoundedCornerShape(MaterialTheme.spacing.medium1))
             .background(color = Color.White.copy(alpha = 0.5f))
             .border(
@@ -61,7 +62,7 @@ fun StyledTextField(
                 shape = RoundedCornerShape(MaterialTheme.spacing.medium1)
             )
             .padding(horizontal = MaterialTheme.spacing.small2),
-        singleLine = true,
+        singleLine = singleLine,
         value = inputText,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
