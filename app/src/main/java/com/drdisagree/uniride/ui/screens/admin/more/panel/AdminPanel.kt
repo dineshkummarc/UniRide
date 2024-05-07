@@ -1,48 +1,53 @@
-package com.drdisagree.uniride.ui.screens.admin.newnotice
+package com.drdisagree.uniride.ui.screens.admin.more.panel
 
-import android.widget.Toast
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
 import com.drdisagree.uniride.R
-import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Notice
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
-import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
-import com.drdisagree.uniride.ui.components.views.LoadingDialog
-import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.screens.destinations.NewNoticeDestination
+import com.drdisagree.uniride.ui.screens.destinations.NewRouteDestination
+import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -50,21 +55,21 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
-fun NewNotice(
+fun AdminPanel(
     navigator: DestinationsNavigator
 ) {
     Container(shadow = false) {
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = stringResource(id = R.string.post_notice),
+                    title = stringResource(id = R.string.admin_panel_title),
                     onBackClick = {
                         navigator.navigateUp()
                     }
                 )
             },
             content = { paddingValues ->
-                NewNoticeContent(
+                MoreContent(
                     paddingValues = paddingValues,
                     navigator = navigator
                 )
@@ -74,7 +79,7 @@ fun NewNotice(
 }
 
 @Composable
-private fun NewNoticeContent(
+private fun MoreContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
@@ -96,9 +101,7 @@ private fun NewNoticeContent(
     when (isAdminState) {
         null -> {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -114,19 +117,45 @@ private fun NewNoticeContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(paddingValues = paddingValues)
                     .verticalScroll(rememberScrollState())
-                    .padding(MaterialTheme.spacing.medium1)
             ) {
-                NewRouteFields()
+                PanelListItem(
+                    icon = R.drawable.ic_document,
+                    title = R.string.post_notice,
+                    onClick = {
+                        navigator.navigate(NewNoticeDestination)
+                    }
+                )
+                PanelListItem(
+                    icon = R.drawable.ic_routing,
+                    title = R.string.add_new_bus_route,
+                    onClick = {
+                        navigator.navigate(NewRouteDestination)
+                    }
+                )
+                PanelListItem(
+                    icon = R.drawable.ic_bus_outline,
+                    title = R.string.add_new_bus_schedule
+                )
+                PanelListItem(
+                    icon = R.drawable.ic_user_list,
+                    title = R.string.view_driver_list
+                )
+                PanelListItem(
+                    icon = R.drawable.ic_warning,
+                    title = R.string.view_emergency_situations
+                )
+                PanelListItem(
+                    icon = R.drawable.ic_sms_edit,
+                    title = R.string.view_reported_issues
+                )
             }
         }
 
         else -> {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -139,88 +168,41 @@ private fun NewNoticeContent(
 }
 
 @Composable
-private fun NewRouteFields(
-    newNoticeViewModel: NewNoticeViewModel = hiltViewModel()
+private fun PanelListItem(
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int,
+    @StringRes title: Int,
+    onClick: (() -> Unit)? = null
 ) {
-    val context = LocalContext.current
-    var announcement by rememberSaveable { mutableStateOf("") }
-
-    StyledTextField(
-        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small2),
-        onValueChange = { announcement = it },
-        inputText = announcement,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        singleLine = false,
-        minLines = 5
-    )
-
-    ButtonPrimary(
-        modifier = Modifier
-            .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
-                top = MaterialTheme.spacing.medium1,
-                bottom = MaterialTheme.spacing.medium1
-            )
-            .fillMaxWidth(),
-        text = "Post"
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .clickable {
+                onClick?.invoke()
+            }
+            .padding(MaterialTheme.spacing.medium1),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        if (
-            announcement.isEmpty()
+        Box(
+            modifier = Modifier
+                .padding(end = MaterialTheme.spacing.medium2)
+                .clip(RoundedCornerShape(MaterialTheme.spacing.small3))
+                .background(Gray15)
+                .padding(MaterialTheme.spacing.small3)
         ) {
-            Toast.makeText(
-                context,
-                "Announcement cannot be empty",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            return@ButtonPrimary
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = stringResource(id = title),
+                modifier = Modifier.size(24.dp)
+            )
         }
 
-        newNoticeViewModel.postAnnouncement(
-            Notice(
-                announcement = announcement
+        Text(
+            text = stringResource(id = title),
+            fontSize = 16.sp,
+            style = TextStyle(
+                fontWeight = FontWeight.Bold
             )
         )
-    }
-
-    var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        newNoticeViewModel.state.collect { result ->
-            when (result) {
-                is Resource.Loading -> {
-                    showLoadingDialog = true
-                }
-
-                is Resource.Success -> {
-                    showLoadingDialog = false
-
-                    Toast.makeText(
-                        context,
-                        result.data,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                is Resource.Error -> {
-                    showLoadingDialog = false
-
-                    Toast.makeText(
-                        context,
-                        result.message,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                else -> {
-                    showLoadingDialog = false
-                }
-            }
-        }
-    }
-
-    if (showLoadingDialog) {
-        LoadingDialog()
     }
 }
