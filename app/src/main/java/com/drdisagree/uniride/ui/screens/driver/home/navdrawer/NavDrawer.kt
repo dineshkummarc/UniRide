@@ -71,12 +71,14 @@ fun NavigationDrawer(
     navigator: DestinationsNavigator,
     drawerState: DrawerState,
     coroutineScope: CoroutineScope,
+    driverHomeViewModel: DriverHomeViewModel,
     driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
     DrawerHeader(
         navigator = navigator,
         drawerState = drawerState,
-        coroutineScope = coroutineScope
+        coroutineScope = coroutineScope,
+        driverHomeViewModel = driverHomeViewModel
     )
     Spacer(
         modifier = Modifier
@@ -154,7 +156,7 @@ private fun DrawerHeader(
     navigator: DestinationsNavigator,
     drawerState: DrawerState,
     coroutineScope: CoroutineScope,
-    driverHomeViewModel: DriverHomeViewModel = hiltViewModel()
+    driverHomeViewModel: DriverHomeViewModel
 ) {
     val context = LocalContext.current
     var driver: Driver? by remember { mutableStateOf(null) }

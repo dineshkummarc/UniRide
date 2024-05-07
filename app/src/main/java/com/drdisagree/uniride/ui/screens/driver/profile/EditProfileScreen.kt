@@ -27,7 +27,7 @@ fun EditProfileScreen(
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = "Profile",
+                    title = "Edit Profile",
                     onBackClick = {
                         navigator.navigateUp()
                     }
