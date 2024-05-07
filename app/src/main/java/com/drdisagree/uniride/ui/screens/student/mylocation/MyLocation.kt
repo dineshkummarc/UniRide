@@ -98,7 +98,7 @@ private fun MapView(
         }
     }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(23.7556286, 90.3875899), 15f)
+        position = CameraPosition.fromLatLngZoom(LatLng(23.8161532, 90.2747436), 15f)
     }
     val uiSettings = remember {
         MapUiSettings(

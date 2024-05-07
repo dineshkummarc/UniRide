@@ -59,7 +59,7 @@ private fun MapViewContent(
 ) {
     val context = LocalContext.current
     val cameraState = rememberCameraPositionState()
-    val marker = LatLng(23.7556286, 90.3875899)
+    val marker = LatLng(23.8161532, 90.2747436)
     val uiSettings = remember {
         MapUiSettings(zoomControlsEnabled = false)
     }
