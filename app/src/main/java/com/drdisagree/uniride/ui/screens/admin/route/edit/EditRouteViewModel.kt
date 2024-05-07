@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.student.route.edit
+package com.drdisagree.uniride.ui.screens.admin.route.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +17,7 @@ class EditRouteViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
-    private val _editState = MutableSharedFlow<Resource<String>>()
+    private val _editState = MutableSharedFlow<Resource<Route>>()
     val editState = _editState.asSharedFlow()
 
     private val _deleteState = MutableSharedFlow<Resource<String>>()
@@ -38,7 +38,7 @@ class EditRouteViewModel @Inject constructor(
                         .set(route)
                         .addOnSuccessListener {
                             viewModelScope.launch {
-                                _editState.emit(Resource.Success("Route saved successfully"))
+                                _editState.emit(Resource.Success(route))
                             }
                         }
                         .addOnFailureListener { exception ->

@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.student.route.edit
+package com.drdisagree.uniride.ui.screens.admin.route.edit
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -49,10 +49,12 @@ import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.screens.destinations.RouteDetailsScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.RouteScreenDestination
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
@@ -317,14 +319,21 @@ private fun EditRouteFields(
 
                     Toast.makeText(
                         context,
-                        result.data,
+                        "Route saved successfully",
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    navigator.popBackStack(
-                        route = RouteScreenDestination,
-                        inclusive = false
-                    )
+                    result.data?.let {
+                        navigator.navigate(
+                            RouteDetailsScreenDestination(
+                                route = it
+                            )
+                        ) {
+                            popUpTo(RouteDetailsScreenDestination) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 }
 
                 is Resource.Error -> {
