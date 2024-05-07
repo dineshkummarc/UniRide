@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.driver.home
+package com.drdisagree.uniride.ui.screens.driver.home.navdrawer
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -52,6 +52,7 @@ import com.drdisagree.uniride.data.utils.Constant
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
+import com.drdisagree.uniride.ui.screens.driver.home.DriverHomeViewModel
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark

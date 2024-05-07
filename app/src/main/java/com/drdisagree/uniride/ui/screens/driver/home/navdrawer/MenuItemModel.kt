@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.driver.home
+package com.drdisagree.uniride.ui.screens.driver.home.navdrawer
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
