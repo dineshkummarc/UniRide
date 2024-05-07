@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
@@ -51,6 +51,7 @@ import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.data.utils.Constant
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.screens.NavGraphs
+import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.home.DriverHomeViewModel
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
@@ -72,7 +73,11 @@ fun NavigationDrawer(
     coroutineScope: CoroutineScope,
     driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
-    DrawerHeader()
+    DrawerHeader(
+        navigator = navigator,
+        drawerState = drawerState,
+        coroutineScope = coroutineScope
+    )
     Spacer(
         modifier = Modifier
             .padding(
@@ -146,6 +151,9 @@ fun NavigationDrawer(
 
 @Composable
 private fun DrawerHeader(
+    navigator: DestinationsNavigator,
+    drawerState: DrawerState,
+    coroutineScope: CoroutineScope,
     driverHomeViewModel: DriverHomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -226,11 +234,16 @@ private fun DrawerHeader(
                     .clip(RoundedCornerShape(100))
                     .background(Blue)
                     .size(30.dp),
-                onClick = { /*TODO*/ }
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                        navigator.navigate(EditProfileScreenDestination)
+                    }
+                }
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Change profile picture",
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit profile",
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(
