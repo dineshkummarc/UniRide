@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,7 +34,8 @@ fun StyledDropDownMenu(
     modifier: Modifier = Modifier,
     selectedText: String,
     itemList: Array<String> = emptyArray(),
-    onItemSelected: ((String) -> Unit)? = null
+    onItemSelected: ((String) -> Unit)? = null,
+    fillMaxWidth: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -43,6 +45,7 @@ fun StyledDropDownMenu(
             expanded = !expanded
         },
         modifier = modifier
+            .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
             .height(64.dp)
             .clip(RoundedCornerShape(MaterialTheme.spacing.medium1))
             .background(color = Color.White.copy(alpha = 0.5f))
@@ -61,7 +64,9 @@ fun StyledDropDownMenu(
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor(),
+                modifier = Modifier
+                    .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
+                    .menuAnchor(),
                 colors = ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -83,6 +88,7 @@ fun StyledDropDownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
+                    .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
                     .background(color = Color.White)
             ) {
                 itemList.forEach { item ->
