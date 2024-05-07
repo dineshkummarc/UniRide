@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.onboarding
+package com.drdisagree.uniride.ui.screens.onboarding.about
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
