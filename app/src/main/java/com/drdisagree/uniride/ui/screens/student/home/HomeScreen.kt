@@ -48,7 +48,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Notice
-import com.drdisagree.uniride.data.models.Route
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
@@ -164,6 +163,10 @@ private fun NoticeBoard(
 ) {
     val notices by noticeBoardViewModel.noticeBoard.collectAsState(initial = Resource.Unspecified())
 
+    LaunchedEffect(Unit) {
+        noticeBoardViewModel.getLastAnnouncement()
+    }
+
     Text(
         text = "Notice Board",
         fontSize = 16.sp,
@@ -192,7 +195,7 @@ private fun NoticeBoard(
             }
 
             is Resource.Success -> {
-                (notices as Resource.Success<List<Notice>>).data?.get(0)?.let {
+                (notices as Resource.Success<Notice>).data?.let {
                     TextFlow(
                         text = it.announcement,
                         color = Dark,
@@ -212,7 +215,7 @@ private fun NoticeBoard(
             }
 
             is Resource.Error -> {
-                (notices as Resource.Error<List<Notice>>).message?.let {
+                (notices as Resource.Error<Notice>).message?.let {
                     Text(
                         text = it,
                         color = Dark,

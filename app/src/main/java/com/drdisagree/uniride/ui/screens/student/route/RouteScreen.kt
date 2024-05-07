@@ -109,7 +109,7 @@ private fun RouteContent(
                     ) {
                         items(routeList.size) { route ->
                             RoutesListItem(
-                                index = routeList[route].timestamp.toInt(),
+                                index = routeList[route].timeStamp.toInt(),
                                 routeNo = routeList[route].routeNo,
                                 routeName = routeList[route].routeName,
                                 onClick = {

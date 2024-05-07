@@ -31,7 +31,7 @@ class RouteViewModel @Inject constructor(
         }
 
         firestore.collection(ROUTE_COLLECTION)
-            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .orderBy("timeStamp", Query.Direction.ASCENDING)
             .get()
             .addOnSuccessListener {
                 viewModelScope.launch {
@@ -55,7 +55,7 @@ class RouteViewModel @Inject constructor(
             }
 
         firestore.collection(ROUTE_COLLECTION)
-            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .orderBy("timeStamp", Query.Direction.ASCENDING)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     viewModelScope.launch {

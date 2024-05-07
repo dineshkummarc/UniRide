@@ -10,9 +10,11 @@ import java.util.UUID
 data class Notice(
     val uuid: String = UUID.randomUUID().toString(),
     val announcement: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timeStamp: Long = System.currentTimeMillis()
 ) : Parcelable {
     constructor() : this(
-        announcement = ""
+        "",
+        "",
+        0
     )
 }

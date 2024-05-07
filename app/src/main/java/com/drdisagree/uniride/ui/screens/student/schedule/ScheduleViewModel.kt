@@ -33,7 +33,7 @@ class ScheduleViewModel @Inject constructor(
         }
 
         val query = firestore.collection(SCHEDULE_COLLECTION)
-            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .orderBy("timeStamp", Query.Direction.ASCENDING)
 
         query.get()
             .addOnSuccessListener {

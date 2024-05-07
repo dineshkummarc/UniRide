@@ -18,20 +18,20 @@ class NoticeBoardViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
-    private val _noticeBoard = MutableStateFlow<Resource<List<Notice>>>(Resource.Unspecified())
+    private val _noticeBoard = MutableStateFlow<Resource<Notice>>(Resource.Unspecified())
     val noticeBoard = _noticeBoard.asStateFlow()
 
     init {
         getLastAnnouncement()
     }
 
-    private fun getLastAnnouncement() {
+    fun getLastAnnouncement() {
         viewModelScope.launch {
             _noticeBoard.emit(Resource.Loading())
         }
 
         val query = firestore.collection(ANNOUNCEMENT_COLLECTION)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .orderBy("timeStamp", Query.Direction.DESCENDING)
             .limit(1)
 
         query.get()
@@ -40,7 +40,7 @@ class NoticeBoardViewModel @Inject constructor(
                     viewModelScope.launch {
                         _noticeBoard.emit(
                             Resource.Success(
-                                querySnapshot.toObjects(Notice::class.java)
+                                querySnapshot.toObjects(Notice::class.java)[0]
                             )
                         )
                     }
@@ -69,7 +69,7 @@ class NoticeBoardViewModel @Inject constructor(
                         viewModelScope.launch {
                             _noticeBoard.emit(
                                 Resource.Success(
-                                    it.toObjects(Notice::class.java)
+                                    it.toObjects(Notice::class.java)[0]
                                 )
                             )
                         }
