@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.data.models
 
+import com.drdisagree.uniride.data.events.BusStatus
 import java.util.UUID
 
 data class Bus(
@@ -12,5 +13,6 @@ data class Bus(
     val departedFrom: String? = null,
     val departedTo: String? = null,
     val departedAt: Long? = null,
-    val driver: Driver? = null
+    val driver: Driver? = null,
+    val currentStatus: BusStatus? = null
 )
