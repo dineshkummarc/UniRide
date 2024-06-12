@@ -17,3 +17,4 @@ local.properties
 /app/debug/*
 /app/google-services.json
 /backend/node_modules
+/.idea/other.xml
