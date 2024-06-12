@@ -3,12 +3,12 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.devToolsKsp)
     id("kotlin-kapt")
     id("kotlin-parcelize")
     id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
     id("androidx.navigation.safeargs.kotlin")
-    id("com.google.devtools.ksp")
 }
 
 android {
@@ -22,7 +22,6 @@ android {
         versionCode = 1
         versionName = "1.0.0-alpha01"
 
-//        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -79,32 +78,34 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-//    testImplementation(libs.junit)
-//    androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
-//    androidTestImplementation(platform(libs.androidx.compose.bom))
-//    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 
     // Material components
     implementation(libs.material)
+
+    // Compose
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     // Dagger hilt
-    implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Firebase
     implementation(libs.firebase.auth)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.storage)
     implementation(libs.play.services.auth)
+    implementation(platform(libs.firebase.bom))
 
     // Coroutines for firebase
     implementation(libs.kotlinx.coroutines.play.services)
@@ -112,12 +113,9 @@ dependencies {
     // Firestore
     implementation(libs.firebase.firestore)
 
-    // Constraint Layout
-    implementation(libs.androidx.constraintlayout.compose)
-
     // Compose destinations
     implementation(libs.animations.core)
-    ksp(libs.ksp)
+    ksp(libs.composeDestinations.ksp)
 
     // Google maps
     implementation(libs.maps.compose)
@@ -141,12 +139,6 @@ dependencies {
 
     // Splash screen
     implementation(libs.androidx.core.splashscreen)
-
-    // Compose
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
 
     // Accompanist permissions
     implementation(libs.google.accompanist.permissions)
