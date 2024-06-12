@@ -16,10 +16,13 @@ firebaseStorage = "21.0.0"
 googleServices = "4.4.2"
 hiltAndroid = "2.50"
 hiltNavigationCompose = "1.2.0"
-kotlin = "1.9.22" # do not change
+#noinspection GradleDependency
+kotlin = "1.9.22"
 kotlinxCoroutinesPlayServices = "1.7.3"
-ksp = "1.9.22-1.0.17" # do not change
-lifecycleRuntimeKtx = "2.7.0" # do not change
+#noinspection GradleDependency
+ksp = "1.9.22-1.0.17"
+#noinspection GradleDependency
+lifecycleRuntimeKtx = "2.7.0"
 mapsCompose = "4.3.3"
 mapsComposeUtils = "4.3.3"
 mapsComposeWidgets = "4.3.3"
