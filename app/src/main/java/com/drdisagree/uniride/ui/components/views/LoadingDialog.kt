@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +41,10 @@ fun LoadingDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
+                .shadow(
+                    elevation = MaterialTheme.spacing.medium1,
+                    shape = RoundedCornerShape(MaterialTheme.spacing.medium2)
+                )
                 .background(
                     Color.White,
                     shape = RoundedCornerShape(MaterialTheme.spacing.medium2)
