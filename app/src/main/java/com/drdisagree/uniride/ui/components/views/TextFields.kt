@@ -101,7 +101,7 @@ fun StyledTextField(
 
                     Box(
                         modifier = Modifier.weight(1f),
-                        contentAlignment = Alignment.CenterStart,
+                        contentAlignment = Alignment.TopStart,
                         content = {
                             if (inputText.isEmpty()) {
                                 Text(
