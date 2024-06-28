@@ -146,6 +146,7 @@ private fun NewRouteFields(
     var announcement by rememberSaveable { mutableStateOf("") }
 
     StyledTextField(
+        placeholder = "Write your announcement here...",
         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small2),
         onValueChange = { announcement = it },
         inputText = announcement,
@@ -166,7 +167,7 @@ private fun NewRouteFields(
         text = "Post"
     ) {
         if (
-            announcement.isEmpty()
+            announcement.trim().isEmpty()
         ) {
             Toast.makeText(
                 context,
