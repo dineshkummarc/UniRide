@@ -10,7 +10,7 @@ import java.util.UUID
 data class Schedule(
     val uuid: String = UUID.randomUUID().toString(),
     val bus: Bus,
-    val category: String,
+    val category: BusCategory,
     val from: String,
     val to: String,
     val time: String,
@@ -21,7 +21,10 @@ data class Schedule(
             "",
             ""
         ),
-        "",
+        BusCategory(
+            "",
+            ""
+        ),
         "",
         "",
         ""

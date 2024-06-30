@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.lifecycle.Observer
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
+import com.drdisagree.uniride.data.models.BusCategory
 import com.drdisagree.uniride.data.models.Schedule
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
@@ -145,8 +147,30 @@ private fun NewScheduleFields(
     newScheduleViewModel: NewScheduleViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var selectedBus by remember { mutableStateOf("Select Bus") }
-    var busCategory by rememberSaveable { mutableStateOf("Common") }
+    val busList by newScheduleViewModel.busModels.collectAsState()
+    val busCategoryList by newScheduleViewModel.busCategoryModels.collectAsState()
+    var selectedBus by remember {
+        mutableStateOf(
+            if (busList.isEmpty()) {
+                Bus(
+                    name = "Bus Name"
+                )
+            } else {
+                busList[0]
+            }
+        )
+    }
+    var busCategory by rememberSaveable {
+        mutableStateOf(
+            if (busCategoryList.isEmpty()) {
+                BusCategory(
+                    name = "Category"
+                )
+            } else {
+                busCategoryList[0]
+            }
+        )
+    }
     var locationFrom by rememberSaveable { mutableStateOf("") }
     var locationTo by rememberSaveable { mutableStateOf("") }
     var departureTime by rememberSaveable { mutableStateOf("") }
@@ -157,11 +181,14 @@ private fun NewScheduleFields(
                 start = MaterialTheme.spacing.small2,
                 end = MaterialTheme.spacing.small2
             ),
-        selectedText = selectedBus,
-        itemList = arrayOf("Select Bus", "Surjomukhi", "Dolphin", "Rojonigondha"),
+        selectedText = selectedBus.name,
+        itemList = busList.map {
+            it.name
+        }.toTypedArray(),
         onItemSelected = {
-            selectedBus = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            selectedBus = busList.first { bus ->
+                bus.name == it
+            }
         },
         fillMaxWidth = true
     )
@@ -173,14 +200,19 @@ private fun NewScheduleFields(
                 end = MaterialTheme.spacing.small2,
                 top = MaterialTheme.spacing.medium1
             ),
-        selectedText = busCategory,
-        itemList = arrayOf("Common", "Employee"),
+        selectedText = busCategory.name,
+        itemList = busCategoryList.map {
+            it.name
+        }.toTypedArray(),
         onItemSelected = {
-            busCategory = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            busCategory = busCategoryList.first { category ->
+                category.name == it
+            }
         },
         fillMaxWidth = true
     )
+
+    // TODO: extract places same as bus name and category
 
     StyledTextField(
         placeholder = "From",
@@ -231,9 +263,8 @@ private fun NewScheduleFields(
             .fillMaxWidth(),
         text = "Submit"
     ) {
-        if (
-            selectedBus.isEmpty() ||
-            busCategory.isEmpty() ||
+        if (selectedBus.name == "Bus Name" ||
+            busCategory.name == "Category" ||
             locationFrom.isEmpty() ||
             locationTo.isEmpty() ||
             departureTime.isEmpty()
@@ -249,9 +280,7 @@ private fun NewScheduleFields(
 
         newScheduleViewModel.saveSchedule(
             Schedule(
-                bus = Bus(
-                    name = selectedBus
-                ),
+                bus = selectedBus,
                 category = busCategory,
                 from = locationFrom,
                 to = locationTo,
@@ -272,8 +301,20 @@ private fun NewScheduleFields(
                 is Resource.Success -> {
                     showLoadingDialog = false
 
-                    selectedBus = ""
-                    busCategory = ""
+                    selectedBus = if (busList.isEmpty()) {
+                        Bus(
+                            name = "Bus Name"
+                        )
+                    } else {
+                        busList[0]
+                    }
+                    busCategory = if (busCategoryList.isEmpty()) {
+                        BusCategory(
+                            name = "Category"
+                        )
+                    } else {
+                        busCategoryList[0]
+                    }
                     locationFrom = ""
                     locationTo = ""
                     departureTime = ""
