@@ -45,8 +45,11 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.screens.destinations.NewBusCategoryDestination
+import com.drdisagree.uniride.ui.screens.destinations.NewBusDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewNoticeDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewRouteDestination
+import com.drdisagree.uniride.ui.screens.destinations.NewScheduleDestination
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
@@ -128,6 +131,20 @@ private fun MoreContent(
                     }
                 )
                 PanelListItem(
+                    icon = R.drawable.ic_bus_outline,
+                    title = R.string.add_new_bus_name,
+                    onClick = {
+                        navigator.navigate(NewBusDestination)
+                    }
+                )
+                PanelListItem(
+                    icon = R.drawable.ic_category,
+                    title = R.string.add_new_bus_category,
+                    onClick = {
+                        navigator.navigate(NewBusCategoryDestination)
+                    }
+                )
+                PanelListItem(
                     icon = R.drawable.ic_routing,
                     title = R.string.add_new_bus_route,
                     onClick = {
@@ -135,8 +152,11 @@ private fun MoreContent(
                     }
                 )
                 PanelListItem(
-                    icon = R.drawable.ic_bus_outline,
-                    title = R.string.add_new_bus_schedule
+                    icon = R.drawable.ic_new_schedule,
+                    title = R.string.add_new_bus_schedule,
+                    onClick = {
+                        navigator.navigate(NewScheduleDestination)
+                    }
                 )
                 PanelListItem(
                     icon = R.drawable.ic_user_list,

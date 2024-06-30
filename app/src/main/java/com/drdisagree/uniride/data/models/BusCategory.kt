@@ -7,13 +7,9 @@ import java.util.UUID
 
 @Stable
 @Parcelize
-data class Bus(
+data class BusCategory(
     val uuid: String = UUID.randomUUID().toString(),
     val name: String,
-    val driver: Driver? = null,
-    val departedFrom: String? = null,
-    val departedTo: String? = null,
-    val departedAt: Long? = null,
 ) : Parcelable {
     constructor() : this(
         "",

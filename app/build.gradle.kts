@@ -145,4 +145,9 @@ dependencies {
 
     // Text Flow
     implementation(libs.textflow)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
 }

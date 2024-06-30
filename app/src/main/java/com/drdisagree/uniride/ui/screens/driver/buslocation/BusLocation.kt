@@ -296,7 +296,7 @@ private fun MapView(
         }
 
         val coroutineScope = rememberCoroutineScope()
-        var status by rememberSaveable { mutableStateOf(BusStatus.WAITING) }
+        var status by rememberSaveable { mutableStateOf(BusStatus.STANDBY) }
         var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
         ButtonPrimary(
@@ -310,7 +310,7 @@ private fun MapView(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             text = when (status) {
-                BusStatus.WAITING -> {
+                BusStatus.STANDBY -> {
                     "Update Status to Driving"
                 }
 
@@ -319,7 +319,7 @@ private fun MapView(
                 }
             }
         ) {
-            if (status == BusStatus.WAITING) {
+            if (status == BusStatus.STANDBY) {
                 coroutineScope.launch {
                     showLoadingDialog = true
                     delay(2000)
