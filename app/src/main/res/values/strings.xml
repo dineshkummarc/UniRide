@@ -27,4 +27,6 @@
     <string name="add_new_bus_category">Add new bus category</string>
     <string name="new_bus">New Bus</string>
     <string name="new_bus_category">New Bus Category</string>
+    <string name="add_new_place">Add new place</string>
+    <string name="new_place">New Place</string>
 </resources>

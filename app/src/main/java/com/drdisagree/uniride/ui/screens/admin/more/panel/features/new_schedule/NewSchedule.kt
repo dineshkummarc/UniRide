@@ -37,6 +37,7 @@ import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
 import com.drdisagree.uniride.data.models.BusCategory
+import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.data.models.Schedule
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
@@ -146,33 +147,43 @@ private fun NewScheduleContent(
 private fun NewScheduleFields(
     newScheduleViewModel: NewScheduleViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
     val busList by newScheduleViewModel.busModels.collectAsState()
     val busCategoryList by newScheduleViewModel.busCategoryModels.collectAsState()
-    var selectedBus by remember {
-        mutableStateOf(
-            if (busList.isEmpty()) {
-                Bus(
-                    name = "Bus Name"
-                )
-            } else {
-                busList[0]
-            }
+    val placeList by newScheduleViewModel.placeModels.collectAsState()
+    val defaultBusName = if (busList.isEmpty()) {
+        Bus(
+            name = "Bus Name"
         )
+    } else {
+        busList[0]
     }
-    var busCategory by rememberSaveable {
-        mutableStateOf(
-            if (busCategoryList.isEmpty()) {
-                BusCategory(
-                    name = "Category"
-                )
-            } else {
-                busCategoryList[0]
-            }
+    val defaultBusCategory = if (busCategoryList.isEmpty()) {
+        BusCategory(
+            name = "Category"
         )
+    } else {
+        busCategoryList[0]
     }
-    var locationFrom by rememberSaveable { mutableStateOf("") }
-    var locationTo by rememberSaveable { mutableStateOf("") }
+    val defaultFrom = if (placeList.isEmpty()) {
+        Place(
+            name = "From"
+        )
+    } else {
+        placeList[0]
+    }
+    val defaultTo = if (placeList.isEmpty()) {
+        Place(
+            name = "To"
+        )
+    } else {
+        placeList[0]
+    }
+
+    val context = LocalContext.current
+    var selectedBus by remember { mutableStateOf(defaultBusName) }
+    var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
+    var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
+    var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
     var departureTime by rememberSaveable { mutableStateOf("") }
 
     StyledDropDownMenu(
@@ -212,31 +223,42 @@ private fun NewScheduleFields(
         fillMaxWidth = true
     )
 
-    // TODO: extract places same as bus name and category
-
-    StyledTextField(
-        placeholder = "From",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
-        ),
-        onValueChange = { locationFrom = it },
-        inputText = locationFrom,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        singleLine = false
+    StyledDropDownMenu(
+        modifier = Modifier
+            .padding(
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2,
+                top = MaterialTheme.spacing.medium1
+            ),
+        selectedText = locationFrom.name,
+        itemList = placeList.map {
+            it.name
+        }.toTypedArray(),
+        onItemSelected = {
+            locationFrom = placeList.first { place ->
+                place.name == it
+            }
+        },
+        fillMaxWidth = true
     )
 
-    StyledTextField(
-        placeholder = "To",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
-        ),
-        onValueChange = { locationTo = it },
-        inputText = locationTo,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+    StyledDropDownMenu(
+        modifier = Modifier
+            .padding(
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2,
+                top = MaterialTheme.spacing.medium1
+            ),
+        selectedText = locationTo.name,
+        itemList = placeList.map {
+            it.name
+        }.toTypedArray(),
+        onItemSelected = {
+            locationTo = placeList.first { place ->
+                place.name == it
+            }
+        },
+        fillMaxWidth = true
     )
 
     StyledTextField(
@@ -265,13 +287,21 @@ private fun NewScheduleFields(
     ) {
         if (selectedBus.name == "Bus Name" ||
             busCategory.name == "Category" ||
-            locationFrom.isEmpty() ||
-            locationTo.isEmpty() ||
+            locationFrom.name == "From" ||
+            locationTo.name == "To" ||
             departureTime.isEmpty()
         ) {
             Toast.makeText(
                 context,
                 "Please fill in all fields",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        } else if (locationFrom == locationTo) {
+            Toast.makeText(
+                context,
+                "Both locations cannot be the same",
                 Toast.LENGTH_SHORT
             ).show()
 
@@ -301,22 +331,10 @@ private fun NewScheduleFields(
                 is Resource.Success -> {
                     showLoadingDialog = false
 
-                    selectedBus = if (busList.isEmpty()) {
-                        Bus(
-                            name = "Bus Name"
-                        )
-                    } else {
-                        busList[0]
-                    }
-                    busCategory = if (busCategoryList.isEmpty()) {
-                        BusCategory(
-                            name = "Category"
-                        )
-                    } else {
-                        busCategoryList[0]
-                    }
-                    locationFrom = ""
-                    locationTo = ""
+                    selectedBus = defaultBusName
+                    busCategory = defaultBusCategory
+                    locationFrom = defaultFrom
+                    locationTo = defaultTo
                     departureTime = ""
 
                     Toast.makeText(

@@ -47,6 +47,7 @@ import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.NewBusCategoryDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewBusDestination
+import com.drdisagree.uniride.ui.screens.destinations.NewLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewNoticeDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewRouteDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewScheduleDestination
@@ -135,6 +136,13 @@ private fun MoreContent(
                     title = R.string.add_new_bus_name,
                     onClick = {
                         navigator.navigate(NewBusDestination)
+                    }
+                )
+                PanelListItem(
+                    icon = R.drawable.ic_new_map,
+                    title = R.string.add_new_place,
+                    onClick = {
+                        navigator.navigate(NewLocationDestination)
                     }
                 )
                 PanelListItem(

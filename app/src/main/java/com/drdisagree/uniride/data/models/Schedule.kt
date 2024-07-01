@@ -11,8 +11,8 @@ data class Schedule(
     val uuid: String = UUID.randomUUID().toString(),
     val bus: Bus,
     val category: BusCategory,
-    val from: String,
-    val to: String,
+    val from: Place,
+    val to: Place,
     val time: String,
 ) : Parcelable {
     constructor() : this(
@@ -25,8 +25,14 @@ data class Schedule(
             "",
             ""
         ),
-        "",
-        "",
+        Place(
+            "",
+            ""
+        ),
+        Place(
+            "",
+            ""
+        ),
         ""
     )
 }

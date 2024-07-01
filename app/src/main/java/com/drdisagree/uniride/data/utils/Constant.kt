@@ -10,6 +10,7 @@ object Constant {
     const val BUS_CATEGORY_COLLECTION = "bus_category_list"
     const val ROUTE_COLLECTION = "route_list"
     const val SCHEDULE_COLLECTION = "schedule_list"
+    const val PLACE_COLLECTION = "place_list"
     const val DRIVER_DOCUMENT_COLLECTION = "driver_documents_list"
     const val ANNOUNCEMENT_COLLECTION = "announcement_list"
     val STUDENT_MAIL_SUFFIX = listOf(
