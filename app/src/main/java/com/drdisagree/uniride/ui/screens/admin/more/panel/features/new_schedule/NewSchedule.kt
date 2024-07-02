@@ -154,7 +154,6 @@ private fun NewScheduleContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NewScheduleFields(
     newScheduleViewModel: NewScheduleViewModel = hiltViewModel()
