@@ -1,18 +1,24 @@
 package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_schedule
 
+import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,16 +27,18 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
 import com.drdisagree.uniride.R
@@ -45,12 +53,15 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
-import com.drdisagree.uniride.ui.components.views.StyledTextField
+import com.drdisagree.uniride.ui.components.views.TimePickerDialog
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
@@ -143,6 +154,7 @@ private fun NewScheduleContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NewScheduleFields(
     newScheduleViewModel: NewScheduleViewModel = hiltViewModel()
@@ -184,7 +196,10 @@ private fun NewScheduleFields(
     var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
     var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
-    var departureTime by rememberSaveable { mutableStateOf("") }
+    var departureTime by rememberSaveable { mutableStateOf("Time") }
+    var departureTimeInMillis by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val is24HourFormat = DateFormat.is24HourFormat(context)
 
     StyledDropDownMenu(
         modifier = Modifier
@@ -261,18 +276,32 @@ private fun NewScheduleFields(
         fillMaxWidth = true
     )
 
-    StyledTextField(
-        placeholder = "Time",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
-        ),
-        onValueChange = { departureTime = it },
-        inputText = departureTime,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        singleLine = false
-    )
+    Box(
+        modifier = Modifier
+            .padding(
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2,
+                top = MaterialTheme.spacing.medium1
+            )
+            .fillMaxWidth()
+            .height(64.dp)
+            .clip(RoundedCornerShape(MaterialTheme.spacing.medium1))
+            .background(color = Color.White.copy(alpha = 0.5f))
+            .border(
+                width = 1.dp,
+                color = Gray,
+                shape = RoundedCornerShape(MaterialTheme.spacing.medium1)
+            )
+            .clickable {
+                showTimePicker = true
+            },
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 14.dp),
+            text = departureTime
+        )
+    }
 
     ButtonPrimary(
         modifier = Modifier
@@ -289,7 +318,7 @@ private fun NewScheduleFields(
             busCategory.name == "Category" ||
             locationFrom.name == "From" ||
             locationTo.name == "To" ||
-            departureTime.isEmpty()
+            departureTime == "Time"
         ) {
             Toast.makeText(
                 context,
@@ -359,6 +388,22 @@ private fun NewScheduleFields(
                 }
             }
         }
+    }
+
+    if (showTimePicker) {
+        TimePickerDialog(
+            onConfirm = {
+                departureTime = SimpleDateFormat(
+                    if (is24HourFormat) "HH:mm" else "hh:mm a",
+                    Locale.getDefault()
+                ).format(it.time)
+                departureTimeInMillis = it.timeInMillis
+
+                showTimePicker = false
+            },
+            onCancel = { showTimePicker = false },
+            selectedTime = departureTimeInMillis
+        )
     }
 
     if (showLoadingDialog) {
