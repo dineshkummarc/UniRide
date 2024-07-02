@@ -123,9 +123,15 @@ private fun RouteContent(
                         }
                     }
                 } else {
-                    Text(
-                        text = "List is empty"
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Route is empty!"
+                        )
+                    }
                 }
             }
 
