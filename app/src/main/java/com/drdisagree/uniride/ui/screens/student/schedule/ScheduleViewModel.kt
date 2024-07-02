@@ -3,11 +3,10 @@ package com.drdisagree.uniride.ui.screens.student.schedule
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.Schedule
 import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
-import com.drdisagree.uniride.domain.models.Schedule
 import com.drdisagree.uniride.domain.repository.ScheduleRepository
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +32,6 @@ class ScheduleViewModel @Inject constructor(
         }
 
         val query = firestore.collection(SCHEDULE_COLLECTION)
-            .orderBy("timeStamp", Query.Direction.ASCENDING)
 
         query.get()
             .addOnSuccessListener {

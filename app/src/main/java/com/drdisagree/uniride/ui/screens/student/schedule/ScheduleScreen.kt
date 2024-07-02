@@ -1,6 +1,9 @@
 package com.drdisagree.uniride.ui.screens.student.schedule
 
+import android.text.format.DateFormat
+import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,17 +13,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -30,18 +37,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.Schedule
 import com.drdisagree.uniride.ui.components.navigation.ScheduleNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
-import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.screens.destinations.ScheduleSearchScreenDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlin.random.Random
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @ScheduleNavGraph(start = true)
 @Destination(style = FadeInOutTransition::class)
@@ -83,29 +95,77 @@ fun ScheduleScreen(
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 @Composable
 private fun ScheduleContent(
     navigator: DestinationsNavigator,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    scheduleViewModel: ScheduleViewModel = hiltViewModel()
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues = paddingValues)
-    ) {
-        repeat(15) { index ->
-            item(key = index) {
-                ScheduleListItem(
-                    index = index,
-                    routeNo = "${
-                        remember {
-                            listOf("Surjomukhi", "Dolpin", "Rojonigondha").random()
-                        }
-                    }-${Random.nextInt(1, 15)}",
-                    routeName = "DSC to Dhanmondi"
+    val context = LocalContext.current
+    val schedules by scheduleViewModel.allSchedules.collectAsState()
+    val is24HourFormat = DateFormat.is24HourFormat(context)
+
+    when (schedules) {
+        is Resource.Loading -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .wrapContentSize()
                 )
             }
         }
+
+        is Resource.Success -> {
+            val scheduleList = (schedules as Resource.Success<List<Schedule>>).data?.let {
+                sortSchedulesByTime(
+                    it,
+                    is24HourFormat
+                )
+            }
+
+            if (scheduleList?.isNotEmpty() == true) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues = paddingValues)
+                ) {
+                    items(scheduleList.size) { index ->
+                        ScheduleListItem(
+                            index = index,
+                            schedule = scheduleList[index]
+                        )
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Schedule is empty!"
+                    )
+                }
+            }
+        }
+
+        is Resource.Error -> {
+            (schedules as Resource.Error<*>).message?.let {
+                Toast.makeText(
+                    context,
+                    it,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+        else -> {}
     }
 }
 
@@ -113,8 +173,7 @@ private fun ScheduleContent(
 private fun ScheduleListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    routeNo: String,
-    routeName: String
+    schedule: Schedule
 ) {
     Column(
         modifier = modifier
@@ -138,7 +197,7 @@ private fun ScheduleListItem(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_bus),
-                contentDescription = "Map with marker image",
+                contentDescription = "Bus icon",
                 modifier = Modifier
                     .padding(end = 16.dp, top = 2.dp)
                     .size(28.dp)
@@ -152,7 +211,7 @@ private fun ScheduleListItem(
                 verticalArrangement = Arrangement.Top,
             ) {
                 Text(
-                    text = routeNo,
+                    text = schedule.bus.name,
                     fontSize = 16.sp,
                     style = TextStyle(
                         fontWeight = FontWeight.Bold
@@ -163,7 +222,7 @@ private fun ScheduleListItem(
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                             append("From: ")
                         }
-                        append("Dhanmondi (Female)")
+                        append(schedule.from.name)
                     },
                     color = Dark,
                     fontSize = 14.sp
@@ -173,7 +232,7 @@ private fun ScheduleListItem(
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                             append("To: ")
                         }
-                        append("DSC")
+                        append(schedule.to.name)
                     },
                     color = Dark,
                     fontSize = 14.sp
@@ -185,20 +244,29 @@ private fun ScheduleListItem(
                 verticalArrangement = Arrangement.Top
             ) {
                 Text(
-                    text = "07:00 AM",
+                    text = schedule.time,
                     color = Color.Black,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    text = remember {
-                        listOf("Common", "Employee", "Fixed", "Friday").random()
-                    },
+                    text = schedule.category.name,
                     color = Dark,
                     fontSize = 14.sp
                 )
             }
         }
+    }
+}
+
+fun sortSchedulesByTime(schedules: List<Schedule>, is24HourFormat: Boolean): List<Schedule> {
+    val formatter = DateTimeFormatter.ofPattern(
+        if (is24HourFormat) "HH:mm" else "hh:mm a",
+        Locale.getDefault()
+    )
+
+    return schedules.sortedBy { schedule ->
+        LocalTime.parse(schedule.time, formatter)
     }
 }
