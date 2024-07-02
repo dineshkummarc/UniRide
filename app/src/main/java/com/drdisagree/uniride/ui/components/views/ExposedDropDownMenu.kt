@@ -3,9 +3,9 @@ package com.drdisagree.uniride.ui.components.views
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
@@ -46,7 +46,7 @@ fun StyledDropDownMenu(
         },
         modifier = modifier
             .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
-            .height(64.dp)
+            .defaultMinSize(minHeight = 64.dp)
             .clip(RoundedCornerShape(MaterialTheme.spacing.medium1))
             .background(color = Color.White.copy(alpha = 0.5f))
             .border(
@@ -56,7 +56,7 @@ fun StyledDropDownMenu(
             )
     ) {
         Box(
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterStart
         ) {
             TextField(
@@ -65,7 +65,11 @@ fun StyledDropDownMenu(
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
-                    .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
+                    .then(
+                        if (fillMaxWidth) Modifier
+                            .padding(top = 3.dp)
+                            .fillMaxWidth() else Modifier
+                    )
                     .menuAnchor(),
                 colors = ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = Color.Transparent,
