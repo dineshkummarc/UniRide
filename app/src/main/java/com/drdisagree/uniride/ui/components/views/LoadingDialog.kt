@@ -50,14 +50,14 @@ fun LoadingDialog(
                     shape = RoundedCornerShape(MaterialTheme.spacing.medium2)
                 )
                 .padding(
-                    start = MaterialTheme.spacing.medium2,
-                    top = MaterialTheme.spacing.medium2,
-                    end = MaterialTheme.spacing.medium2,
-                    bottom = MaterialTheme.spacing.medium1
+                    start = MaterialTheme.spacing.large2,
+                    top = MaterialTheme.spacing.medium3,
+                    end = MaterialTheme.spacing.large2,
+                    bottom = MaterialTheme.spacing.medium2
                 )
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(56.dp)
             )
             Text(
                 text = text,
