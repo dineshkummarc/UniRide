@@ -3,5 +3,5 @@
     <item
         android:width="36dp"
         android:height="36dp"
-        android:drawable="@drawable/img_pin_map" />
+        android:drawable="@drawable/img_pin_map_person" />
 </layer-list>
