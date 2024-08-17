@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -70,7 +71,8 @@ private fun ScheduleSearchContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues = paddingValues),
+            .padding(paddingValues = paddingValues)
+            .padding(MaterialTheme.spacing.medium1),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item(key = -1) {
@@ -87,58 +89,63 @@ private fun ScheduleSearchFields() {
     var selectedPlaceFrom by remember { mutableStateOf(SCHEDULE_FROM[0]) }
     var selectedPlaceTo by remember { mutableStateOf(SCHEDULE_TO[0]) }
 
-    val density = LocalDensity.current
-    var componentWidth by remember { mutableStateOf(0.dp) }
-
     StyledDropDownMenu(
         modifier = Modifier
             .padding(
-                start = MaterialTheme.spacing.medium1,
-                end = MaterialTheme.spacing.medium1,
-                top = MaterialTheme.spacing.medium1
-            )
-            .onGloballyPositioned {
-                componentWidth = with(density) {
-                    it.size.width.toDp()
-                }
-            },
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2
+            ),
         selectedText = selectedCategory,
         itemList = SCHEDULE_CATEGORY.toTypedArray(),
         onItemSelected = {
             selectedCategory = it
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
+        },
+        fillMaxWidth = true
     )
 
-    Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
-
     StyledDropDownMenu(
-        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1),
+        modifier = Modifier
+            .padding(
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2,
+                top = MaterialTheme.spacing.medium1
+            ),
         selectedText = selectedPlaceFrom,
         itemList = SCHEDULE_FROM.toTypedArray(),
         onItemSelected = {
             selectedPlaceFrom = it
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
+        },
+        fillMaxWidth = true
     )
 
-    Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
-
     StyledDropDownMenu(
-        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1),
+        modifier = Modifier
+            .padding(
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2,
+                top = MaterialTheme.spacing.medium1
+            ),
         selectedText = selectedPlaceTo,
         itemList = SCHEDULE_TO.toTypedArray(),
         onItemSelected = {
             selectedPlaceTo = it
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
+        },
+        fillMaxWidth = true
     )
 
-    Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
-
     ButtonPrimary(
-        text = "Search",
-        modifier = Modifier.width(width = componentWidth)
+        modifier = Modifier
+            .padding(
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2,
+                top = MaterialTheme.spacing.medium1,
+                bottom = MaterialTheme.spacing.medium1
+            )
+            .fillMaxWidth(),
+        text = "Search"
     ) {
 
     }

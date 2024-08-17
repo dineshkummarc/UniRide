@@ -24,6 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.spacing
@@ -71,6 +75,7 @@ fun StyledDropDownMenu(
                             .fillMaxWidth() else Modifier
                     )
                     .menuAnchor(),
+                singleLine = true,
                 colors = ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -80,7 +85,8 @@ fun StyledDropDownMenu(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
-                )
+                ),
+                visualTransformation = ellipsisVisualTransformation()
             )
         }
 
@@ -111,5 +117,23 @@ fun StyledDropDownMenu(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ellipsisVisualTransformation() = VisualTransformation { text ->
+    val ellipsis = "..."
+    val maxLength = 30
+
+    if (text.length <= maxLength) {
+        TransformedText(text = text, offsetMapping = OffsetMapping.Identity)
+    } else {
+        TransformedText(
+            AnnotatedString.Builder().apply {
+                append(text.take(maxLength - ellipsis.length))
+                append(ellipsis)
+            }.toAnnotatedString(),
+            OffsetMapping.Identity
+        )
     }
 }
