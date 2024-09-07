@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -74,7 +75,7 @@ fun StyledDropDownMenu(
                             .padding(top = 3.dp)
                             .fillMaxWidth() else Modifier
                     )
-                    .menuAnchor(),
+                    .menuAnchor(type = MenuAnchorType.PrimaryEditable),
                 singleLine = true,
                 colors = ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = Color.Transparent,
@@ -98,8 +99,9 @@ fun StyledDropDownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
-                    .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
-                    .background(color = Color.White)
+                    .then(if (fillMaxWidth) Modifier.exposedDropdownSize() else Modifier)
+                    .background(color = Color.White),
+                containerColor = Color.White
             ) {
                 itemList.forEach { item ->
                     DropdownMenuItem(
