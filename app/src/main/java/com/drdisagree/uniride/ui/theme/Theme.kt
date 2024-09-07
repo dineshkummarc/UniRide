@@ -3,8 +3,9 @@ package com.drdisagree.uniride.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -72,15 +73,14 @@ fun UniRideTheme(
 val MaterialTheme.spacing: Spacing
     @Composable get() = LocalAppSpacing.current
 
-object NoRippleTheme : RippleTheme {
-    @Composable
-    override fun defaultColor() = Color.Unspecified
-
-    @Composable
-    override fun rippleAlpha(): RippleAlpha = RippleAlpha(
-        0.0f,
-        0.0f,
-        0.0f,
-        0.0f
+@OptIn(ExperimentalMaterial3Api::class)
+val NoRippleTheme =
+    RippleConfiguration(
+        color = Color.Unspecified,
+        rippleAlpha = RippleAlpha(
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f
+        )
     )
-}
