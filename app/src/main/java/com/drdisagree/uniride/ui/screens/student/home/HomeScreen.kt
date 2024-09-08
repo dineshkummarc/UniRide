@@ -56,8 +56,10 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
+import com.drdisagree.uniride.ui.components.views.RequestNotificationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
+import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
 import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -117,21 +119,26 @@ private fun HandlePermissions(
     gpsStateManager: GpsStateManager = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var permissionGranted by remember {
+    var locationPermissionGranted by remember {
         mutableStateOf(false)
     }
     val gpsRequested by remember {
         mutableStateOf(gpsStateManager.gpsRequested.value)
     }
+    var notificationPermissionGranted by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(Unit) {
         Prefs.putString(WHICH_USER_COLLECTION, STUDENT_COLLECTION)
-        permissionGranted = areLocationPermissionsGranted(context)
+        locationPermissionGranted = areLocationPermissionsGranted(context)
+        notificationPermissionGranted = isNotificationPermissionGranted(context)
     }
 
     RequestLocationPermission(
-        onPermissionGranted = { permissionGranted = true },
-        onPermissionDenied = { permissionGranted = false }) {
+        onPermissionGranted = { locationPermissionGranted = true },
+        onPermissionDenied = { locationPermissionGranted = false }
+    ) {
         Toast.makeText(
             context,
             "Please grant location permission",
@@ -139,7 +146,12 @@ private fun HandlePermissions(
         ).show()
     }
 
-    if (permissionGranted && !gpsRequested) {
+    RequestNotificationPermission(
+        onPermissionGranted = { notificationPermissionGranted = true },
+        onPermissionDenied = { notificationPermissionGranted = false }
+    )
+
+    if (locationPermissionGranted && !gpsRequested) {
         RequestGpsEnable(
             context = context,
             onGpsEnabled = { },

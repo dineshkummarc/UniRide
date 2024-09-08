@@ -3,6 +3,7 @@ package com.drdisagree.uniride.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.drdisagree.uniride.data.database.ScheduleDatabase
 import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
@@ -63,5 +64,12 @@ class AppModule {
     @Provides
     fun provideSignInClient(@ApplicationContext context: Context): SignInClient {
         return Identity.getSignInClient(context)
+    }
+
+    @Provides
+    fun provideViewModelFactory(
+        @ApplicationContext context: Context
+    ): ViewModelProvider.Factory {
+        return ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     }
 }

@@ -45,6 +45,7 @@ import com.drdisagree.uniride.data.events.BusStatus
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.KeepScreenOn
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
@@ -101,6 +102,8 @@ private fun MapView(
     paddingValues: PaddingValues,
     locationViewModel: LocationSharingViewModel = hiltViewModel()
 ) {
+    KeepScreenOn()
+
     val context = LocalContext.current
     var isMapLoaded by remember { mutableStateOf(false) }
     var marker: LatLng? by rememberSaveable { mutableStateOf(null) }

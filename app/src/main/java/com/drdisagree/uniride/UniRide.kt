@@ -1,6 +1,8 @@
 package com.drdisagree.uniride
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
 import java.lang.ref.WeakReference
@@ -12,6 +14,16 @@ class UniRide : Application() {
         super.onCreate()
         instance = this
         contextReference = WeakReference(applicationContext)
+
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+            createNotificationChannel(
+                NotificationChannel(
+                    "location",
+                    "Location",
+                    NotificationManager.IMPORTANCE_LOW
+                )
+            )
+        }
     }
 
     companion object {

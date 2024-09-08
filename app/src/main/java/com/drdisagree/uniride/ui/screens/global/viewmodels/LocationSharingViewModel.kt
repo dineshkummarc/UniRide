@@ -45,18 +45,25 @@ class LocationSharingViewModel @Inject constructor(
     private fun startLocationUpdates() {
         viewModelScope.launch {
             callbackFlow {
+                val locationRequest = LocationRequest
+                    .Builder(Priority.PRIORITY_HIGH_ACCURACY, 0)
+                    .setWaitForAccurateLocation(false)
+                    .setMinUpdateIntervalMillis(0)
+                    .setMaxUpdateDelayMillis(0)
+                    .build()
+
                 val locationCallback = object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult) {
                         trySendBlocking(locationResult.lastLocation)
+                        Log.d(
+                            LocationSharingViewModel::class.java.simpleName,
+                            "Location: ${locationResult.lastLocation}"
+                        )
                     }
                 }
 
                 fusedLocationProviderClient.requestLocationUpdates(
-                    LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 50L)
-                        .setWaitForAccurateLocation(false)
-                        .setMinUpdateIntervalMillis(10L)
-                        .setMaxUpdateDelayMillis(100L)
-                        .build(),
+                    locationRequest,
                     locationCallback,
                     Looper.getMainLooper()
                 )

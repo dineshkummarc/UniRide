@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.driver.home
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -48,15 +49,18 @@ import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
+import com.drdisagree.uniride.services.LocationService
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ContainerNavDrawer
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
+import com.drdisagree.uniride.ui.components.views.RequestNotificationPermission
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithNavDrawerIcon
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
+import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
 import com.drdisagree.uniride.ui.screens.destinations.BusLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.home.navdrawer.NavigationDrawer
@@ -354,6 +358,19 @@ private fun ShareLocationFields(
             ).show()
 
             return@ButtonPrimary
+        } else if (!isNotificationPermissionGranted(context)) {
+            Toast.makeText(
+                context,
+                "Please grant notification permission",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        }
+
+        Intent(context.applicationContext, LocationService::class.java).apply {
+            action = LocationService.ACTION_START
+            context.startService(this)
         }
 
         navigator.navigate(BusLocationDestination)
@@ -365,21 +382,26 @@ private fun HandlePermissions(
     gpsStateManager: GpsStateManager = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var permissionGranted by remember {
+    var locationPermissionGranted by remember {
         mutableStateOf(false)
     }
     val gpsRequested by remember {
         mutableStateOf(gpsStateManager.gpsRequested.value)
     }
+    var notificationPermissionGranted by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(Unit) {
         Prefs.putString(WHICH_USER_COLLECTION, DRIVER_COLLECTION)
-        permissionGranted = areLocationPermissionsGranted(context)
+        locationPermissionGranted = areLocationPermissionsGranted(context)
+        notificationPermissionGranted = isNotificationPermissionGranted(context)
     }
 
     RequestLocationPermission(
-        onPermissionGranted = { permissionGranted = true },
-        onPermissionDenied = { permissionGranted = false }) {
+        onPermissionGranted = { locationPermissionGranted = true },
+        onPermissionDenied = { locationPermissionGranted = false }
+    ) {
         Toast.makeText(
             context,
             "Please grant location permission",
@@ -387,7 +409,12 @@ private fun HandlePermissions(
         ).show()
     }
 
-    if (permissionGranted && !gpsRequested) {
+    RequestNotificationPermission(
+        onPermissionGranted = { notificationPermissionGranted = true },
+        onPermissionDenied = { notificationPermissionGranted = false }
+    )
+
+    if (locationPermissionGranted && !gpsRequested) {
         RequestGpsEnable(
             context = context,
             onGpsEnabled = { },
