@@ -203,13 +203,6 @@ private fun ShareLocationFields(
     listsViewModel: ListsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var permissionGranted by remember { mutableStateOf(false) }
-    var gpsEnabled by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        permissionGranted = areLocationPermissionsGranted(context)
-        gpsEnabled = isGpsEnabled(context)
-    }
-
     val busList by listsViewModel.busModels.collectAsState()
     val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
     val placeList by listsViewModel.placeModels.collectAsState()
@@ -228,11 +221,11 @@ private fun ShareLocationFields(
         name = "Destination"
     )
 
-    var selectedBus by remember { mutableStateOf(defaultBusName) }
+    var selectedBus by rememberSaveable { mutableStateOf(defaultBusName) }
     var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
     var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
-    var currentStatus by remember { mutableStateOf(statusList[0]) }
+    var currentStatus by rememberSaveable { mutableStateOf(statusList[0]) }
 
     Text(
         text = "Let's start driving",
@@ -362,7 +355,7 @@ private fun ShareLocationFields(
             return@ButtonPrimary
         }
 
-        if (!permissionGranted) {
+        if (!areLocationPermissionsGranted(context)) {
             Toast.makeText(
                 context,
                 "Please grant location permission",
@@ -370,7 +363,7 @@ private fun ShareLocationFields(
             ).show()
 
             return@ButtonPrimary
-        } else if (!gpsEnabled) {
+        } else if (!isGpsEnabled(context)) {
             Toast.makeText(
                 context,
                 "Please enable GPS",
