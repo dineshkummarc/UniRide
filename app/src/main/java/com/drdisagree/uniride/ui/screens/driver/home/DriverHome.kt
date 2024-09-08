@@ -20,10 +20,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,9 +42,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.models.Bus
+import com.drdisagree.uniride.data.models.BusCategory
+import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
-import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_FROM
-import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_TO
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
@@ -53,9 +56,11 @@ import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithNavDrawerIcon
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
+import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.screens.destinations.BusLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.home.navdrawer.NavigationDrawer
+import com.drdisagree.uniride.ui.screens.global.ListsViewModel
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -193,12 +198,41 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
 }
 
 @Composable
-private fun ShareLocationFields(navigator: DestinationsNavigator) {
+private fun ShareLocationFields(
+    navigator: DestinationsNavigator,
+    listsViewModel: ListsViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
+    var permissionGranted by remember { mutableStateOf(false) }
+    var gpsEnabled by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        permissionGranted = areLocationPermissionsGranted(context)
+        gpsEnabled = isGpsEnabled(context)
+    }
 
-    var selectedCategory by remember { mutableStateOf("Select Bus") }
-    var selectedPlaceFrom by remember { mutableStateOf("Start From") }
-    var selectedPlaceTo by remember { mutableStateOf("Destination") }
+    val busList by listsViewModel.busModels.collectAsState()
+    val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
+    val placeList by listsViewModel.placeModels.collectAsState()
+    val statusList = arrayOf("Current Status", "Waiting for Students", "On The Way")
+
+    val defaultBusName = Bus(
+        name = "Select Bus"
+    )
+    val defaultBusCategory = BusCategory(
+        name = "Bus Category"
+    )
+    val defaultFrom = Place(
+        name = "Start From"
+    )
+    val defaultTo = Place(
+        name = "Destination"
+    )
+
+    var selectedBus by remember { mutableStateOf(defaultBusName) }
+    var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
+    var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
+    var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
+    var currentStatus by remember { mutableStateOf(statusList[0]) }
 
     Text(
         text = "Let's start driving",
@@ -214,11 +248,39 @@ private fun ShareLocationFields(navigator: DestinationsNavigator) {
                 end = MaterialTheme.spacing.medium1,
                 top = MaterialTheme.spacing.medium1
             ),
-        selectedText = selectedCategory,
-        itemList = arrayOf("Select Bus", "Surjomukhi", "Dolphin", "Rojonigondha"),
+        selectedText = selectedBus.name,
+        itemList = busList.sortedWith(compareBy<Bus> {
+            it.name.substringBefore('-')
+        }.thenBy {
+            val suffix = it.name.substringAfter('-', "")
+            if (suffix.isEmpty()) Int.MAX_VALUE else suffix.toIntOrNull() ?: Int.MAX_VALUE
+        }).map {
+            it.name
+        }.toTypedArray(),
         onItemSelected = {
-            selectedCategory = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            selectedBus = busList.first { bus ->
+                bus.name == it
+            }
+        },
+        fillMaxWidth = true
+    )
+
+    Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
+
+    StyledDropDownMenu(
+        modifier = Modifier
+            .padding(
+                start = MaterialTheme.spacing.medium1,
+                end = MaterialTheme.spacing.medium1
+            ),
+        selectedText = busCategory.name,
+        itemList = busCategoryList.map {
+            it.name
+        }.toTypedArray(),
+        onItemSelected = {
+            busCategory = busCategoryList.first { category ->
+                category.name == it
+            }
         },
         fillMaxWidth = true
     )
@@ -227,11 +289,14 @@ private fun ShareLocationFields(navigator: DestinationsNavigator) {
 
     StyledDropDownMenu(
         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1),
-        selectedText = selectedPlaceFrom,
-        itemList = SCHEDULE_FROM.toTypedArray(),
+        selectedText = locationFrom.name,
+        itemList = placeList.map {
+            it.name
+        }.toTypedArray(),
         onItemSelected = {
-            selectedPlaceFrom = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            locationFrom = placeList.first { place ->
+                place.name == it
+            }
         },
         fillMaxWidth = true
     )
@@ -240,11 +305,14 @@ private fun ShareLocationFields(navigator: DestinationsNavigator) {
 
     StyledDropDownMenu(
         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1),
-        selectedText = selectedPlaceTo,
-        itemList = SCHEDULE_TO.toTypedArray(),
+        selectedText = locationTo.name,
+        itemList = placeList.map {
+            it.name
+        }.toTypedArray(),
         onItemSelected = {
-            selectedPlaceTo = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            locationTo = placeList.first { place ->
+                place.name == it
+            }
         },
         fillMaxWidth = true
     )
@@ -253,11 +321,12 @@ private fun ShareLocationFields(navigator: DestinationsNavigator) {
 
     StyledDropDownMenu(
         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1),
-        selectedText = "Current Status",
-        itemList = arrayOf("Current Status", "Waiting for Students"),
+        selectedText = currentStatus,
+        itemList = statusList,
         onItemSelected = {
-            selectedPlaceTo = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            currentStatus = statusList.first { status ->
+                status == it
+            }
         },
         fillMaxWidth = true
     )
@@ -270,6 +339,47 @@ private fun ShareLocationFields(navigator: DestinationsNavigator) {
             .padding(horizontal = MaterialTheme.spacing.medium1)
             .fillMaxWidth()
     ) {
+        if (selectedBus.name == defaultBusName.name ||
+            busCategory.name == defaultBusCategory.name ||
+            locationFrom.name == defaultFrom.name ||
+            locationTo.name == defaultTo.name ||
+            currentStatus == statusList[0]
+        ) {
+            Toast.makeText(
+                context,
+                "Please select all fields",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        } else if (locationFrom == locationTo) {
+            Toast.makeText(
+                context,
+                "Both locations cannot be the same",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        }
+
+        if (!permissionGranted) {
+            Toast.makeText(
+                context,
+                "Please grant location permission",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        } else if (!gpsEnabled) {
+            Toast.makeText(
+                context,
+                "Please enable GPS",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        }
+
         navigator.navigate(BusLocationDestination)
     }
 }

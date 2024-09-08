@@ -55,6 +55,7 @@ import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TimePickerDialog
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.screens.global.ListsViewModel
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
@@ -155,39 +156,25 @@ private fun NewScheduleContent(
 
 @Composable
 private fun NewScheduleFields(
-    newScheduleViewModel: NewScheduleViewModel = hiltViewModel()
+    newScheduleViewModel: NewScheduleViewModel = hiltViewModel(),
+    listsViewModel: ListsViewModel = hiltViewModel()
 ) {
-    val busList by newScheduleViewModel.busModels.collectAsState()
-    val busCategoryList by newScheduleViewModel.busCategoryModels.collectAsState()
-    val placeList by newScheduleViewModel.placeModels.collectAsState()
-    val defaultBusName = if (busList.isEmpty()) {
-        Bus(
-            name = "Bus Name"
-        )
-    } else {
-        busList[0]
-    }
-    val defaultBusCategory = if (busCategoryList.isEmpty()) {
-        BusCategory(
-            name = "Category"
-        )
-    } else {
-        busCategoryList[0]
-    }
-    val defaultFrom = if (placeList.isEmpty()) {
-        Place(
-            name = "From"
-        )
-    } else {
-        placeList[0]
-    }
-    val defaultTo = if (placeList.isEmpty()) {
-        Place(
-            name = "To"
-        )
-    } else {
-        placeList[0]
-    }
+    val busList by listsViewModel.busModels.collectAsState()
+    val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
+    val placeList by listsViewModel.placeModels.collectAsState()
+
+    val defaultBusName = Bus(
+        name = "Bus Name"
+    )
+    val defaultBusCategory = BusCategory(
+        name = "Category"
+    )
+    val defaultFrom = Place(
+        name = "From"
+    )
+    val defaultTo = Place(
+        name = "To"
+    )
 
     val context = LocalContext.current
     var selectedBus by remember { mutableStateOf(defaultBusName) }
@@ -317,10 +304,10 @@ private fun NewScheduleFields(
             .fillMaxWidth(),
         text = "Submit"
     ) {
-        if (selectedBus.name == "Bus Name" ||
-            busCategory.name == "Category" ||
-            locationFrom.name == "From" ||
-            locationTo.name == "To" ||
+        if (selectedBus.name == defaultBusName.name ||
+            busCategory.name == defaultBusCategory.name ||
+            locationFrom.name == defaultFrom.name ||
+            locationTo.name == defaultTo.name ||
             departureTime == "Time"
         ) {
             Toast.makeText(
