@@ -123,19 +123,33 @@ fun StyledDropDownMenu(
 }
 
 @Composable
-fun ellipsisVisualTransformation() = VisualTransformation { text ->
+fun ellipsisVisualTransformation(maxLength: Int = 30) = VisualTransformation { text ->
     val ellipsis = "..."
-    val maxLength = 30
+    val originalText = text.text
 
-    if (text.length <= maxLength) {
+    if (originalText.length <= maxLength) {
         TransformedText(text = text, offsetMapping = OffsetMapping.Identity)
     } else {
+        val truncatedText = originalText.take(maxLength - ellipsis.length) + ellipsis
+        val transformedAnnotatedString = AnnotatedString(truncatedText)
+
+        val originalToTransformed =
+            IntArray(originalText.length) { it.coerceAtMost(maxLength - ellipsis.length) }
+        val transformedToOriginal = IntArray(truncatedText.length) {
+            if (it < maxLength - ellipsis.length) it else maxLength - ellipsis.length
+        }
+
         TransformedText(
-            AnnotatedString.Builder().apply {
-                append(text.take(maxLength - ellipsis.length))
-                append(ellipsis)
-            }.toAnnotatedString(),
-            OffsetMapping.Identity
+            transformedAnnotatedString,
+            object : OffsetMapping {
+                override fun originalToTransformed(offset: Int): Int {
+                    return originalToTransformed.getOrElse(offset) { truncatedText.length }
+                }
+
+                override fun transformedToOriginal(offset: Int): Int {
+                    return transformedToOriginal.getOrElse(offset) { originalText.length }
+                }
+            }
         )
     }
 }
