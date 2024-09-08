@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.student.mylocation
+package com.drdisagree.uniride.ui.screens.global.viewmodels
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -28,8 +28,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 @SuppressLint("MissingPermission")
-class MyLocationViewModel @Inject constructor(
-    private val application: Application
+class LocationSharingViewModel @Inject constructor(
+    application: Application
 ) : ViewModel() {
 
     private val _locationFlow = MutableStateFlow<Location?>(null)
@@ -66,7 +66,7 @@ class MyLocationViewModel @Inject constructor(
                 }
             }.catch { e ->
                 Log.e(
-                    MyLocationViewModel::class.java.simpleName,
+                    LocationSharingViewModel::class.java.simpleName,
                     "Error getting location updates: $e"
                 )
             }.shareIn(

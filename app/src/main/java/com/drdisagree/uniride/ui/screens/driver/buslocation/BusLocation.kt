@@ -49,7 +49,7 @@ import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
-import com.drdisagree.uniride.ui.screens.student.mylocation.BusLocationViewModel
+import com.drdisagree.uniride.ui.screens.global.viewmodels.LocationSharingViewModel
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -99,12 +99,12 @@ fun BusLocation(
 private fun MapView(
     navigator: DestinationsNavigator,
     paddingValues: PaddingValues,
-    viewModel: BusLocationViewModel = hiltViewModel()
+    locationViewModel: LocationSharingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var isMapLoaded by remember { mutableStateOf(false) }
     var marker: LatLng? by rememberSaveable { mutableStateOf(null) }
-    val location by viewModel.locationFlow.collectAsState()
+    val location by locationViewModel.locationFlow.collectAsState()
     location?.let {
         if (marker == null || marker != LatLng(it.latitude, it.longitude)) {
             marker = LatLng(it.latitude, it.longitude)

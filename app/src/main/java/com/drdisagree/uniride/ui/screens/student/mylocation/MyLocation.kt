@@ -39,10 +39,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
-import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.screens.global.viewmodels.LocationSharingViewModel
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -86,12 +87,12 @@ fun MyLocation(
 @Composable
 private fun MapView(
     paddingValues: PaddingValues,
-    viewModel: MyLocationViewModel = hiltViewModel()
+    locationViewModel: LocationSharingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var isMapLoaded by remember { mutableStateOf(false) }
     var marker: LatLng? by rememberSaveable { mutableStateOf(null) }
-    val location by viewModel.locationFlow.collectAsState()
+    val location by locationViewModel.locationFlow.collectAsState()
     location?.let {
         if (marker == null || marker != LatLng(it.latitude, it.longitude)) {
             marker = LatLng(it.latitude, it.longitude)

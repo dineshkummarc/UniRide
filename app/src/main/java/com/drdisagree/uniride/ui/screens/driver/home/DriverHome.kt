@@ -60,7 +60,7 @@ import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.screens.destinations.BusLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.home.navdrawer.NavigationDrawer
-import com.drdisagree.uniride.ui.screens.global.ListsViewModel
+import com.drdisagree.uniride.ui.screens.global.viewmodels.ListsViewModel
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -206,7 +206,6 @@ private fun ShareLocationFields(
     val busList by listsViewModel.busModels.collectAsState()
     val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
     val placeList by listsViewModel.placeModels.collectAsState()
-    val statusList = arrayOf("Current Status", "Waiting for Students", "On The Way")
 
     val defaultBusName = Bus(
         name = "Select Bus"
@@ -225,7 +224,6 @@ private fun ShareLocationFields(
     var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
     var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
-    var currentStatus by rememberSaveable { mutableStateOf(statusList[0]) }
 
     Text(
         text = "Let's start driving",
@@ -312,20 +310,6 @@ private fun ShareLocationFields(
 
     Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
 
-    StyledDropDownMenu(
-        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1),
-        selectedText = currentStatus,
-        itemList = statusList,
-        onItemSelected = {
-            currentStatus = statusList.first { status ->
-                status == it
-            }
-        },
-        fillMaxWidth = true
-    )
-
-    Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
-
     ButtonPrimary(
         text = "Start Sharing Location",
         modifier = Modifier
@@ -335,8 +319,7 @@ private fun ShareLocationFields(
         if (selectedBus.name == defaultBusName.name ||
             busCategory.name == defaultBusCategory.name ||
             locationFrom.name == defaultFrom.name ||
-            locationTo.name == defaultTo.name ||
-            currentStatus == statusList[0]
+            locationTo.name == defaultTo.name
         ) {
             Toast.makeText(
                 context,
