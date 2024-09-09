@@ -64,6 +64,7 @@ import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGrante
 import com.drdisagree.uniride.ui.screens.destinations.BusLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.home.navdrawer.NavigationDrawer
+import com.drdisagree.uniride.ui.screens.global.viewmodels.GetDriverViewModel
 import com.drdisagree.uniride.ui.screens.global.viewmodels.ListsViewModel
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
@@ -80,7 +81,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DriverHome(
     navigator: DestinationsNavigator,
-    driverHomeViewModel: DriverHomeViewModel = hiltViewModel()
+    getDriverViewModel: GetDriverViewModel = hiltViewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -92,7 +93,7 @@ fun DriverHome(
                 navigator = navigator,
                 drawerState = drawerState,
                 coroutineScope = coroutineScope,
-                driverHomeViewModel = driverHomeViewModel
+                getDriverViewModel = getDriverViewModel
             )
         }
     ) {

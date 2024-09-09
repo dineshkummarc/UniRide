@@ -46,10 +46,7 @@ class ListsViewModel @Inject constructor(
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val models = querySnapshot.documents.mapNotNull { doc ->
-                    Bus(
-                        uuid = doc.id,
-                        name = doc.getString("name") ?: "",
-                    )
+                    doc.toObject(Bus::class.java)?.copy(uuid = doc.id)
                 }.sortedWith(compareBy { it.name })
 
                 _busModels.value = models
@@ -66,10 +63,7 @@ class ListsViewModel @Inject constructor(
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val models = querySnapshot.documents.mapNotNull { doc ->
-                    BusCategory(
-                        uuid = doc.id,
-                        name = doc.getString("name") ?: "",
-                    )
+                    doc.toObject(BusCategory::class.java)?.copy(uuid = doc.id)
                 }.sortedWith(compareBy { it.name })
 
                 _busCategoryModels.value = models
@@ -86,10 +80,7 @@ class ListsViewModel @Inject constructor(
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val models = querySnapshot.documents.mapNotNull { doc ->
-                    Place(
-                        uuid = doc.id,
-                        name = doc.getString("name") ?: "",
-                    )
+                    doc.toObject(Place::class.java)?.copy(uuid = doc.id)
                 }.sortedWith(compareBy { it.name })
 
                 _placeModels.value = models
