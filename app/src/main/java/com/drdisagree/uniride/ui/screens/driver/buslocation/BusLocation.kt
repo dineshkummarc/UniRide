@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +49,7 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.KeepScreenOn
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
@@ -103,6 +106,7 @@ private fun MapView(
     locationViewModel: LocationSharingViewModel = hiltViewModel()
 ) {
     KeepScreenOn()
+    CheckGpsPeriodically()
 
     val context = LocalContext.current
     var isMapLoaded by remember { mutableStateOf(false) }
@@ -353,5 +357,41 @@ private fun MapView(
                     .wrapContentSize()
             )
         }
+    }
+}
+
+@Composable
+fun CheckGpsPeriodically() {
+    val context = LocalContext.current
+    var requestGps by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            requestGps = !isGpsEnabled(context)
+            delay(5000)
+        }
+    }
+
+    if (requestGps) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text(text = "GPS Not Enabled") },
+            text = { Text(text = "Please enable GPS to share your location.") },
+            confirmButton = {}
+        )
+
+        RequestGpsEnable(
+            context = context,
+            onGpsEnabled = {
+                requestGps = false
+            },
+            onGpsDisabled = {
+                Toast.makeText(
+                    context,
+                    "Please enable GPS",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
     }
 }
