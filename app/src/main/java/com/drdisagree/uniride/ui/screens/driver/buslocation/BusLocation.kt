@@ -293,7 +293,7 @@ private fun MapView(
                     title = "Position",
                     snippet = "You are currently at this location",
                     draggable = false,
-                    icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_person)
+                    icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
                 )
             }
         }
