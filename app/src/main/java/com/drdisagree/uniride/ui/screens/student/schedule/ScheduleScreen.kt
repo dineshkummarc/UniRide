@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.student.schedule
 
+import android.annotation.SuppressLint
 import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -54,6 +55,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.regex.Pattern
 
 @ScheduleNavGraph(start = true)
 @Destination(style = FadeInOutTransition::class)
@@ -259,13 +261,41 @@ fun ScheduleListItem(
     }
 }
 
+@SuppressLint("DefaultLocale")
 fun sortSchedulesByTime(schedules: List<Schedule>, is24HourFormat: Boolean): List<Schedule> {
     val formatter = DateTimeFormatter.ofPattern(
         if (is24HourFormat) "HH:mm" else "hh:mm a",
         Locale.getDefault()
     )
 
-    return schedules.sortedBy { schedule ->
-        LocalTime.parse(schedule.time, formatter)
+    return schedules.sortedWith(
+        compareBy<Schedule> { schedule ->
+            LocalTime.parse(schedule.time, formatter)
+        }.thenBy { schedule ->
+            naturalOrderCompare(schedule.bus.name)
+        }
+    )
+}
+
+@SuppressLint("DefaultLocale")
+fun naturalOrderCompare(name: String): String {
+    val pattern = Pattern.compile("(\\d+)")
+    val matcher = pattern.matcher(name)
+
+    val result = StringBuilder()
+    var lastIndex = 0
+
+    while (matcher.find()) {
+        val number = matcher.group()
+        val nonNumericPart = name.substring(lastIndex, matcher.start())
+
+        result.append(nonNumericPart)
+        result.append(String.format("%05d", number.toInt()))
+
+        lastIndex = matcher.end()
     }
+
+    result.append(name.substring(lastIndex))
+
+    return result.toString()
 }
