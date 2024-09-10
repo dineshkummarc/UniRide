@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.account
+package com.drdisagree.uniride.ui.screens.global.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountStatusViewModel @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
+    firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 

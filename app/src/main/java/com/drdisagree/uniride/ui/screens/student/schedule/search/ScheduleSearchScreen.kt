@@ -2,37 +2,33 @@ package com.drdisagree.uniride.ui.screens.student.schedule.search
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
-import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_CATEGORY
-import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_FROM
-import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_TO
+import com.drdisagree.uniride.data.models.BusCategory
+import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.ui.components.navigation.ScheduleNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.screens.global.viewmodels.ListsViewModel
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -82,12 +78,26 @@ private fun ScheduleSearchContent(
 }
 
 @Composable
-private fun ScheduleSearchFields() {
-    val context = LocalContext.current
+private fun ScheduleSearchFields(
+    listsViewModel: ListsViewModel = hiltViewModel()
+) {
+    val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
+    val placeList by listsViewModel.placeModels.collectAsState()
 
-    var selectedCategory by remember { mutableStateOf(SCHEDULE_CATEGORY[0]) }
-    var selectedPlaceFrom by remember { mutableStateOf(SCHEDULE_FROM[0]) }
-    var selectedPlaceTo by remember { mutableStateOf(SCHEDULE_TO[0]) }
+    val defaultBusCategory = BusCategory(
+        name = "Category"
+    )
+    val defaultFrom = Place(
+        name = "From"
+    )
+    val defaultTo = Place(
+        name = "To"
+    )
+
+    val context = LocalContext.current
+    var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
+    var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
+    var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
 
     StyledDropDownMenu(
         modifier = Modifier
@@ -95,11 +105,14 @@ private fun ScheduleSearchFields() {
                 start = MaterialTheme.spacing.small2,
                 end = MaterialTheme.spacing.small2
             ),
-        selectedText = selectedCategory,
-        itemList = SCHEDULE_CATEGORY.toTypedArray(),
+        selectedText = busCategory.name,
+        itemList = busCategoryList.map {
+            it.name
+        }.toTypedArray(),
         onItemSelected = {
-            selectedCategory = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            busCategory = busCategoryList.first { category ->
+                category.name == it
+            }
         },
         fillMaxWidth = true
     )
@@ -111,11 +124,14 @@ private fun ScheduleSearchFields() {
                 end = MaterialTheme.spacing.small2,
                 top = MaterialTheme.spacing.medium1
             ),
-        selectedText = selectedPlaceFrom,
-        itemList = SCHEDULE_FROM.toTypedArray(),
+        selectedText = locationFrom.name,
+        itemList = placeList.map {
+            it.name
+        }.toTypedArray(),
         onItemSelected = {
-            selectedPlaceFrom = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            locationFrom = placeList.first { place ->
+                place.name == it
+            }
         },
         fillMaxWidth = true
     )
@@ -127,11 +143,14 @@ private fun ScheduleSearchFields() {
                 end = MaterialTheme.spacing.small2,
                 top = MaterialTheme.spacing.medium1
             ),
-        selectedText = selectedPlaceTo,
-        itemList = SCHEDULE_TO.toTypedArray(),
+        selectedText = locationTo.name,
+        itemList = placeList.map {
+            it.name
+        }.toTypedArray(),
         onItemSelected = {
-            selectedPlaceTo = it
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            locationTo = placeList.first { place ->
+                place.name == it
+            }
         },
         fillMaxWidth = true
     )
@@ -147,6 +166,27 @@ private fun ScheduleSearchFields() {
             .fillMaxWidth(),
         text = "Search"
     ) {
+        if (busCategory.name == defaultBusCategory.name ||
+            locationFrom.name == defaultFrom.name ||
+            locationTo.name == defaultTo.name
+        ) {
+            Toast.makeText(
+                context,
+                "Please fill in all fields",
+                Toast.LENGTH_SHORT
+            ).show()
 
+            return@ButtonPrimary
+        } else if (locationFrom == locationTo) {
+            Toast.makeText(
+                context,
+                "Both locations cannot be the same",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        }
+
+        // TODO: Implement search
     }
 }

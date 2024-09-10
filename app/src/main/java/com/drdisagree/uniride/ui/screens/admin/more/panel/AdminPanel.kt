@@ -44,7 +44,7 @@ import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.ui.screens.admin.account.AccountStatusViewModel
+import com.drdisagree.uniride.ui.screens.global.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.NewBusCategoryDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewBusDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewLocationDestination
