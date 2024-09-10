@@ -95,7 +95,6 @@ fun ScheduleScreen(
     }
 }
 
-@Suppress("UNCHECKED_CAST")
 @Composable
 private fun ScheduleContent(
     navigator: DestinationsNavigator,
@@ -170,7 +169,7 @@ private fun ScheduleContent(
 }
 
 @Composable
-private fun ScheduleListItem(
+fun ScheduleListItem(
     modifier: Modifier = Modifier,
     index: Int,
     schedule: Schedule

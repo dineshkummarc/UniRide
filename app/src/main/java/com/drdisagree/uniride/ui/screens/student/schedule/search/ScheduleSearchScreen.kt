@@ -1,13 +1,21 @@
 package com.drdisagree.uniride.ui.screens.student.schedule.search
 
+import android.text.format.DateFormat
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,12 +24,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.BusCategory
 import com.drdisagree.uniride.data.models.Place
+import com.drdisagree.uniride.data.models.Schedule
 import com.drdisagree.uniride.ui.components.navigation.ScheduleNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
@@ -29,6 +40,9 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.screens.global.viewmodels.ListsViewModel
+import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleListItem
+import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleViewModel
+import com.drdisagree.uniride.ui.screens.student.schedule.sortSchedulesByTime
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -64,25 +78,27 @@ private fun ScheduleSearchContent(
     navigator: DestinationsNavigator,
     paddingValues: PaddingValues
 ) {
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues = paddingValues)
-            .padding(MaterialTheme.spacing.medium1),
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item(key = -1) {
-            ScheduleSearchFields()
-        }
+        ScheduleSearchFieldsAndResult()
     }
 }
 
 @Composable
-private fun ScheduleSearchFields(
-    listsViewModel: ListsViewModel = hiltViewModel()
+private fun ScheduleSearchFieldsAndResult(
+    listsViewModel: ListsViewModel = hiltViewModel(),
+    scheduleViewModel: ScheduleViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
     val placeList by listsViewModel.placeModels.collectAsState()
+    val schedules by scheduleViewModel.allSchedules.collectAsState()
+    val is24HourFormat = DateFormat.is24HourFormat(context)
 
     val defaultBusCategory = BusCategory(
         name = "Category"
@@ -94,16 +110,20 @@ private fun ScheduleSearchFields(
         name = "To"
     )
 
-    val context = LocalContext.current
+    var scheduleList by rememberSaveable { mutableStateOf(emptyList<Schedule>()) }
     var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
     var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
+    var selectedBusCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
+    var selectedLocationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
+    var selectedLocationTo by rememberSaveable { mutableStateOf(defaultTo) }
 
     StyledDropDownMenu(
         modifier = Modifier
             .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2
+                top = MaterialTheme.spacing.medium1,
+                start = MaterialTheme.spacing.medium3,
+                end = MaterialTheme.spacing.medium3
             ),
         selectedText = busCategory.name,
         itemList = busCategoryList.map {
@@ -120,8 +140,8 @@ private fun ScheduleSearchFields(
     StyledDropDownMenu(
         modifier = Modifier
             .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
+                start = MaterialTheme.spacing.medium3,
+                end = MaterialTheme.spacing.medium3,
                 top = MaterialTheme.spacing.medium1
             ),
         selectedText = locationFrom.name,
@@ -139,8 +159,8 @@ private fun ScheduleSearchFields(
     StyledDropDownMenu(
         modifier = Modifier
             .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
+                start = MaterialTheme.spacing.medium3,
+                end = MaterialTheme.spacing.medium3,
                 top = MaterialTheme.spacing.medium1
             ),
         selectedText = locationTo.name,
@@ -158,14 +178,16 @@ private fun ScheduleSearchFields(
     ButtonPrimary(
         modifier = Modifier
             .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
+                start = MaterialTheme.spacing.medium3,
+                end = MaterialTheme.spacing.medium3,
                 top = MaterialTheme.spacing.medium1,
-                bottom = MaterialTheme.spacing.medium1
+                bottom = MaterialTheme.spacing.medium3
             )
             .fillMaxWidth(),
         text = "Search"
     ) {
+        var hasError = false
+
         if (busCategory.name == defaultBusCategory.name ||
             locationFrom.name == defaultFrom.name ||
             locationTo.name == defaultTo.name
@@ -176,7 +198,7 @@ private fun ScheduleSearchFields(
                 Toast.LENGTH_SHORT
             ).show()
 
-            return@ButtonPrimary
+            hasError = true
         } else if (locationFrom == locationTo) {
             Toast.makeText(
                 context,
@@ -184,9 +206,95 @@ private fun ScheduleSearchFields(
                 Toast.LENGTH_SHORT
             ).show()
 
+            hasError = true
+        }
+
+        if (hasError) {
+            selectedBusCategory = defaultBusCategory
+            selectedLocationFrom = defaultFrom
+            selectedLocationTo = defaultTo
+
             return@ButtonPrimary
         }
 
-        // TODO: Implement search
+        selectedBusCategory = busCategory
+        selectedLocationFrom = locationFrom
+        selectedLocationTo = locationTo
+    }
+
+    when (schedules) {
+        is Resource.Loading -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = MaterialTheme.spacing.large3,
+                        bottom = MaterialTheme.spacing.medium1
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .wrapContentSize()
+                )
+            }
+        }
+
+        is Resource.Success -> {
+            scheduleList =
+                (schedules as Resource.Success<List<Schedule>>).data?.let { thisSchedules ->
+                    thisSchedules.filter { schedule ->
+                        schedule.category == selectedBusCategory &&
+                                schedule.from == selectedLocationFrom &&
+                                schedule.to == selectedLocationTo
+                    }.also { filteredSchedules ->
+                        sortSchedulesByTime(
+                            filteredSchedules,
+                            is24HourFormat
+                        )
+                    }
+                } ?: emptyList()
+
+            if (scheduleList.isNotEmpty()) {
+                repeat(scheduleList.size) { index ->
+                    ScheduleListItem(
+                        index = index,
+                        schedule = scheduleList[index]
+                    )
+                }
+            } else if (selectedBusCategory.name != defaultBusCategory.name &&
+                selectedLocationFrom.name != defaultFrom.name &&
+                selectedLocationTo.name != defaultTo.name
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            top = MaterialTheme.spacing.large3,
+                            bottom = MaterialTheme.spacing.medium1
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "No schedules found!"
+                    )
+                }
+            }
+        }
+
+        is Resource.Error -> {
+            (schedules as Resource.Error<*>).message?.let {
+                Toast.makeText(
+                    context,
+                    it,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+        else -> {}
     }
 }
