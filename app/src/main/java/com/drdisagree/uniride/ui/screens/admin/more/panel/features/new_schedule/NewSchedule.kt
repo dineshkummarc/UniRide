@@ -175,13 +175,14 @@ private fun NewScheduleFields(
     val defaultTo = Place(
         name = "To"
     )
+    val defaultTime = "Time"
 
     val context = LocalContext.current
     var selectedBus by remember { mutableStateOf(defaultBusName) }
     var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
     var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
-    var departureTime by rememberSaveable { mutableStateOf("Time") }
+    var departureTime by rememberSaveable { mutableStateOf(defaultTime) }
     var departureTimeInMillis by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
     var showTimePicker by remember { mutableStateOf(false) }
     val is24HourFormat = DateFormat.is24HourFormat(context)
@@ -308,7 +309,7 @@ private fun NewScheduleFields(
             busCategory.name == defaultBusCategory.name ||
             locationFrom.name == defaultFrom.name ||
             locationTo.name == defaultTo.name ||
-            departureTime == "Time"
+            departureTime == defaultTime
         ) {
             Toast.makeText(
                 context,
@@ -354,7 +355,7 @@ private fun NewScheduleFields(
                     busCategory = defaultBusCategory
                     locationFrom = defaultFrom
                     locationTo = defaultTo
-                    departureTime = ""
+                    departureTime = defaultTime
 
                     Toast.makeText(
                         context,
