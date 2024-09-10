@@ -279,9 +279,7 @@ private fun DrawerBody(
     LazyColumn(modifier) {
         items(
             count = items.size,
-            key = {
-                items[it].id
-            }
+            key = { items[it].id }
         ) { item ->
             NavigationDrawerItem(
                 label = {

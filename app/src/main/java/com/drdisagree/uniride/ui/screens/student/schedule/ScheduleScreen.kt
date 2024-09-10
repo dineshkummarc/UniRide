@@ -136,7 +136,10 @@ private fun ScheduleContent(
                         .fillMaxSize()
                         .padding(paddingValues = paddingValues)
                 ) {
-                    items(scheduleList.size) { index ->
+                    items(
+                        count = scheduleList.size,
+                        key = { scheduleList[it].uuid }
+                    ) { index ->
                         ScheduleListItem(
                             index = index,
                             schedule = scheduleList[index]

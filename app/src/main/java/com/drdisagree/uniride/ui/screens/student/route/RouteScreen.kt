@@ -107,7 +107,10 @@ private fun RouteContent(
                             .fillMaxSize()
                             .padding(paddingValues = paddingValues)
                     ) {
-                        items(routeList.size) { route ->
+                        items(
+                            count = routeList.size,
+                            key = { route -> routeList[route].uuid }
+                        ) { route ->
                             RoutesListItem(
                                 index = routeList[route].timeStamp.toInt(),
                                 routeNo = routeList[route].routeNo,
