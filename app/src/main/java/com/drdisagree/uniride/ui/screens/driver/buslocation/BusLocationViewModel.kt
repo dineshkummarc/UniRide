@@ -110,18 +110,16 @@ class BusLocationViewModel @Inject constructor(
                 }
             }
 
-            if (busDocument == null) {
-                busDocument = firestore.collection(RUNNING_BUS_COLLECTION)
-                    .whereEqualTo("driver.id", userId)
-                    .get()
-                    .await()
+            busDocument = firestore.collection(RUNNING_BUS_COLLECTION)
+                .whereEqualTo("driver.id", userId)
+                .get()
+                .await()
 
-                if (busDocument == null) {
-                    _updateBusStatus.emit(
-                        Resource.Error("Bus not found for the current driver id $userId")
-                    )
-                    return@launch
-                }
+            if (busDocument == null) {
+                _updateBusStatus.emit(
+                    Resource.Error("Bus not found for the current driver id $userId")
+                )
+                return@launch
             }
 
             if (busDocument!!.isEmpty) {
@@ -182,19 +180,17 @@ class BusLocationViewModel @Inject constructor(
                 }
             }
 
-            if (busDocument == null) {
-                busDocument = firestore.collection(RUNNING_BUS_COLLECTION)
-                    .whereEqualTo("driver.id", userId)
-                    .get()
-                    .await()
+            busDocument = firestore.collection(RUNNING_BUS_COLLECTION)
+                .whereEqualTo("driver.id", userId)
+                .get()
+                .await()
 
-                if (busDocument == null) {
-                    _updateBusStatus.emit(
-                        Resource.Error("Bus not found for the current driver id $userId")
-                    )
-                    onResult(false)
-                    return@launch
-                }
+            if (busDocument == null) {
+                _updateBusStatus.emit(
+                    Resource.Error("Bus not found for the current driver id $userId")
+                )
+                onResult(false)
+                return@launch
             }
 
             if (busDocument!!.isEmpty) {
@@ -258,20 +254,18 @@ class BusLocationViewModel @Inject constructor(
             }
         }
 
-        if (busDocument == null) {
-            busDocument = firestore.collection(RUNNING_BUS_COLLECTION)
-                .whereEqualTo("driver.id", userId)
-                .get()
-                .await()
+        busDocument = firestore.collection(RUNNING_BUS_COLLECTION)
+            .whereEqualTo("driver.id", userId)
+            .get()
+            .await()
 
-            if (busDocument == null) {
-                viewModelScope.launch {
-                    _updateBusLocation.emit(
-                        Resource.Error("Bus not found for the current driver id $userId")
-                    )
-                }
-                return
+        if (busDocument == null) {
+            viewModelScope.launch {
+                _updateBusLocation.emit(
+                    Resource.Error("Bus not found for the current driver id $userId")
+                )
             }
+            return
         }
 
         if (isProcessingUpdates) return

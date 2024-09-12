@@ -23,14 +23,14 @@ class GeocodingViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (lat == null || lng == null) {
-                    errorMessage.postValue("N/A")
+                    errorMessage.postValue("Lat and Lng cannot be null")
                     return@launch
                 }
 
                 val name = repository.getLocationName(lat, lng)
 
                 if (name == null) {
-                    errorMessage.postValue("N/A")
+                    errorMessage.postValue("Location not found")
                     return@launch
                 }
 

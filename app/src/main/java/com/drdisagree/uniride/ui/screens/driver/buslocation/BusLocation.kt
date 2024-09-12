@@ -56,9 +56,9 @@ import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
-import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.toBitmapDescriptor
+import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -310,8 +310,8 @@ private fun MapView(
             if (marker != null) {
                 Marker(
                     state = MarkerState(position = marker!!),
-                    title = "Position",
-                    snippet = "You are currently at this location",
+                    title = "Me",
+                    snippet = "My position",
                     draggable = false,
                     icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
                 )

@@ -65,7 +65,7 @@ import com.drdisagree.uniride.ui.components.views.RequestNotificationPermission
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
-import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDestination
+import com.drdisagree.uniride.ui.screens.destinations.NearbyBusLocationScreenDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
@@ -312,8 +312,22 @@ private fun NearbyBuses(
         }
     }
 
-    if (!showLoadingDialog) {
-        if (sortedBuses.isEmpty()) {
+    if (sortedBuses.isEmpty()) {
+        if (showLoadingDialog) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = MaterialTheme.spacing.large3),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .wrapContentSize()
+                )
+            }
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -325,31 +339,19 @@ private fun NearbyBuses(
                     text = "No buses found nearby!"
                 )
             }
-        } else {
-            repeat(sortedBuses.size) { index ->
-                NearbyBusListItem(
-                    index = index,
-                    runningBus = sortedBuses[index],
-                    onClick = {
-                        navigator.navigate(
-                            CurrentLocationScreenDestination()
-                        )
-                    }
-                )
-            }
         }
     } else {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = MaterialTheme.spacing.large3),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .background(Color.White)
-                    .wrapContentSize()
+        repeat(sortedBuses.size) { index ->
+            NearbyBusListItem(
+                index = index,
+                runningBus = sortedBuses[index],
+                onClick = {
+                    navigator.navigate(
+                        NearbyBusLocationScreenDestination(
+                            busId = sortedBuses[index].uuid
+                        )
+                    )
+                }
             )
         }
     }
@@ -365,19 +367,12 @@ private fun NearbyBusListItem(
 ) {
     val context = LocalContext.current
     val locationName by geocodingViewModel.locationName.observeAsState("Retrieving...")
-    val errorMessage by geocodingViewModel.errorMessage.observeAsState(null)
 
     LaunchedEffect(runningBus.currentlyAt?.latitude, runningBus.currentlyAt?.longitude) {
         geocodingViewModel.fetchLocationName(
             runningBus.currentlyAt?.latitude,
             runningBus.currentlyAt?.longitude
         )
-    }
-
-    LaunchedEffect(errorMessage) {
-        if (errorMessage != null) {
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-        }
     }
 
     Column(
@@ -435,7 +430,7 @@ private fun NearbyBusListItem(
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                             append("Currently at: ")
                         }
-                        append(locationName)
+                        append(locationName ?: "Unknown")
                     },
                     color = Dark,
                     fontSize = 14.sp

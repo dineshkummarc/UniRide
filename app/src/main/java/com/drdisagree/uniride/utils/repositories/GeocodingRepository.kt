@@ -16,6 +16,8 @@ class GeocodingRepository @Inject constructor(
                 result.addressComponents.forEach { component ->
                     if (component.types.contains("sublocality")) {
                         return component.shortName
+                    } else if (component.types.contains("locality")) {
+                        return component.shortName
                     }
                 }
             }
