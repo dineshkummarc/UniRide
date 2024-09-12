@@ -135,21 +135,25 @@ private fun HandlePermissions(
         notificationPermissionGranted = isNotificationPermissionGranted(context)
     }
 
-    RequestLocationPermission(
-        onPermissionGranted = { locationPermissionGranted = true },
-        onPermissionDenied = { locationPermissionGranted = false }
-    ) {
-        Toast.makeText(
-            context,
-            "Please grant location permission",
-            Toast.LENGTH_SHORT
-        ).show()
+    if (!locationPermissionGranted) {
+        RequestLocationPermission(
+            onPermissionGranted = { locationPermissionGranted = true },
+            onPermissionDenied = { locationPermissionGranted = false }
+        ) {
+            Toast.makeText(
+                context,
+                "Please grant location permission",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
-    RequestNotificationPermission(
-        onPermissionGranted = { notificationPermissionGranted = true },
-        onPermissionDenied = { notificationPermissionGranted = false }
-    )
+    if (locationPermissionGranted && !notificationPermissionGranted) {
+        RequestNotificationPermission(
+            onPermissionGranted = { notificationPermissionGranted = true },
+            onPermissionDenied = { notificationPermissionGranted = false }
+        )
+    }
 
     if (locationPermissionGranted && !gpsRequested) {
         RequestGpsEnable(
