@@ -5,10 +5,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,16 +23,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.BusStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
+import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.drdisagree.uniride.utils.toBitmapDescriptorWithColor
 import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
@@ -70,6 +76,7 @@ fun NearbyBusLocationScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues = paddingValues),
+                    navigator = navigator,
                     busId = busId
                 )
             }
@@ -80,6 +87,7 @@ fun NearbyBusLocationScreen(
 @Composable
 private fun MapViewContent(
     modifier: Modifier,
+    navigator: DestinationsNavigator,
     busId: String,
     nearbyBusLocationViewModel: NearbyBusLocationViewModel = hiltViewModel(),
     locationViewModel: LocationSharingViewModel = hiltViewModel()
@@ -99,9 +107,9 @@ private fun MapViewContent(
     }
     val uiSettings = remember {
         MapUiSettings(
-            zoomControlsEnabled = true,
-            compassEnabled = true,
-            myLocationButtonEnabled = true
+            zoomControlsEnabled = false,
+            compassEnabled = false,
+            myLocationButtonEnabled = false
         )
     }
     val mapProperties by remember {
@@ -146,36 +154,56 @@ private fun MapViewContent(
             }
     }
 
-    GoogleMap(
-        modifier = modifier,
-        cameraPositionState = cameraPositionState,
-        uiSettings = uiSettings,
-        properties = mapProperties,
-        onMapLoaded = {
-            isMapLoaded = true
-        }
+    Box(
+        modifier = modifier
     ) {
-        if (marker != null) {
-            Marker(
-                state = MarkerState(position = marker),
-                title = runningBus?.bus?.name ?: "Unknown name",
-                snippet = runningBus?.category?.name ?: "Unknown category",
-                draggable = false,
-                icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus_colored)
-            )
-        }
-        if (myMarker != null) {
-            Marker(
-                state = MarkerState(position = myMarker!!),
-                title = "Me",
-                snippet = "My position",
-                draggable = false,
-                icon = toBitmapDescriptorWithColor(
-                    context,
-                    R.drawable.ic_pin_map_person,
-                    Color(0xFF1E90FF)
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            uiSettings = uiSettings,
+            properties = mapProperties,
+            onMapLoaded = {
+                isMapLoaded = true
+            }
+        ) {
+            if (marker != null) {
+                Marker(
+                    state = MarkerState(position = marker),
+                    title = runningBus?.bus?.name ?: "Unknown name",
+                    snippet = runningBus?.category?.name ?: "Unknown category",
+                    draggable = false,
+                    icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus_colored)
                 )
-            )
+            }
+            if (myMarker != null) {
+                Marker(
+                    state = MarkerState(position = myMarker!!),
+                    title = "Me",
+                    snippet = "My position",
+                    draggable = false,
+                    icon = toBitmapDescriptorWithColor(
+                        context,
+                        R.drawable.ic_pin_map_person,
+                        Color(0xFF1E90FF)
+                    )
+                )
+            }
+        }
+
+        if (runningBus?.status == BusStatus.STOPPED) {
+            ButtonPrimary(
+                modifier = Modifier
+                    .padding(
+                        start = MaterialTheme.spacing.medium1,
+                        end = MaterialTheme.spacing.medium1,
+                        top = MaterialTheme.spacing.medium1,
+                        bottom = MaterialTheme.spacing.extraLarge1
+                    )
+                    .align(Alignment.BottomCenter),
+                text = "Bus has reached its destination"
+            ) {
+                navigator.navigateUp()
+            }
         }
     }
 
