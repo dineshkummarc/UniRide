@@ -55,10 +55,6 @@ class LocationSharingViewModel @Inject constructor(
                 val locationCallback = object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult) {
                         trySendBlocking(locationResult.lastLocation)
-                        Log.d(
-                            LocationSharingViewModel::class.java.simpleName,
-                            "Location: ${locationResult.lastLocation}"
-                        )
                     }
                 }
 
