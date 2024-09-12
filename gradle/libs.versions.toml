@@ -33,6 +33,7 @@ playServicesMaps = "19.0.0"
 retrofit = "2.9.0"
 roomKtx = "2.6.1"
 textflow = "1.1.2"
+runtimeLivedataVersion = "1.7.1"
 
 [libraries]
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
@@ -78,6 +79,7 @@ play-services-location = { module = "com.google.android.gms:play-services-locati
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 textflow = { module = "io.github.oleksandrbalan:textflow", version.ref = "textflow" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedataVersion" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

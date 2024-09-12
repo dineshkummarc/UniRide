@@ -92,7 +92,9 @@ class DriverHomeViewModel @Inject constructor(
                                         .addOnSuccessListener { documentSnapshot ->
                                             val existingBus =
                                                 documentSnapshot.toObject(RunningBus::class.java)
-                                            val shouldAssignNewDriver = existingBus?.driver == null
+                                            val shouldAssignNewDriver =
+                                                existingBus?.driver == null ||
+                                                        existingBus.driver.id == driver?.id
 
                                             if (shouldAssignNewDriver) {
                                                 val runningBus = RunningBus(

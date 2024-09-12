@@ -9,6 +9,8 @@ import com.drdisagree.uniride.data.database.ScheduleDatabase
 import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
 import com.drdisagree.uniride.domain.repository.ScheduleRepository
 import com.drdisagree.uniride.domain.repository.ScheduleRepositoryImpl
+import com.drdisagree.uniride.services.GeocodingService
+import com.drdisagree.uniride.utils.repositories.GeocodingRepository
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.ktx.auth
@@ -20,6 +22,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -71,5 +75,20 @@ class AppModule {
         @ApplicationContext context: Context
     ): ViewModelProvider.Factory {
         return ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    }
+
+    @Provides
+    fun provideGeocodingService(): GeocodingService {
+        return Retrofit.Builder()
+            .baseUrl("https://maps.googleapis.com/maps/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(GeocodingService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeocodingRepository(geocodingService: GeocodingService): GeocodingRepository {
+        return GeocodingRepository(geocodingService)
     }
 }

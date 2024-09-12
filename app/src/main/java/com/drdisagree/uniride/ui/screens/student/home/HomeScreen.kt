@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,8 +27,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Notice
+import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
@@ -61,14 +66,17 @@ import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
 import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDestination
+import com.drdisagree.uniride.ui.screens.global.viewmodels.LocationSharingViewModel
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.DistanceUtils.distance
+import com.drdisagree.uniride.utils.Formatter.getFormattedTime
+import com.drdisagree.uniride.utils.viewmodels.GeocodingViewModel
 import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import eu.wewox.textflow.TextFlow
-import kotlin.random.Random
 
 @HomeNavGraph(start = true)
 @Destination(style = FadeInOutTransition::class)
@@ -248,7 +256,9 @@ private fun NoticeBoard(
 
 @Composable
 private fun NearbyBuses(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    nearbyBusesViewModel: NearbyBusesViewModel = hiltViewModel(),
+    locationViewModel: LocationSharingViewModel = hiltViewModel()
 ) {
     Text(
         text = "Nearby Buses",
@@ -260,20 +270,88 @@ private fun NearbyBuses(
             bottom = MaterialTheme.spacing.medium1
         )
     )
-    repeat(10) { index ->
-        val routeNo = remember {
-            "${listOf("Surjomukhi", "Dolpin", "Rojonigondha").random()}-${Random.nextInt(1, 10)}"
+
+    val context = LocalContext.current
+    val buses by nearbyBusesViewModel.runningBuses.observeAsState(emptyList())
+    var showLoadingDialog by rememberSaveable { mutableStateOf(true) }
+    val location by locationViewModel.locationFlow.collectAsState()
+
+    val sortedBuses = location?.let { loc ->
+        buses.sortedBy { bus ->
+            val busLat = bus.currentlyAt?.latitude ?: 0.0
+            val busLng = bus.currentlyAt?.longitude ?: 0.0
+            distance(loc.latitude, loc.longitude, busLat, busLng)
         }
-        NearbyBusListItem(
-            index = index,
-            routeNo = routeNo,
-            routeName = "DSC to Dhanmondi",
-            onClick = {
-                navigator.navigate(
-                    CurrentLocationScreenDestination()
+    } ?: buses
+
+    LaunchedEffect(nearbyBusesViewModel.state) {
+        nearbyBusesViewModel.state.collect { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    showLoadingDialog = true
+                }
+
+                is Resource.Success -> {
+                    showLoadingDialog = false
+                }
+
+                is Resource.Error -> {
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        result.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {
+                    showLoadingDialog = false
+                }
+            }
+        }
+    }
+
+    if (!showLoadingDialog) {
+        if (sortedBuses.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = MaterialTheme.spacing.large3),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "No buses found nearby!"
                 )
             }
-        )
+        } else {
+            repeat(sortedBuses.size) { index ->
+                NearbyBusListItem(
+                    index = index,
+                    runningBus = sortedBuses[index],
+                    onClick = {
+                        navigator.navigate(
+                            CurrentLocationScreenDestination()
+                        )
+                    }
+                )
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = MaterialTheme.spacing.large3),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .background(Color.White)
+                    .wrapContentSize()
+            )
+        }
     }
 }
 
@@ -281,10 +359,27 @@ private fun NearbyBuses(
 private fun NearbyBusListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    routeNo: String,
-    routeName: String,
-    onClick: (() -> Unit)? = null
+    runningBus: RunningBus,
+    onClick: (() -> Unit)? = null,
+    geocodingViewModel: GeocodingViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val locationName by geocodingViewModel.locationName.observeAsState("Retrieving...")
+    val errorMessage by geocodingViewModel.errorMessage.observeAsState(null)
+
+    LaunchedEffect(runningBus.currentlyAt?.latitude, runningBus.currentlyAt?.longitude) {
+        geocodingViewModel.fetchLocationName(
+            runningBus.currentlyAt?.latitude,
+            runningBus.currentlyAt?.longitude
+        )
+    }
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -324,14 +419,14 @@ private fun NearbyBusListItem(
                 verticalArrangement = Arrangement.Top,
             ) {
                 Text(
-                    text = routeNo,
+                    text = runningBus.bus.name,
                     fontSize = 16.sp,
                     style = TextStyle(
                         fontWeight = FontWeight.Bold
                     )
                 )
                 Text(
-                    text = "Dhanmondi <> DSC",
+                    text = "${runningBus.departedFrom!!.name} <> ${runningBus.departedTo!!.name}",
                     color = Dark,
                     fontSize = 14.sp
                 )
@@ -340,7 +435,7 @@ private fun NearbyBusListItem(
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                             append("Currently at: ")
                         }
-                        append(listOf("Dhanmondi", "Mirpur", "Birulia").random())
+                        append(locationName)
                     },
                     color = Dark,
                     fontSize = 14.sp
@@ -359,7 +454,7 @@ private fun NearbyBusListItem(
                 )
 
                 Text(
-                    text = listOf("07:05 AM", "07:20 AM", "07:35 AM").random(),
+                    text = getFormattedTime(context, runningBus.departedAt),
                     color = Dark,
                     fontSize = 14.sp
                 )
