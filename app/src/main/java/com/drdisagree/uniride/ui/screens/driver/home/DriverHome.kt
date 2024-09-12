@@ -1,6 +1,5 @@
 package com.drdisagree.uniride.ui.screens.driver.home
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -43,16 +42,17 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
 import com.drdisagree.uniride.data.models.BusCategory
 import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
-import com.drdisagree.uniride.services.LocationService
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ContainerNavDrawer
+import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.RequestNotificationPermission
@@ -181,6 +181,7 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.small2)
             )
 
+            @Suppress("DEPRECATION")
             ClickableText(
                 text = annotatedString,
                 onClick = { offset ->
@@ -205,7 +206,9 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
 @Composable
 private fun ShareLocationFields(
     navigator: DestinationsNavigator,
-    listsViewModel: ListsViewModel = hiltViewModel()
+    listsViewModel: ListsViewModel = hiltViewModel(),
+    driverViewModel: GetDriverViewModel = hiltViewModel(),
+    driverHomeViewModel: DriverHomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val busList by listsViewModel.busModels.collectAsState()
@@ -229,6 +232,18 @@ private fun ShareLocationFields(
     var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
     var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
+
+    LaunchedEffect(driverViewModel.getDriver) {
+        driverViewModel.getDriver.collect { resource ->
+            if (resource is Resource.Success) {
+                driverHomeViewModel.checkIfAnyBusAssignedToDriver(resource.data) { isAssigned ->
+                    if (isAssigned) {
+                        navigator.navigate(BusLocationDestination)
+                    }
+                }
+            }
+        }
+    }
 
     Text(
         text = "Let's start driving",
@@ -369,12 +384,50 @@ private fun ShareLocationFields(
             return@ButtonPrimary
         }
 
-        Intent(context.applicationContext, LocationService::class.java).apply {
-            action = LocationService.ACTION_START
-            context.startService(this)
-        }
+        driverHomeViewModel.startDeparture(
+            driverViewModel = driverViewModel,
+            listsViewModel = listsViewModel,
+            busName = selectedBus.name,
+            fromPlaceName = locationFrom.name,
+            toPlaceName = locationTo.name,
+            categoryName = busCategory.name
+        )
+    }
 
-        navigator.navigate(BusLocationDestination)
+    var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(driverHomeViewModel.updateBusStatus) {
+        driverHomeViewModel.updateBusStatus.collect { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    showLoadingDialog = true
+                }
+
+                is Resource.Success -> {
+                    showLoadingDialog = false
+
+                    navigator.navigate(BusLocationDestination)
+                }
+
+                is Resource.Error -> {
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        result.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {
+                    showLoadingDialog = false
+                }
+            }
+        }
+    }
+
+    if (showLoadingDialog) {
+        LoadingDialog()
     }
 }
 

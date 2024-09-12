@@ -6,5 +6,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 enum class BusStatus : Parcelable {
     STANDBY,
-    RUNNING
+    RUNNING,
+    STOPPED
 }

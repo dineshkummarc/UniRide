@@ -8,8 +8,8 @@ import com.drdisagree.uniride.data.utils.Constant
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,8 +19,8 @@ class GetDriverViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
-    private val _getDriver = MutableSharedFlow<Resource<Driver>>()
-    val getDriver = _getDriver.asSharedFlow()
+    private val _getDriver = MutableStateFlow<Resource<Driver>>(Resource.Loading())
+    val getDriver: StateFlow<Resource<Driver>> = _getDriver
 
     init {
         firebaseAuth.currentUser?.let {

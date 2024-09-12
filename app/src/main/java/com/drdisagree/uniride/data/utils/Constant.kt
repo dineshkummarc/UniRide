@@ -12,6 +12,7 @@ object Constant {
     const val DRIVER_COLLECTION = "driver_list"
     const val WHICH_USER_COLLECTION = "which_user_list"
     const val BUS_COLLECTION = "bus_list"
+    const val RUNNING_BUS_COLLECTION = "running_bus_list"
     const val BUS_CATEGORY_COLLECTION = "bus_category_list"
     const val ROUTE_COLLECTION = "route_list"
     const val SCHEDULE_COLLECTION = "schedule_list"

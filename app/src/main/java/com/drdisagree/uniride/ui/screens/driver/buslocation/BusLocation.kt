@@ -1,6 +1,7 @@
 package com.drdisagree.uniride.ui.screens.driver.buslocation
 
 import android.content.Context.SENSOR_SERVICE
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.Sensor.TYPE_ACCELEROMETER
 import android.hardware.Sensor.TYPE_MAGNETIC_FIELD
@@ -33,7 +34,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -44,13 +44,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.BusStatus
+import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.services.LocationService
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.DisableBackHandler
 import com.drdisagree.uniride.ui.components.views.KeepScreenOn
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
-import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.screens.global.viewmodels.LocationSharingViewModel
@@ -70,7 +73,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @RootNavGraph
@@ -79,23 +81,22 @@ import kotlin.math.roundToInt
 fun BusLocation(
     navigator: DestinationsNavigator
 ) {
-    Container(shadow = false) {
-        Scaffold(
-            topBar = {
-                TopAppBarWithBackButton(
-                    title = "Sharing Location",
-                    onBackClick = {
-                        navigator.navigateUp()
-                    }
-                )
-            },
-            content = { paddingValues ->
-                MapView(
-                    navigator = navigator,
-                    paddingValues = paddingValues
-                )
-            }
-        )
+    DisableBackHandler(isDisabled = true) {
+        Container(shadow = false) {
+            Scaffold(
+                topBar = {
+                    TopAppBarNoButton(
+                        title = "Sharing Location"
+                    )
+                },
+                content = { paddingValues ->
+                    MapView(
+                        navigator = navigator,
+                        paddingValues = paddingValues
+                    )
+                }
+            )
+        }
     }
 }
 
@@ -103,12 +104,21 @@ fun BusLocation(
 private fun MapView(
     navigator: DestinationsNavigator,
     paddingValues: PaddingValues,
-    locationViewModel: LocationSharingViewModel = hiltViewModel()
+    locationViewModel: LocationSharingViewModel = hiltViewModel(),
+    busLocationViewModel: BusLocationViewModel = hiltViewModel()
 ) {
     KeepScreenOn()
     CheckGpsPeriodically()
 
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        Intent(context.applicationContext, LocationService::class.java).apply {
+            action = LocationService.ACTION_START
+            context.startService(this)
+        }
+    }
+
     var isMapLoaded by remember { mutableStateOf(false) }
     var marker: LatLng? by rememberSaveable { mutableStateOf(null) }
     val location by locationViewModel.locationFlow.collectAsState()
@@ -247,6 +257,12 @@ private fun MapView(
         }
     }
 
+    LaunchedEffect(key1 = marker) {
+        marker?.let {
+            busLocationViewModel.updateBusLocation(location = it)
+        }
+    }
+
     LaunchedEffect(key1 = marker, key2 = degrees) {
         marker?.let {
             val cameraPosition = CameraPosition.Builder()
@@ -302,8 +318,8 @@ private fun MapView(
             }
         }
 
-        val coroutineScope = rememberCoroutineScope()
-        var status by rememberSaveable { mutableStateOf(BusStatus.STANDBY) }
+        val runningBus by busLocationViewModel.runningBus.collectAsState()
+        val status = runningBus?.status ?: BusStatus.STANDBY
         var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
         ButtonPrimary(
@@ -317,25 +333,60 @@ private fun MapView(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             text = when (status) {
+                BusStatus.STANDBY -> "Update Status to Driving"
+                BusStatus.RUNNING -> "Stop Sharing Location"
+                BusStatus.STOPPED -> "Start Sharing Location"
+            }
+        ) {
+            when (status) {
                 BusStatus.STANDBY -> {
-                    "Update Status to Driving"
+                    busLocationViewModel.updateBusStatus(BusStatus.RUNNING)
                 }
 
                 BusStatus.RUNNING -> {
-                    "Stop Sharing Location"
+                    busLocationViewModel.stopBus { success ->
+                        if (success) {
+                            Intent(context.applicationContext, LocationService::class.java).apply {
+                                action = LocationService.ACTION_STOP
+                                context.startService(this)
+                            }
+
+                            navigator.navigateUp()
+                        }
+                    }
+                }
+
+                BusStatus.STOPPED -> {
+                    busLocationViewModel.updateBusStatus(BusStatus.STANDBY)
                 }
             }
-        ) {
-            if (status == BusStatus.STANDBY) {
-                coroutineScope.launch {
-                    showLoadingDialog = true
-                    delay(2000)
-                    showLoadingDialog = false
+        }
 
-                    status = BusStatus.RUNNING
+        LaunchedEffect(busLocationViewModel.updateBusStatus) {
+            busLocationViewModel.updateBusStatus.collect { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        showLoadingDialog = true
+                    }
+
+                    is Resource.Success -> {
+                        showLoadingDialog = false
+                    }
+
+                    is Resource.Error -> {
+                        showLoadingDialog = false
+
+                        Toast.makeText(
+                            context,
+                            result.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    else -> {
+                        showLoadingDialog = false
+                    }
                 }
-            } else {
-                navigator.navigateUp()
             }
         }
 
@@ -356,6 +407,56 @@ private fun MapView(
                     .background(Color.White)
                     .wrapContentSize()
             )
+        }
+    }
+
+    var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(busLocationViewModel.updateBusStatus) {
+        busLocationViewModel.updateBusStatus.collect { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    showLoadingDialog = true
+                }
+
+                is Resource.Success -> {
+                    showLoadingDialog = false
+                }
+
+                is Resource.Error -> {
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        result.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {
+                    showLoadingDialog = false
+                }
+            }
+        }
+    }
+
+    if (showLoadingDialog) {
+        LoadingDialog()
+    }
+
+    LaunchedEffect(busLocationViewModel.updateBusLocation) {
+        busLocationViewModel.updateBusLocation.collect { result ->
+            when (result) {
+                is Resource.Error -> {
+                    Toast.makeText(
+                        context,
+                        result.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {}
+            }
         }
     }
 }

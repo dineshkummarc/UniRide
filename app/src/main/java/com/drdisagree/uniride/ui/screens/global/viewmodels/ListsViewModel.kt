@@ -6,9 +6,11 @@ import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
 import com.drdisagree.uniride.data.models.BusCategory
 import com.drdisagree.uniride.data.models.Place
+import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.BUS_CATEGORY_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.BUS_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.PLACE_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,6 +31,9 @@ class ListsViewModel @Inject constructor(
     private val _busModels = MutableStateFlow<List<Bus>>(emptyList())
     val busModels: StateFlow<List<Bus>> = _busModels
 
+    private val _runningBusModels = MutableStateFlow<List<RunningBus>>(emptyList())
+    val runningBusModels: StateFlow<List<RunningBus>> = _runningBusModels
+
     private val _busCategoryModels = MutableStateFlow<List<BusCategory>>(emptyList())
     val busCategoryModels: StateFlow<List<BusCategory>> = _busCategoryModels
 
@@ -37,6 +42,7 @@ class ListsViewModel @Inject constructor(
 
     init {
         getBusList()
+        getRunningBusList()
         getBusCategoryList()
         getPlaceList()
     }
@@ -50,6 +56,23 @@ class ListsViewModel @Inject constructor(
                 }.sortedWith(compareBy { it.name })
 
                 _busModels.value = models
+            }
+            .addOnFailureListener {
+                viewModelScope.launch {
+                    _state.emit(Resource.Error(it.message.toString()))
+                }
+            }
+    }
+
+    private fun getRunningBusList() {
+        firestore.collection(RUNNING_BUS_COLLECTION)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val models = querySnapshot.documents.mapNotNull { doc ->
+                    doc.toObject(RunningBus::class.java)?.copy(uuid = doc.id)
+                }.sortedWith(compareBy { it.bus.name })
+
+                _runningBusModels.value = models
             }
             .addOnFailureListener {
                 viewModelScope.launch {
