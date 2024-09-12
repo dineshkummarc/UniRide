@@ -54,7 +54,7 @@ import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
-import com.drdisagree.uniride.ui.screens.global.viewmodels.GetDriverViewModel
+import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray

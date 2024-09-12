@@ -56,7 +56,7 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.screens.NavGraphs
-import com.drdisagree.uniride.ui.screens.global.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.AdminPanelDestination
 import com.drdisagree.uniride.ui.screens.destinations.MyLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination

@@ -54,8 +54,8 @@ import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TimePickerDialog
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.ui.screens.global.viewmodels.AccountStatusViewModel
-import com.drdisagree.uniride.ui.screens.global.viewmodels.ListsViewModel
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination

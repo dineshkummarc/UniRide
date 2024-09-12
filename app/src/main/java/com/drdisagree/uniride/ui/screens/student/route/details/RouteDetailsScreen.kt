@@ -60,7 +60,7 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
-import com.drdisagree.uniride.ui.screens.global.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.EditRouteDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray

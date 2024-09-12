@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.activities.MainActivity
-import com.drdisagree.uniride.ui.screens.global.viewmodels.LocationSharingViewModel
+import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

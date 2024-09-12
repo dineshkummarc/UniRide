@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.global.viewmodels
+package com.drdisagree.uniride.utils.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -48,7 +48,7 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
-import com.drdisagree.uniride.ui.screens.global.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.RouteDetailsScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.RouteScreenDestination
 import com.drdisagree.uniride.ui.theme.spacing

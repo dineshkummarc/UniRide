@@ -56,7 +56,7 @@ import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
-import com.drdisagree.uniride.ui.screens.global.viewmodels.LocationSharingViewModel
+import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.google.android.gms.maps.CameraUpdateFactory

@@ -39,7 +39,7 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.ui.screens.global.viewmodels.ListsViewModel
+import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleListItem
 import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleViewModel
 import com.drdisagree.uniride.ui.screens.student.schedule.sortSchedulesByTime

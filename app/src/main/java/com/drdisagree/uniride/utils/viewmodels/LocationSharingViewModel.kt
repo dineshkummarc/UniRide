@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.global.viewmodels
+package com.drdisagree.uniride.utils.viewmodels
 
 import android.annotation.SuppressLint
 import android.app.Application

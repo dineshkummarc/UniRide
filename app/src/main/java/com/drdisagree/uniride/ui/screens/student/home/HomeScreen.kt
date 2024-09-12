@@ -66,7 +66,6 @@ import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
 import com.drdisagree.uniride.ui.screens.destinations.CurrentLocationScreenDestination
-import com.drdisagree.uniride.ui.screens.global.viewmodels.LocationSharingViewModel
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
@@ -74,6 +73,7 @@ import com.drdisagree.uniride.utils.DistanceUtils.distance
 import com.drdisagree.uniride.utils.Formatter.getFormattedTime
 import com.drdisagree.uniride.utils.viewmodels.GeocodingViewModel
 import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
+import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import eu.wewox.textflow.TextFlow
