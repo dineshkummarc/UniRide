@@ -336,7 +336,8 @@ private fun NearbyBuses(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "No buses found nearby!"
+                    text = "No bus found nearby!",
+                    textAlign = TextAlign.Center
                 )
             }
         }
