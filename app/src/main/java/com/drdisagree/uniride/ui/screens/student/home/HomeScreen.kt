@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.student.home
 
+import android.location.Location
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -77,6 +78,7 @@ import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import eu.wewox.textflow.TextFlow
+import java.util.Locale
 
 @HomeNavGraph(start = true)
 @Destination(style = FadeInOutTransition::class)
@@ -345,6 +347,7 @@ private fun NearbyBuses(
         repeat(sortedBuses.size) { index ->
             NearbyBusListItem(
                 index = index,
+                myLocation = location,
                 runningBus = sortedBuses[index],
                 onClick = {
                     navigator.navigate(
@@ -362,6 +365,7 @@ private fun NearbyBuses(
 private fun NearbyBusListItem(
     modifier: Modifier = Modifier,
     index: Int,
+    myLocation: Location?,
     runningBus: RunningBus,
     onClick: (() -> Unit)? = null,
     geocodingViewModel: GeocodingViewModel = hiltViewModel()
@@ -429,9 +433,27 @@ private fun NearbyBusListItem(
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
-                            append("Currently at: ")
+                            append("Location: ")
                         }
-                        append(locationName ?: "Unknown")
+                        append(
+                            if (locationName != null) {
+                                if (myLocation != null && runningBus.currentlyAt != null) {
+                                    String.format(
+                                        Locale.getDefault(),
+                                        "%s (%.1fkm)", locationName, distance(
+                                            myLocation.latitude,
+                                            myLocation.longitude,
+                                            runningBus.currentlyAt.latitude,
+                                            runningBus.currentlyAt.longitude
+                                        )
+                                    )
+                                } else {
+                                    locationName
+                                }
+                            } else {
+                                "Unknown"
+                            }
+                        )
                     },
                     color = Dark,
                     fontSize = 14.sp
