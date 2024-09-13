@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -53,10 +54,9 @@ import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
-import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.screens.NavGraphs
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.AdminPanelDestination
 import com.drdisagree.uniride.ui.screens.destinations.MyLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
@@ -64,8 +64,8 @@ import com.drdisagree.uniride.ui.screens.student.account.StudentSignInViewModel
 import com.drdisagree.uniride.ui.screens.student.main.getRootNavigator
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
-import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.ramcosta.composedestinations.annotation.Destination
@@ -191,7 +191,7 @@ private fun ProfileSection(
         Text(
             text = student.userName ?: "Unknown",
             fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
         )
         Text(
@@ -208,19 +208,11 @@ private fun QuickActionsSection(
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
-    Text(
-        text = "Quick Actions",
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
+    Row(
         modifier = Modifier.padding(
-            start = MaterialTheme.spacing.medium1,
             top = MaterialTheme.spacing.medium1,
             bottom = MaterialTheme.spacing.medium1
         )
-    )
-
-    Row(
-        modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium1)
     ) {
         QuickActionsItem(
             icon = R.drawable.ic_map,
@@ -229,6 +221,8 @@ private fun QuickActionsSection(
             modifier = Modifier
                 .padding(start = MaterialTheme.spacing.medium1)
                 .weight(1f),
+            backgroundColor = Color(0xFFFFEDDE),
+            iconBackgroundColor = Color(0xFFFFD8BA),
             onClick = {
                 navigator.navigate(MyLocationDestination)
             }
@@ -242,7 +236,9 @@ private fun QuickActionsSection(
             subtitle = R.string.emergency_summary,
             modifier = Modifier
                 .padding(end = MaterialTheme.spacing.medium1)
-                .weight(1f)
+                .weight(1f),
+            backgroundColor = Color(0xFFEBEBFF),
+            iconBackgroundColor = Color(0xFFD7D5FC),
         )
     }
 
@@ -255,7 +251,9 @@ private fun QuickActionsSection(
             subtitle = R.string.chat_box_summary,
             modifier = Modifier
                 .padding(start = MaterialTheme.spacing.medium1)
-                .weight(1f)
+                .weight(1f),
+            backgroundColor = Color(0xFFDBE8E6),
+            iconBackgroundColor = Color(0xFFBAD9D6),
         )
 
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium1))
@@ -266,7 +264,9 @@ private fun QuickActionsSection(
             subtitle = R.string.report_summary,
             modifier = Modifier
                 .padding(end = MaterialTheme.spacing.medium1)
-                .weight(1f)
+                .weight(1f),
+            backgroundColor = Color(0xFFEEE6E2),
+            iconBackgroundColor = Color(0xFFDECBC3),
         )
     }
 
@@ -295,6 +295,8 @@ private fun QuickActionsSection(
                 modifier = Modifier
                     .padding(start = MaterialTheme.spacing.medium1)
                     .weight(1f),
+                backgroundColor = Color(0xFFFFD6D6),
+                iconBackgroundColor = Color(0xFFFABABA),
                 onClick = {
                     navigator.navigate(AdminPanelDestination)
                 }
@@ -309,7 +311,9 @@ private fun QuickActionsSection(
                 modifier = Modifier
                     .padding(end = MaterialTheme.spacing.medium1)
                     .weight(1f)
-                    .alpha(0f) // Hide the item, reveal in future when new item needed
+                    .alpha(0f), // TODO: Reveal in future when new item needed
+                backgroundColor = Color(0xFFFFDDC1),
+                iconBackgroundColor = Color(0xFFFFCEA8),
             )
         }
     }
@@ -321,13 +325,15 @@ private fun QuickActionsItem(
     @DrawableRes icon: Int,
     @StringRes title: Int,
     @StringRes subtitle: Int,
+    backgroundColor: Color,
+    iconBackgroundColor: Color,
     onClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier
-            .heightIn(min = 80.dp)
-            .clip(MaterialTheme.shapes.medium)
-            .background(LightGray)
+            .heightIn(min = 160.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(backgroundColor)
             .clickable {
                 onClick?.invoke()
             }
@@ -337,19 +343,22 @@ private fun QuickActionsItem(
             painter = painterResource(id = icon),
             contentDescription = null,
             modifier = Modifier
-                .padding(bottom = MaterialTheme.spacing.medium1)
-                .size(26.dp),
+                .padding(bottom = MaterialTheme.spacing.large2)
+                .clip(CircleShape)
+                .background(iconBackgroundColor)
+                .size(46.dp)
+                .padding(12.dp),
             tint = Color.Black
         )
         Text(
             text = stringResource(id = title),
             fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Medium
         )
         Text(
             text = stringResource(id = subtitle),
-            fontSize = 14.sp,
-            lineHeight = 18.sp,
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
             color = Dark
         )
     }

@@ -14,8 +14,9 @@ val Black = Color(0xFF000000)
 val SemiBlack = Color(0xFF2A2A2A)
 val Gray = Color(0xFFE6E7EA)
 val DarkGray = Color(0xFF8F8F8F)
-val LightGray = Color(0xFFF5F5F5)
-val Blue = Color(0xFF1167E4)
+val LightGray = Color(0xFFF6F5FA)
+val Blue = Color(0xFF4E7DDB)
+val DarkBlue = Color(0xFF1167E4)
 
 val Dark = Color(0xFF4A4D4B)
 

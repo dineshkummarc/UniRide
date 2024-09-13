@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -68,9 +69,7 @@ import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGrante
 import com.drdisagree.uniride.ui.screens.destinations.BusLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.home.navdrawer.NavigationDrawer
-import com.drdisagree.uniride.ui.theme.Blue
-import com.drdisagree.uniride.ui.theme.Dark
-import com.drdisagree.uniride.ui.theme.LightGray
+import com.drdisagree.uniride.ui.theme.DarkBlue
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.SystemUtils.isInternetAvailable
 import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
@@ -157,22 +156,28 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
                 top = MaterialTheme.spacing.medium1
             )
             .clip(MaterialTheme.shapes.medium)
-            .background(LightGray)
-            .padding(MaterialTheme.spacing.medium1)
+            .background(Color(0xFFEED2D1))
+            .padding(MaterialTheme.spacing.medium2)
     ) {
         val incompleteProfileWarn =
-            "Some information on your account appears to be missing or incomplete. Please update your information to avoid account suspension or penalty. "
-        val editProfile = "» Edit Profile «"
+            "আপনার অ্যাকাউন্টে কিছু তথ্য অনুপস্থিত বা অসম্পূর্ণ বলে মনে হচ্ছে। অ্যাকাউন্ট সাসপেনশন বা জরিমানা এড়াতে অনুগ্রহ করে আপনার তথ্য আপডেট করুন।\n"
+        val editProfile = "» প্রোফাইল সম্পাদনা করুন «"
 
         val annotatedString = buildAnnotatedString {
-            withStyle(SpanStyle(color = Dark, fontSize = 14.sp)) {
+            withStyle(SpanStyle(color = Color(0xFF74423D), fontSize = 15.sp)) {
                 pushStringAnnotation(
                     tag = incompleteProfileWarn,
                     annotation = incompleteProfileWarn
                 )
                 append(incompleteProfileWarn)
             }
-            withStyle(SpanStyle(color = Blue, fontSize = 14.sp, fontWeight = FontWeight.Bold)) {
+            withStyle(
+                SpanStyle(
+                    color = DarkBlue,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            ) {
                 pushStringAnnotation(tag = editProfile, annotation = editProfile)
                 append(editProfile)
             }
@@ -180,10 +185,11 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
 
         Column {
             Text(
-                text = "Your profile is incomplete.",
+                text = "আপনার প্রোফাইল অসম্পূর্ণ",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = MaterialTheme.spacing.small2)
+                color = Color(0xFFBA5050),
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraSmall2)
             )
 
             @Suppress("DEPRECATION")
@@ -259,7 +265,7 @@ private fun ShareLocationFields(
     Text(
         text = "Let's start driving",
         fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
     )
 

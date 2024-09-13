@@ -51,11 +51,11 @@ import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
-import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.screens.destinations.DocumentVerificationScreenDestination
-import com.drdisagree.uniride.ui.theme.Blue
+import com.drdisagree.uniride.ui.theme.DarkBlue
 import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
@@ -98,9 +98,7 @@ private fun HeaderSection(
         horizontalArrangement = Arrangement.Center
     ) {
         Image(
-            modifier = Modifier
-                .padding(top = MaterialTheme.spacing.extraSmall1)
-                .size(width = 24.dp, height = 24.dp),
+            modifier = Modifier.size(width = 28.dp, height = 28.dp),
             painter = painterResource(id = R.drawable.ic_launcher_icon),
             contentDescription = null,
             colorFilter = ColorFilter.tint(Color.Black)
@@ -133,7 +131,7 @@ private fun HeaderSection(
             pushStringAnnotation(tag = haveAccount, annotation = haveAccount)
             append(haveAccount)
         }
-        withStyle(SpanStyle(color = Blue, fontSize = 18.sp, fontWeight = FontWeight.Bold)) {
+        withStyle(SpanStyle(color = DarkBlue, fontSize = 18.sp, fontWeight = FontWeight.Medium)) {
             pushStringAnnotation(tag = login, annotation = login)
             append(login)
         }

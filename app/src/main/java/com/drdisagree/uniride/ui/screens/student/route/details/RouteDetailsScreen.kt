@@ -329,7 +329,7 @@ private fun DetailsSectionContent(
 
         Text(
             text = title,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Medium,
             fontSize = 15.sp
         )
     }

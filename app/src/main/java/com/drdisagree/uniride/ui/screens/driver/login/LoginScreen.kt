@@ -55,16 +55,16 @@ import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
+import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
-import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.DriverHomeDestination
 import com.drdisagree.uniride.ui.screens.destinations.RegisterScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.login.utils.LoginValidation
 import com.drdisagree.uniride.ui.screens.driver.login.utils.validateEmail
-import com.drdisagree.uniride.ui.theme.Blue
+import com.drdisagree.uniride.ui.theme.DarkBlue
 import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
@@ -113,9 +113,7 @@ private fun HeaderSection(
             )
     ) {
         Image(
-            modifier = Modifier
-                .padding(top = MaterialTheme.spacing.extraSmall1)
-                .size(width = 24.dp, height = 24.dp),
+            modifier = Modifier.size(width = 28.dp, height = 28.dp),
             painter = painterResource(id = R.drawable.ic_launcher_icon),
             contentDescription = null,
             colorFilter = ColorFilter.tint(Color.Black)
@@ -149,7 +147,7 @@ private fun HeaderSection(
             pushStringAnnotation(tag = noAccount, annotation = noAccount)
             append(noAccount)
         }
-        withStyle(SpanStyle(color = Blue, fontSize = 18.sp, fontWeight = FontWeight.Bold)) {
+        withStyle(SpanStyle(color = DarkBlue, fontSize = 18.sp, fontWeight = FontWeight.Medium)) {
             pushStringAnnotation(tag = register, annotation = register)
             append(register)
         }
@@ -381,7 +379,7 @@ private fun ForgotPasswordSection(
             pushStringAnnotation(tag = forgotPass, annotation = forgotPass)
             append(forgotPass)
         }
-        withStyle(SpanStyle(color = Blue, fontSize = 14.sp, fontWeight = FontWeight.Bold)) {
+        withStyle(SpanStyle(color = DarkBlue, fontSize = 14.sp, fontWeight = FontWeight.Medium)) {
             pushStringAnnotation(tag = recover, annotation = recover)
             append(recover)
         }
@@ -429,7 +427,7 @@ private fun ForgotPasswordSection(
                 Text(
                     text = "Reset Password",
                     fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
 
                 Text(

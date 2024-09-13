@@ -62,7 +62,7 @@ fun LoadingDialog(
             Text(
                 text = text,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(top = MaterialTheme.spacing.small2)

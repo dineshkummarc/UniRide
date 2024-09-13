@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
-import com.drdisagree.uniride.ui.theme.Blue
+import com.drdisagree.uniride.ui.theme.DarkBlue
 
 const val DEFAULT_MINIMUM_TEXT_LINE = 3
 
@@ -86,7 +86,7 @@ fun ExpandableText(
                         append(text)
                         withStyle(
                             style = showLessStyle.copy(
-                                color = Blue
+                                color = DarkBlue
                             )
                         ) { append(showLessText) }
                     } else {
@@ -96,7 +96,7 @@ fun ExpandableText(
                         append(adjustText)
                         withStyle(
                             style = showMoreStyle.copy(
-                                color = Blue
+                                color = DarkBlue
                             )
                         ) { append(showMoreText) }
                     }

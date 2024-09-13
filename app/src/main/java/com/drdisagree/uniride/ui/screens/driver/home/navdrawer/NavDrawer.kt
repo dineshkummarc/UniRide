@@ -55,7 +55,7 @@ import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestinati
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
-import com.drdisagree.uniride.ui.theme.Blue
+import com.drdisagree.uniride.ui.theme.DarkBlue
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.Gray15
@@ -233,7 +233,7 @@ private fun DrawerHeader(
             IconButton(
                 modifier = Modifier
                     .clip(RoundedCornerShape(100))
-                    .background(Blue)
+                    .background(DarkBlue)
                     .size(30.dp),
                 onClick = {
                     coroutineScope.launch {
@@ -258,7 +258,7 @@ private fun DrawerHeader(
         Text(
             text = driver?.name ?: "Unknown",
             fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small3)
         )
         Text(

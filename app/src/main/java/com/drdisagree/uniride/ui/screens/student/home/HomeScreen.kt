@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -67,6 +68,7 @@ import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
 import com.drdisagree.uniride.ui.screens.destinations.NearbyBusLocationScreenDestination
+import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
@@ -125,97 +127,36 @@ private fun HomeContent(
 }
 
 @Composable
-private fun HandlePermissions(
-    gpsStateManager: GpsStateManager = hiltViewModel()
-) {
-    val context = LocalContext.current
-    var locationPermissionGranted by remember {
-        mutableStateOf(false)
-    }
-    val gpsRequested by remember {
-        mutableStateOf(gpsStateManager.gpsRequested.value)
-    }
-    var notificationPermissionGranted by remember {
-        mutableStateOf(false)
-    }
-
-    LaunchedEffect(Unit) {
-        Prefs.putString(WHICH_USER_COLLECTION, STUDENT_COLLECTION)
-        locationPermissionGranted = areLocationPermissionsGranted(context)
-        notificationPermissionGranted = isNotificationPermissionGranted(context)
-    }
-
-    if (!locationPermissionGranted) {
-        RequestLocationPermission(
-            onPermissionGranted = { locationPermissionGranted = true },
-            onPermissionDenied = { locationPermissionGranted = false }
-        ) {
-            Toast.makeText(
-                context,
-                "Please grant location permission",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    if (locationPermissionGranted && !notificationPermissionGranted) {
-        RequestNotificationPermission(
-            onPermissionGranted = { notificationPermissionGranted = true },
-            onPermissionDenied = { notificationPermissionGranted = false }
-        )
-    }
-
-    if (locationPermissionGranted && !gpsRequested) {
-        RequestGpsEnable(
-            context = context,
-            onGpsEnabled = { },
-            onGpsDisabled = {
-                Toast.makeText(
-                    context,
-                    "Please enable GPS",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        )
-
-        gpsStateManager.setGpsRequested(true)
-    }
-}
-
-@Composable
 private fun NoticeBoard(
     modifier: Modifier = Modifier,
     noticeBoardViewModel: NoticeBoardViewModel = hiltViewModel()
 ) {
     val notices by noticeBoardViewModel.noticeBoard.collectAsState(initial = Resource.Unspecified())
 
-    LaunchedEffect(Unit) {
-        noticeBoardViewModel.getLastAnnouncement()
-    }
-
     Text(
-        text = "Notice Board",
+        text = "Announcement",
         fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.medium1,
             top = MaterialTheme.spacing.medium1
         )
     )
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(MaterialTheme.spacing.medium1)
-            .clip(MaterialTheme.shapes.medium)
-            .background(LightGray)
-            .padding(MaterialTheme.spacing.medium1)
+            .clip(MaterialTheme.shapes.large)
+            .background(Blue)
+            .padding(MaterialTheme.spacing.medium2)
     ) {
         when (notices) {
             is Resource.Loading -> {
                 Text(
                     text = "Loading...",
-                    color = Dark,
-                    fontSize = 14.sp,
+                    color = Color.White,
+                    fontSize = 15.sp,
                     textAlign = TextAlign.Justify
                 )
             }
@@ -224,14 +165,15 @@ private fun NoticeBoard(
                 (notices as Resource.Success<Notice>).data?.let {
                     TextFlow(
                         text = it.announcement,
-                        color = Dark,
-                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontSize = 15.sp,
                         textAlign = TextAlign.Justify,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Image(
                             painter = painterResource(R.drawable.img_announcement),
                             contentDescription = null,
+                            colorFilter = ColorFilter.tint(color = Color.White),
                             modifier = Modifier
                                 .padding(end = MaterialTheme.spacing.small3)
                                 .width(80.dp)
@@ -244,8 +186,8 @@ private fun NoticeBoard(
                 (notices as Resource.Error<Notice>).message?.let {
                     Text(
                         text = it,
-                        color = Dark,
-                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontSize = 15.sp,
                         textAlign = TextAlign.Justify
                     )
                 }
@@ -265,7 +207,7 @@ private fun NearbyBuses(
     Text(
         text = "Nearby Buses",
         fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(
             top = MaterialTheme.spacing.medium1,
             start = MaterialTheme.spacing.medium1,
@@ -422,7 +364,7 @@ private fun NearbyBusListItem(
                     text = runningBus.bus.name,
                     fontSize = 16.sp,
                     style = TextStyle(
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Medium
                     )
                 )
                 Text(
@@ -432,7 +374,7 @@ private fun NearbyBusListItem(
                 )
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
+                        withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = Color.Black)) {
                             append("Location: ")
                         }
                         append(
@@ -468,7 +410,7 @@ private fun NearbyBusListItem(
                     text = "Departed at",
                     color = Color.Black,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
 
                 Text(
@@ -478,5 +420,63 @@ private fun NearbyBusListItem(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun HandlePermissions(
+    gpsStateManager: GpsStateManager = hiltViewModel()
+) {
+    val context = LocalContext.current
+    var locationPermissionGranted by remember {
+        mutableStateOf(false)
+    }
+    val gpsRequested by remember {
+        mutableStateOf(gpsStateManager.gpsRequested.value)
+    }
+    var notificationPermissionGranted by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+        Prefs.putString(WHICH_USER_COLLECTION, STUDENT_COLLECTION)
+        locationPermissionGranted = areLocationPermissionsGranted(context)
+        notificationPermissionGranted = isNotificationPermissionGranted(context)
+    }
+
+    if (!locationPermissionGranted) {
+        RequestLocationPermission(
+            onPermissionGranted = { locationPermissionGranted = true },
+            onPermissionDenied = { locationPermissionGranted = false }
+        ) {
+            Toast.makeText(
+                context,
+                "Please grant location permission",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    if (locationPermissionGranted && !notificationPermissionGranted) {
+        RequestNotificationPermission(
+            onPermissionGranted = { notificationPermissionGranted = true },
+            onPermissionDenied = { notificationPermissionGranted = false }
+        )
+    }
+
+    if (locationPermissionGranted && !gpsRequested) {
+        RequestGpsEnable(
+            context = context,
+            onGpsEnabled = { },
+            onGpsDisabled = {
+                Toast.makeText(
+                    context,
+                    "Please enable GPS",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+
+        gpsStateManager.setGpsRequested(true)
     }
 }

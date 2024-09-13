@@ -229,7 +229,7 @@ private fun PanelListItem(
             text = stringResource(id = title),
             fontSize = 16.sp,
             style = TextStyle(
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium
             )
         )
     }

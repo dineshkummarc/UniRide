@@ -185,7 +185,7 @@ private fun OnBoardingScreenContent(
             text = buildAnnotatedString {
                 append("Track\nYour\n")
 
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.Medium)) {
                     append("Destination")
                 }
             },

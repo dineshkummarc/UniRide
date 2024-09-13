@@ -9,7 +9,7 @@
     <string name="emergency_title">Emergency</string>
     <string name="emergency_summary">Report emergency situation</string>
     <string name="chat_box_title">Chat Box</string>
-    <string name="chat_box_summary">Chat with other students</string>
+    <string name="chat_box_summary">Chat with other commuters</string>
     <string name="report_title">Report Issue</string>
     <string name="report_summary">Report an issue or incident</string>
     <string name="admin_panel_title">Admin Panel</string>
