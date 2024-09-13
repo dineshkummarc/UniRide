@@ -37,10 +37,12 @@ class DriverHomeViewModel @Inject constructor(
 
         firestore.collection(RUNNING_BUS_COLLECTION)
             .whereEqualTo("driver.id", driver.id)
-            .whereNotEqualTo("status", BusStatus.STOPPED)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val isAssigned = !querySnapshot.isEmpty
+                val isAssigned = querySnapshot.documents.any { document ->
+                    val status = document.getString("status")
+                    status != BusStatus.STOPPED.toString()
+                }
                 onResult(isAssigned)
             }
             .addOnFailureListener {

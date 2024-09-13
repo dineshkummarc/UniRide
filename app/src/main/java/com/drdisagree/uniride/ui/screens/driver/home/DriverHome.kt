@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.driver.home
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -41,6 +42,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
@@ -53,6 +56,7 @@ import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ContainerNavDrawer
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.NoInternetDialog
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.RequestNotificationPermission
@@ -64,13 +68,14 @@ import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGrante
 import com.drdisagree.uniride.ui.screens.destinations.BusLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.home.navdrawer.NavigationDrawer
-import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
-import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.SystemUtils.isInternetAvailable
+import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
 import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
+import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -203,6 +208,7 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
     }
 }
 
+@SuppressLint("FlowOperatorInvokedInComposition")
 @Composable
 private fun ShareLocationFields(
     navigator: DestinationsNavigator,
@@ -233,13 +239,18 @@ private fun ShareLocationFields(
     var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
 
-    LaunchedEffect(driverViewModel.getDriver) {
-        driverViewModel.getDriver.collect { resource ->
-            if (resource is Resource.Success) {
-                driverHomeViewModel.checkIfAnyBusAssignedToDriver(resource.data) { isAssigned ->
-                    if (isAssigned) {
-                        navigator.navigate(BusLocationDestination)
-                    }
+    var isNoInternetDialogShown by rememberSaveable { mutableStateOf(false) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val driverResource by driverViewModel.getDriver
+        .flowWithLifecycle(lifecycleOwner.lifecycle)
+        .collectAsState(initial = Resource.Loading())
+
+    LaunchedEffect(driverResource) {
+        if (driverResource is Resource.Success) {
+            driverHomeViewModel.checkIfAnyBusAssignedToDriver(driverResource.data) { isAssigned ->
+                if (isAssigned) {
+                    navigator.navigate(BusLocationDestination)
                 }
             }
         }
@@ -384,6 +395,14 @@ private fun ShareLocationFields(
             return@ButtonPrimary
         }
 
+        if (!isInternetAvailable(context)) {
+            isNoInternetDialogShown = true
+
+            return@ButtonPrimary
+        } else {
+            isNoInternetDialogShown = false
+        }
+
         driverHomeViewModel.startDeparture(
             driverViewModel = driverViewModel,
             listsViewModel = listsViewModel,
@@ -428,6 +447,13 @@ private fun ShareLocationFields(
 
     if (showLoadingDialog) {
         LoadingDialog()
+    }
+
+    if (isNoInternetDialogShown) {
+        NoInternetDialog(
+            context = context,
+            onDismiss = { isNoInternetDialogShown = false }
+        )
     }
 }
 

@@ -8,6 +8,7 @@ import com.drdisagree.uniride.data.events.BusStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NearbyBusesViewModel @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val _state = MutableSharedFlow<Resource<Unit>>()
@@ -35,6 +37,10 @@ class NearbyBusesViewModel @Inject constructor(
     }
 
     private fun startListening() {
+        if (auth.currentUser == null) {
+            _runningBuses.postValue(emptyList())
+        }
+
         viewModelScope.launch {
             _state.emit(
                 Resource.Loading()

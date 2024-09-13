@@ -47,7 +47,9 @@ class GetDriverViewModel @Inject constructor(
             }
             .addOnFailureListener {
                 viewModelScope.launch {
-                    _getDriver.emit(Resource.Error(it.message.toString()))
+                    _getDriver.emit(
+                        Resource.Error(it.message.toString())
+                    )
                 }
             }
     }

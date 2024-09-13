@@ -52,11 +52,13 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.DisableBackHandler
 import com.drdisagree.uniride.ui.components.views.KeepScreenOn
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.NoInternetDialog
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.SystemUtils.isInternetAvailable
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -108,7 +110,7 @@ private fun MapView(
     busLocationViewModel: BusLocationViewModel = hiltViewModel()
 ) {
     KeepScreenOn()
-    CheckGpsPeriodically()
+    CheckGpsAndInternetPeriodically()
 
     val context = LocalContext.current
 
@@ -462,13 +464,24 @@ private fun MapView(
 }
 
 @Composable
-fun CheckGpsPeriodically() {
+fun CheckGpsAndInternetPeriodically() {
     val context = LocalContext.current
     var requestGps by remember { mutableStateOf(false) }
+
+    var isNoInternetDialogShown by rememberSaveable { mutableStateOf(false) }
+    var isInternetAvailable by rememberSaveable { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         while (true) {
             requestGps = !isGpsEnabled(context)
+            isInternetAvailable = isInternetAvailable(context)
+
+            if (!isInternetAvailable && !isNoInternetDialogShown) {
+                isNoInternetDialogShown = true
+            } else if (isInternetAvailable && isNoInternetDialogShown) {
+                isNoInternetDialogShown = false
+            }
+
             delay(5000)
         }
     }
@@ -493,6 +506,13 @@ fun CheckGpsPeriodically() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+        )
+    }
+
+    if (isNoInternetDialogShown) {
+        NoInternetDialog(
+            context = context,
+            onDismiss = { isNoInternetDialogShown = false }
         )
     }
 }

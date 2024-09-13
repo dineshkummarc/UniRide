@@ -115,14 +115,7 @@ class BusLocationViewModel @Inject constructor(
                 .get()
                 .await()
 
-            if (busDocument == null) {
-                _updateBusStatus.emit(
-                    Resource.Error("Bus not found for the current driver id $userId")
-                )
-                return@launch
-            }
-
-            if (busDocument!!.isEmpty) {
+            if (busDocument == null || busDocument!!.isEmpty) {
                 _updateBusStatus.emit(
                     Resource.Error("Bus not found for the current driver id $userId")
                 )
@@ -185,17 +178,9 @@ class BusLocationViewModel @Inject constructor(
                 .get()
                 .await()
 
-            if (busDocument == null) {
+            if (busDocument == null || busDocument!!.isEmpty) {
                 _updateBusStatus.emit(
                     Resource.Error("Bus not found for the current driver id $userId")
-                )
-                onResult(false)
-                return@launch
-            }
-
-            if (busDocument!!.isEmpty) {
-                _updateBusStatus.emit(
-                    Resource.Error("Bus not found for the current driver id")
                 )
                 onResult(false)
                 return@launch
@@ -259,12 +244,8 @@ class BusLocationViewModel @Inject constructor(
             .get()
             .await()
 
-        if (busDocument == null) {
-            viewModelScope.launch {
-                _updateBusLocation.emit(
-                    Resource.Error("Bus not found for the current driver id $userId")
-                )
-            }
+        if (busDocument == null || busDocument!!.isEmpty) {
+            // Bus has been stopped
             return
         }
 
@@ -273,43 +254,37 @@ class BusLocationViewModel @Inject constructor(
         isProcessingUpdates = true
 
         try {
-            if (busDocument!!.isEmpty) {
-                _updateBusLocation.emit(
-                    Resource.Error("Bus not found for the current driver id")
-                )
-            } else {
-                val bus = busDocument!!.documents.first()
-                val busObject = bus.toObject(RunningBus::class.java)
-                val updatedBus = busObject?.copy(
-                    currentlyAt = LatLngSerializable.fromLatLng(location),
-                    status = _runningBus.value?.status ?: busObject.status
-                )
+            val bus = busDocument!!.documents.first()
+            val busObject = bus.toObject(RunningBus::class.java)
+            val updatedBus = busObject?.copy(
+                currentlyAt = LatLngSerializable.fromLatLng(location),
+                status = _runningBus.value?.status ?: busObject.status
+            )
 
-                if (updatedBus != null) {
-                    firestore.collection(RUNNING_BUS_COLLECTION)
-                        .document(bus.id)
-                        .set(updatedBus)
-                        .addOnSuccessListener {
-                            viewModelScope.launch {
+            if (updatedBus != null) {
+                firestore.collection(RUNNING_BUS_COLLECTION)
+                    .document(bus.id)
+                    .set(updatedBus)
+                    .addOnSuccessListener {
+                        viewModelScope.launch {
+                            _updateBusLocation.emit(
+                                Resource.Success(Unit)
+                            )
+                        }
+                    }
+                    .addOnFailureListener {
+                        viewModelScope.launch {
+                            if (_runningBus.value?.status != BusStatus.STOPPED) {
                                 _updateBusLocation.emit(
-                                    Resource.Success(Unit)
+                                    Resource.Error("Failed to update bus location")
                                 )
                             }
                         }
-                        .addOnFailureListener {
-                            viewModelScope.launch {
-                                if (_runningBus.value?.status != BusStatus.STOPPED) {
-                                    _updateBusLocation.emit(
-                                        Resource.Error("Failed to update bus location")
-                                    )
-                                }
-                            }
-                        }
-                } else {
-                    _updateBusLocation.emit(
-                        Resource.Error("Failed to convert bus document to RunningBus")
-                    )
-                }
+                    }
+            } else {
+                _updateBusLocation.emit(
+                    Resource.Error("Failed to convert bus document to RunningBus")
+                )
             }
         } catch (e: Exception) {
             _updateBusLocation.emit(
