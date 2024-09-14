@@ -348,7 +348,7 @@ private fun QuickActionsItem(
                 .background(iconBackgroundColor)
                 .size(46.dp)
                 .padding(12.dp),
-            tint = Color.Black
+            tint = Color.Black.copy(alpha = 0.8f)
         )
         Text(
             text = stringResource(id = title),
