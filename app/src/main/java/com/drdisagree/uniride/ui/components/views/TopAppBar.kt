@@ -80,7 +80,10 @@ fun TopAppBarWithBackButton(
             }
         },
         actions = {
-            IconButton(onClick = { /* Do nothing */ }) { }
+            IconButton(
+                onClick = { /* Do nothing */ },
+                modifier = Modifier.padding(end = 12.dp)
+            ) { }
         },
         modifier = Modifier.shadow(elevation = 2.dp)
     )
