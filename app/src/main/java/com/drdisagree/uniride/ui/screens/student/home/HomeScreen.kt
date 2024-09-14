@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -149,51 +150,63 @@ private fun NoticeBoard(
             .padding(MaterialTheme.spacing.medium1)
             .clip(MaterialTheme.shapes.large)
             .background(Blue)
-            .padding(MaterialTheme.spacing.medium2)
     ) {
-        when (notices) {
-            is Resource.Loading -> {
-                Text(
-                    text = "Loading...",
-                    color = Color.White,
-                    fontSize = 15.sp,
-                    textAlign = TextAlign.Justify
-                )
-            }
-
-            is Resource.Success -> {
-                (notices as Resource.Success<Notice>).data?.let {
-                    TextFlow(
-                        text = it.announcement,
-                        color = Color.White,
-                        fontSize = 15.sp,
-                        textAlign = TextAlign.Justify,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.img_announcement),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(color = Color.White),
-                            modifier = Modifier
-                                .padding(end = MaterialTheme.spacing.small3)
-                                .width(80.dp)
-                        )
-                    }
-                }
-            }
-
-            is Resource.Error -> {
-                (notices as Resource.Error<Notice>).message?.let {
+        Image(
+            painter = painterResource(id = R.drawable.bg_intersecting_waves_scattered),
+            colorFilter = ColorFilter.tint(color = Color(0xFF3163C6)),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(MaterialTheme.spacing.medium2)
+        ) {
+            when (notices) {
+                is Resource.Loading -> {
                     Text(
-                        text = it,
+                        text = "Loading...",
                         color = Color.White,
                         fontSize = 15.sp,
                         textAlign = TextAlign.Justify
                     )
                 }
-            }
 
-            else -> {}
+                is Resource.Success -> {
+                    (notices as Resource.Success<Notice>).data?.let {
+                        TextFlow(
+                            text = it.announcement,
+                            color = Color.White,
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Justify,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.img_announcement),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(color = Color.White),
+                                modifier = Modifier
+                                    .padding(end = MaterialTheme.spacing.small3)
+                                    .width(60.dp)
+                            )
+                        }
+                    }
+                }
+
+                is Resource.Error -> {
+                    (notices as Resource.Error<Notice>).message?.let {
+                        Text(
+                            text = it,
+                            color = Color.White,
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Justify
+                        )
+                    }
+                }
+
+                else -> {}
+            }
         }
     }
 }
