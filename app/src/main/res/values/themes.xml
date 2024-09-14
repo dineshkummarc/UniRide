@@ -6,7 +6,7 @@
     </style>
 
     <style name="Theme.UniRide.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.UniRide</item>
     </style>

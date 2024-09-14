@@ -74,13 +74,12 @@ val MaterialTheme.spacing: Spacing
     @Composable get() = LocalAppSpacing.current
 
 @OptIn(ExperimentalMaterial3Api::class)
-val NoRippleTheme =
-    RippleConfiguration(
-        color = Color.Unspecified,
-        rippleAlpha = RippleAlpha(
-            0.0f,
-            0.0f,
-            0.0f,
-            0.0f
-        )
+val NoRippleTheme = RippleConfiguration(
+    color = Color.Unspecified,
+    rippleAlpha = RippleAlpha(
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f
     )
+)
