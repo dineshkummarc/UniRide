@@ -125,6 +125,7 @@ class StudentSignInViewModel @Inject constructor(
         } catch (exception: Exception) {
             if (exception !is CancellationException) {
                 Log.e(tag, "signIn:", exception)
+                _loadingState.emit(Resource.Error("No email account found"))
             } else {
                 throw exception
             }

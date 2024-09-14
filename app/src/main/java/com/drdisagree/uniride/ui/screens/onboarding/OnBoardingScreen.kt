@@ -246,6 +246,11 @@ private fun OnBoardingScreenContent(
                         true
                     }
 
+                    is Resource.Error -> {
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                        false
+                    }
+
                     else -> {
                         false
                     }
