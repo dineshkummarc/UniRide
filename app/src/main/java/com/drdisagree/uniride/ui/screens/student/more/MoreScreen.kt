@@ -2,6 +2,7 @@ package com.drdisagree.uniride.ui.screens.student.more
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -222,7 +224,8 @@ private fun QuickActionsSection(
                 .padding(start = MaterialTheme.spacing.medium1)
                 .weight(1f),
             backgroundColor = Color(0xFFFFEDDE),
-            iconBackgroundColor = Color(0xFFFFD8BA),
+            backgroundWaveColor = Color(0xFFFFDEC4),
+            iconBackgroundColor = Color(0xFFFFD6B7),
             onClick = {
                 navigator.navigate(MyLocationDestination)
             }
@@ -238,6 +241,7 @@ private fun QuickActionsSection(
                 .padding(end = MaterialTheme.spacing.medium1)
                 .weight(1f),
             backgroundColor = Color(0xFFEBEBFF),
+            backgroundWaveColor = Color(0xFFDFDEFC),
             iconBackgroundColor = Color(0xFFD7D5FC),
         )
     }
@@ -253,6 +257,7 @@ private fun QuickActionsSection(
                 .padding(start = MaterialTheme.spacing.medium1)
                 .weight(1f),
             backgroundColor = Color(0xFFDBE8E6),
+            backgroundWaveColor = Color(0xFFCCD9D8),
             iconBackgroundColor = Color(0xFFBAD9D6),
         )
 
@@ -266,6 +271,7 @@ private fun QuickActionsSection(
                 .padding(end = MaterialTheme.spacing.medium1)
                 .weight(1f),
             backgroundColor = Color(0xFFEEE6E2),
+            backgroundWaveColor = Color(0xFFE0D5D0),
             iconBackgroundColor = Color(0xFFDECBC3),
         )
     }
@@ -296,6 +302,7 @@ private fun QuickActionsSection(
                     .padding(start = MaterialTheme.spacing.medium1)
                     .weight(1f),
                 backgroundColor = Color(0xFFFFD6D6),
+                backgroundWaveColor = Color(0xFFF8C4C4),
                 iconBackgroundColor = Color(0xFFFABABA),
                 onClick = {
                     navigator.navigate(AdminPanelDestination)
@@ -313,6 +320,7 @@ private fun QuickActionsSection(
                     .weight(1f)
                     .alpha(0f), // TODO: Reveal in future when new item needed
                 backgroundColor = Color(0xFFFFDDC1),
+                backgroundWaveColor = Color(0xFFF6D5BC),
                 iconBackgroundColor = Color(0xFFFFCEA8),
             )
         }
@@ -326,40 +334,53 @@ private fun QuickActionsItem(
     @StringRes title: Int,
     @StringRes subtitle: Int,
     backgroundColor: Color,
+    backgroundWaveColor: Color,
     iconBackgroundColor: Color,
     onClick: (() -> Unit)? = null
 ) {
-    Column(
+    Box(
         modifier = modifier
             .heightIn(min = 160.dp)
             .clip(MaterialTheme.shapes.extraLarge)
             .background(backgroundColor)
-            .clickable {
-                onClick?.invoke()
-            }
-            .padding(MaterialTheme.spacing.medium1)
+            .clickable { onClick?.invoke() }
     ) {
-        Icon(
-            painter = painterResource(id = icon),
+        Image(
+            painter = painterResource(id = R.drawable.bg_intersecting_waves_split),
+            colorFilter = ColorFilter.tint(color = backgroundWaveColor),
             contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .padding(bottom = MaterialTheme.spacing.large2)
-                .clip(CircleShape)
-                .background(iconBackgroundColor)
-                .size(46.dp)
-                .padding(12.dp),
-            tint = Color.Black.copy(alpha = 0.8f)
+                .fillMaxSize()
+                .clip(MaterialTheme.shapes.extraLarge)
         )
-        Text(
-            text = stringResource(id = title),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
-        )
-        Text(
-            text = stringResource(id = subtitle),
-            fontSize = 12.sp,
-            lineHeight = 16.sp,
-            color = Dark
-        )
+        Column(
+            modifier = Modifier
+                .padding(MaterialTheme.spacing.medium1)
+                .fillMaxSize()
+        ) {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(bottom = MaterialTheme.spacing.large2)
+                    .clip(CircleShape)
+                    .background(iconBackgroundColor)
+                    .size(46.dp)
+                    .padding(12.dp),
+                tint = Color.Black.copy(alpha = 0.8f)
+            )
+            Text(
+                text = stringResource(id = title),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = stringResource(id = subtitle),
+                fontSize = 12.sp,
+                lineHeight = 16.sp,
+                color = Dark
+            )
+        }
     }
 }
