@@ -111,7 +111,7 @@ class StudentSignInViewModel @Inject constructor(
                 if (isSuccessful) {
                     Resource.Unspecified()
                 } else {
-                    Resource.Error("Login failed")
+                    Resource.Error(result.errorMessage ?: "Login failed")
                 }
             )
         }
@@ -146,7 +146,7 @@ class StudentSignInViewModel @Inject constructor(
         if (!Constant.STUDENT_MAIL_SUFFIX.any { suffix -> credential.id.endsWith(suffix) }) {
             return SignInResult(
                 data = null,
-                errorMessage = "You are not a student of DIU"
+                errorMessage = "Sign in with DIU email"
             )
         }
 
