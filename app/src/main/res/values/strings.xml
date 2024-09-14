@@ -25,8 +25,10 @@
     <string name="new_schedule">New Schedule</string>
     <string name="add_new_bus_name">Add new bus name</string>
     <string name="add_new_bus_category">Add new bus category</string>
+    <string name="add_new_route_category">Add new route category</string>
     <string name="new_bus">New Bus</string>
     <string name="new_bus_category">New Bus Category</string>
+    <string name="new_route_category">New Route Category</string>
     <string name="add_new_place">Add new place</string>
     <string name="new_place">New Place</string>
 </resources>

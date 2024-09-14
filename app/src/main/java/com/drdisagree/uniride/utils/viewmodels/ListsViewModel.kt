@@ -6,10 +6,12 @@ import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
 import com.drdisagree.uniride.data.models.BusCategory
 import com.drdisagree.uniride.data.models.Place
+import com.drdisagree.uniride.data.models.RouteCategory
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.BUS_CATEGORY_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.BUS_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.PLACE_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.ROUTE_CATEGORY_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +39,9 @@ class ListsViewModel @Inject constructor(
     private val _busCategoryModels = MutableStateFlow<List<BusCategory>>(emptyList())
     val busCategoryModels: StateFlow<List<BusCategory>> = _busCategoryModels
 
+    private val _routeCategoryModels = MutableStateFlow<List<RouteCategory>>(emptyList())
+    val routeCategoryModels: StateFlow<List<RouteCategory>> = _routeCategoryModels
+
     private val _placeModels = MutableStateFlow<List<Place>>(emptyList())
     val placeModels: StateFlow<List<Place>> = _placeModels
 
@@ -44,6 +49,7 @@ class ListsViewModel @Inject constructor(
         getBusList()
         getRunningBusList()
         getBusCategoryList()
+        getRouteCategoryList()
         getPlaceList()
     }
 
@@ -90,6 +96,23 @@ class ListsViewModel @Inject constructor(
                 }.sortedWith(compareBy { it.name })
 
                 _busCategoryModels.value = models
+            }
+            .addOnFailureListener {
+                viewModelScope.launch {
+                    _state.emit(Resource.Error(it.message.toString()))
+                }
+            }
+    }
+
+    private fun getRouteCategoryList() {
+        firestore.collection(ROUTE_CATEGORY_COLLECTION)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val models = querySnapshot.documents.mapNotNull { doc ->
+                    doc.toObject(RouteCategory::class.java)?.copy(uuid = doc.id)
+                }.sortedWith(compareBy { it.name })
+
+                _routeCategoryModels.value = models
             }
             .addOnFailureListener {
                 viewModelScope.launch {

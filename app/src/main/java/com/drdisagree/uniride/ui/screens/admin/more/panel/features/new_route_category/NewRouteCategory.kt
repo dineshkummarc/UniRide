@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_route
+package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_route_category
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,40 +34,37 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Route
 import com.drdisagree.uniride.data.models.RouteCategory
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
-import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
-import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
-fun NewRoute(
+fun NewRouteCategory(
     navigator: DestinationsNavigator
 ) {
     Container(shadow = false) {
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = stringResource(R.string.new_route),
+                    title = stringResource(R.string.new_route_category),
                     onBackClick = {
                         navigator.navigateUp()
                     }
                 )
             },
             content = { paddingValues ->
-                NewRouteContent(
+                NewRouteCategoryContent(
                     paddingValues = paddingValues,
                     navigator = navigator
                 )
@@ -78,7 +74,7 @@ fun NewRoute(
 }
 
 @Composable
-private fun NewRouteContent(
+private fun NewRouteCategoryContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
@@ -122,7 +118,7 @@ private fun NewRouteContent(
                     .verticalScroll(rememberScrollState())
                     .padding(MaterialTheme.spacing.medium1)
             ) {
-                NewRouteFields()
+                NewRouteCategoryFields()
             }
         }
 
@@ -143,113 +139,22 @@ private fun NewRouteContent(
 }
 
 @Composable
-private fun NewRouteFields(
-    newRouteViewModel: NewRouteViewModel = hiltViewModel(),
-    listsViewModel: ListsViewModel = hiltViewModel()
+private fun NewRouteCategoryFields(
+    newRouteCategoryViewModel: NewRouteCategoryViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val routeCategoryList by listsViewModel.routeCategoryModels.collectAsState()
-
-    val defaultRouteCategory = RouteCategory(
-        name = "Category"
-    )
-
-    var routeNo by rememberSaveable { mutableStateOf("") }
-    var routeCategory by rememberSaveable { mutableStateOf(defaultRouteCategory) }
-    var routeName by rememberSaveable { mutableStateOf("") }
-    var routeDetails by rememberSaveable { mutableStateOf("") }
-    var startTime by rememberSaveable { mutableStateOf("") }
-    var departureTime by rememberSaveable { mutableStateOf("") }
-    var routeMap by rememberSaveable { mutableStateOf("") }
+    var routeCategoryName by remember { mutableStateOf("") }
 
     StyledTextField(
-        placeholder = "Route No",
-        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small2),
-        onValueChange = { routeNo = it },
-        inputText = routeNo,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-    )
-
-    StyledDropDownMenu(
-        modifier = Modifier
-            .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
-                top = MaterialTheme.spacing.medium1
-            ),
-        selectedText = routeCategory.name,
-        itemList = routeCategoryList.map {
-            it.name
-        }.toTypedArray(),
-        onItemSelected = {
-            routeCategory = routeCategoryList.first { category ->
-                category.name == it
-            }
-        },
-        fillMaxWidth = true
-    )
-
-    StyledTextField(
-        placeholder = "Route Name",
+        placeholder = "Category name",
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
+            end = MaterialTheme.spacing.small2
         ),
-        onValueChange = { routeName = it },
-        inputText = routeName,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-    )
-
-    StyledTextField(
-        placeholder = "Route Details (Locations separated by <>)",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
-        ),
-        onValueChange = { routeDetails = it },
-        inputText = routeDetails,
+        onValueChange = { routeCategoryName = it },
+        inputText = routeCategoryName,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         singleLine = false
-    )
-
-    StyledTextField(
-        placeholder = "Start Time (To DSC) (Separated by $$)",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
-        ),
-        onValueChange = { startTime = it },
-        inputText = startTime,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        singleLine = false
-    )
-
-    StyledTextField(
-        placeholder = "Departure Time (From DSC) (Separated by $$)",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
-        ),
-        onValueChange = { departureTime = it },
-        inputText = departureTime,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        singleLine = false
-    )
-
-    StyledTextField(
-        placeholder = "Route Map (Google Maps URL)",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
-        ),
-        onValueChange = { routeMap = it },
-        inputText = routeMap,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
     )
 
     ButtonPrimary(
@@ -263,32 +168,19 @@ private fun NewRouteFields(
             .fillMaxWidth(),
         text = "Submit"
     ) {
-        if (
-            routeNo.isEmpty() ||
-            routeCategory.name == defaultRouteCategory.name ||
-            routeName.isEmpty() ||
-            routeDetails.isEmpty() ||
-            startTime.isEmpty() ||
-            departureTime.isEmpty()
-        ) {
+        if (routeCategoryName.isEmpty()) {
             Toast.makeText(
                 context,
-                "Please fill in all fields",
+                "Please fill in category name field",
                 Toast.LENGTH_SHORT
             ).show()
 
             return@ButtonPrimary
         }
 
-        newRouteViewModel.saveRoute(
-            Route(
-                routeNo = routeNo,
-                routeCategory = routeCategory,
-                routeName = routeName,
-                routeDetails = routeDetails,
-                startTime = startTime,
-                departureTime = departureTime,
-                routeWebUrl = routeMap.ifEmpty { null }
+        newRouteCategoryViewModel.saveRouteCategory(
+            RouteCategory(
+                name = routeCategoryName
             )
         )
     }
@@ -296,7 +188,7 @@ private fun NewRouteFields(
     var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        newRouteViewModel.state.collect { result ->
+        newRouteCategoryViewModel.state.collect { result ->
             when (result) {
                 is Resource.Loading -> {
                     showLoadingDialog = true
@@ -305,13 +197,7 @@ private fun NewRouteFields(
                 is Resource.Success -> {
                     showLoadingDialog = false
 
-                    routeNo = ""
-                    routeCategory = defaultRouteCategory
-                    routeName = ""
-                    routeDetails = ""
-                    startTime = ""
-                    departureTime = ""
-                    routeMap = ""
+                    routeCategoryName = ""
 
                     Toast.makeText(
                         context,

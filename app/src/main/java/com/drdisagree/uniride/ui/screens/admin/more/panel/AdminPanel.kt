@@ -44,15 +44,16 @@ import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.NewBusCategoryDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewBusDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewNoticeDestination
+import com.drdisagree.uniride.ui.screens.destinations.NewRouteCategoryDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewRouteDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewScheduleDestination
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -146,10 +147,17 @@ private fun MoreContent(
                     }
                 )
                 PanelListItem(
-                    icon = R.drawable.ic_category,
+                    icon = R.drawable.ic_new_category,
                     title = R.string.add_new_bus_category,
                     onClick = {
                         navigator.navigate(NewBusCategoryDestination)
+                    }
+                )
+                PanelListItem(
+                    icon = R.drawable.ic_new_route_category,
+                    title = R.string.add_new_route_category,
+                    onClick = {
+                        navigator.navigate(NewRouteCategoryDestination)
                     }
                 )
                 PanelListItem(
@@ -171,11 +179,11 @@ private fun MoreContent(
                     title = R.string.view_driver_list
                 )
                 PanelListItem(
-                    icon = R.drawable.ic_warning,
+                    icon = R.drawable.ic_warning_outline,
                     title = R.string.view_emergency_situations
                 )
                 PanelListItem(
-                    icon = R.drawable.ic_sms_edit,
+                    icon = R.drawable.ic_sms_edit_outline,
                     title = R.string.view_reported_issues
                 )
             }

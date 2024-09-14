@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,12 +47,14 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.screens.destinations.RouteDetailsScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.RouteScreenDestination
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -185,13 +188,17 @@ private fun EditRouteFields(
     navigator: DestinationsNavigator,
     editRouteViewModel: EditRouteViewModel,
     openDialog: Boolean,
-    onCloseDialog: () -> Unit
+    onCloseDialog: () -> Unit,
+    listsViewModel: ListsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val routeCategoryList by listsViewModel.routeCategoryModels.collectAsState()
+
     var routeNo by rememberSaveable { mutableStateOf(route.routeNo) }
-    var startTime by rememberSaveable { mutableStateOf(route.startTime) }
+    var routeCategory by rememberSaveable { mutableStateOf(route.routeCategory) }
     var routeName by rememberSaveable { mutableStateOf(route.routeName) }
     var routeDetails by rememberSaveable { mutableStateOf(route.routeDetails) }
+    var startTime by rememberSaveable { mutableStateOf(route.startTime) }
     var departureTime by rememberSaveable { mutableStateOf(route.departureTime) }
     var routeMap by rememberSaveable { mutableStateOf(route.routeWebUrl ?: "") }
 
@@ -203,17 +210,23 @@ private fun EditRouteFields(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
     )
 
-    StyledTextField(
-        placeholder = "Start Time (To DSC) (Separated by $$)",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
-            top = MaterialTheme.spacing.medium1
-        ),
-        onValueChange = { startTime = it },
-        inputText = startTime,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        singleLine = false
+    StyledDropDownMenu(
+        modifier = Modifier
+            .padding(
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2,
+                top = MaterialTheme.spacing.medium1
+            ),
+        selectedText = routeCategory.name,
+        itemList = routeCategoryList.map {
+            it.name
+        }.toTypedArray(),
+        onItemSelected = {
+            routeCategory = routeCategoryList.first { category ->
+                category.name == it
+            }
+        },
+        fillMaxWidth = true
     )
 
     StyledTextField(
@@ -237,6 +250,19 @@ private fun EditRouteFields(
         ),
         onValueChange = { routeDetails = it },
         inputText = routeDetails,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        singleLine = false
+    )
+
+    StyledTextField(
+        placeholder = "Start Time (To DSC) (Separated by $$)",
+        modifier = Modifier.padding(
+            start = MaterialTheme.spacing.small2,
+            end = MaterialTheme.spacing.small2,
+            top = MaterialTheme.spacing.medium1
+        ),
+        onValueChange = { startTime = it },
+        inputText = startTime,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         singleLine = false
     )
@@ -279,9 +305,9 @@ private fun EditRouteFields(
     ) {
         if (
             routeNo.isEmpty() ||
-            startTime.isEmpty() ||
             routeName.isEmpty() ||
             routeDetails.isEmpty() ||
+            startTime.isEmpty() ||
             departureTime.isEmpty()
         ) {
             Toast.makeText(
@@ -296,6 +322,7 @@ private fun EditRouteFields(
         editRouteViewModel.editRoute(
             route.copy(
                 routeNo = routeNo,
+                routeCategory = routeCategory,
                 startTime = startTime,
                 routeName = routeName,
                 routeDetails = routeDetails,

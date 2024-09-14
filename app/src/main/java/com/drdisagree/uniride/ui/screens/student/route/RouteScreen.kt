@@ -7,14 +7,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -52,6 +55,7 @@ import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.util.Locale
 
 @RoutesNavGraph(start = true)
 @Destination(style = FadeInOutTransition::class)
@@ -116,8 +120,7 @@ private fun RouteContent(
                         ) { route ->
                             RoutesListItem(
                                 index = routeList[route].timeStamp.toInt(),
-                                routeNo = routeList[route].routeNo,
-                                routeName = routeList[route].routeName,
+                                route = routeList[route],
                                 onClick = {
                                     navigator.navigate(
                                         RouteDetailsScreenDestination(
@@ -166,10 +169,25 @@ private fun RouteContent(
 private fun RoutesListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    routeNo: String,
-    routeName: String,
+    route: Route,
     onClick: (() -> Unit)? = null
 ) {
+    val categoryLowercase = route.routeCategory.name.lowercase(Locale.getDefault())
+    val categoryPillBackgroundColor = if (categoryLowercase.contains("shuttle")) {
+        Color(0xFFE9FAF4)
+    } else if (categoryLowercase.contains("friday")) {
+        Color(0xFFFBEBEC)
+    } else { // regular
+        Color(0xFFF0F0F2)
+    }
+    val categoryPillTextColor = if (categoryLowercase.contains("shuttle")) {
+        Color(0xFF0B710A)
+    } else if (categoryLowercase.contains("friday")) {
+        Color(0xFF881418)
+    } else { // regular
+        Dark
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -186,6 +204,7 @@ private fun RoutesListItem(
 
         Row(
             modifier = modifier
+                .height(IntrinsicSize.Min)
                 .fillMaxWidth()
                 .padding(
                     horizontal = MaterialTheme.spacing.medium3,
@@ -211,16 +230,36 @@ private fun RoutesListItem(
                     .padding(end = MaterialTheme.spacing.medium1),
                 verticalArrangement = Arrangement.Top
             ) {
-                Text(
-                    text = "Route $routeNo",
-                    fontSize = 16.sp,
-                    modifier = Modifier.fillMaxWidth(),
-                    style = TextStyle(
-                        fontWeight = FontWeight.Medium
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Route ${route.routeNo}",
+                        fontSize = 16.sp,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Medium
+                        )
                     )
-                )
+                    Box(
+                        modifier = Modifier
+                            .padding(start = MaterialTheme.spacing.small1)
+                            .clip(RoundedCornerShape(28.dp))
+                            .background(categoryPillBackgroundColor)
+                            .padding(
+                                horizontal = MaterialTheme.spacing.small2,
+                                vertical = MaterialTheme.spacing.extraSmall1
+                            )
+                    ) {
+                        Text(
+                            text = route.routeCategory.name,
+                            color = categoryPillTextColor,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
                 Text(
-                    text = routeName,
+                    text = route.routeName,
                     color = Dark,
                     fontSize = 14.sp,
                     modifier = Modifier.fillMaxWidth()

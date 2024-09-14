@@ -14,6 +14,7 @@ object Constant {
     const val BUS_COLLECTION = "bus_list"
     const val RUNNING_BUS_COLLECTION = "running_bus_list"
     const val BUS_CATEGORY_COLLECTION = "bus_category_list"
+    const val ROUTE_CATEGORY_COLLECTION = "route_category_list"
     const val ROUTE_COLLECTION = "route_list"
     const val SCHEDULE_COLLECTION = "schedule_list"
     const val PLACE_COLLECTION = "place_list"
