@@ -42,8 +42,8 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -171,7 +171,7 @@ private fun NewBusCategoryFields(
         if (busCategoryName.isEmpty()) {
             Toast.makeText(
                 context,
-                "Please fill in bus name field",
+                "Please fill in category name field",
                 Toast.LENGTH_SHORT
             ).show()
 
