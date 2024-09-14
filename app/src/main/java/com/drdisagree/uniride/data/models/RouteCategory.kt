@@ -7,7 +7,7 @@ import java.util.UUID
 
 @Stable
 @Parcelize
-data class Place(
+data class RouteCategory(
     val uuid: String = UUID.randomUUID().toString(),
     val name: String,
 ) : Parcelable {

@@ -17,12 +17,9 @@ data class Driver(
     val accountStatus: AccountStatus = AccountStatus.PENDING
 ) : Parcelable {
     constructor() : this(
-        "",
-        "",
-        "",
-        "",
-        "",
-        emptyList(),
-        AccountStatus.PENDING
+        id = "",
+        name = "",
+        email = "",
+        documents = emptyList(),
     )
 }

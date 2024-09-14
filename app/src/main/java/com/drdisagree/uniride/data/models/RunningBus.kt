@@ -21,7 +21,6 @@ data class RunningBus(
     val currentlyAt: LatLngSerializable? = null
 ) : Parcelable {
     constructor() : this(
-        "",
-        Bus(),
+        bus = Bus()
     )
 }

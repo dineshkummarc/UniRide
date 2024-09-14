@@ -13,9 +13,9 @@ data class Student(
     val profilePictureUrl: String?
 ) : Parcelable {
     constructor() : this(
-        "",
-        "",
-        "",
-        ""
+        userId = "",
+        userName = "",
+        email = "",
+        profilePictureUrl = ""
     )
 }

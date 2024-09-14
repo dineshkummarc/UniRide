@@ -10,6 +10,7 @@ import java.util.UUID
 data class Route(
     val uuid: String = UUID.randomUUID().toString(),
     val routeNo: String,
+    val routeCategory: RouteCategory? = null,
     val routeName: String,
     val routeDetails: String,
     val startTime: String,
@@ -18,12 +19,11 @@ data class Route(
     val timeStamp: Long = System.currentTimeMillis()
 ) : Parcelable {
     constructor() : this(
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        routeNo = "",
+        routeName = "",
+        routeDetails = "",
+        startTime = "",
+        departureTime = "",
+        routeWebUrl = ""
     )
 }

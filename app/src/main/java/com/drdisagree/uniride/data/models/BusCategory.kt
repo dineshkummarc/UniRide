@@ -12,7 +12,6 @@ data class BusCategory(
     val name: String,
 ) : Parcelable {
     constructor() : this(
-        "",
-        ""
+        name = ""
     )
 }

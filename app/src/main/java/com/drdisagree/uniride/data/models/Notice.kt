@@ -13,8 +13,6 @@ data class Notice(
     val timeStamp: Long = System.currentTimeMillis()
 ) : Parcelable {
     constructor() : this(
-        "",
-        "",
-        0
+        announcement = ""
     )
 }

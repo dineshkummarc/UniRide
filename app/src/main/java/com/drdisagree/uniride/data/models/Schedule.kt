@@ -16,23 +16,10 @@ data class Schedule(
     val time: String,
 ) : Parcelable {
     constructor() : this(
-        "",
-        Bus(
-            "",
-            ""
-        ),
-        BusCategory(
-            "",
-            ""
-        ),
-        Place(
-            "",
-            ""
-        ),
-        Place(
-            "",
-            ""
-        ),
-        ""
+        bus = Bus("", ""),
+        category = BusCategory("", ""),
+        from = Place("", ""),
+        to = Place("", ""),
+        time = ""
     )
 }
