@@ -176,14 +176,14 @@ private fun RoutesListItem(
     val categoryPillBackgroundColor = if (categoryLowercase.contains("shuttle")) {
         Color(0xFFE9FAF4)
     } else if (categoryLowercase.contains("friday")) {
-        Color(0xFFFBEBEC)
+        Color(0xFFFFEEE6)
     } else { // regular
         Color(0xFFF0F0F2)
     }
     val categoryPillTextColor = if (categoryLowercase.contains("shuttle")) {
         Color(0xFF0B710A)
     } else if (categoryLowercase.contains("friday")) {
-        Color(0xFF881418)
+        Color(0xFFAA6A48)
     } else { // regular
         Dark
     }
