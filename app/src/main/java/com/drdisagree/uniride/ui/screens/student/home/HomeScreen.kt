@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -112,125 +112,15 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     navigator: DestinationsNavigator,
-    paddingValues: PaddingValues
-) {
-    HandlePermissions()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues = paddingValues)
-            .verticalScroll(rememberScrollState())
-    ) {
-        NoticeBoard()
-        NearbyBuses(navigator = navigator)
-    }
-}
-
-@Composable
-private fun NoticeBoard(
-    modifier: Modifier = Modifier,
-    noticeBoardViewModel: NoticeBoardViewModel = hiltViewModel()
-) {
-    val notices by noticeBoardViewModel.noticeBoard.collectAsState(initial = Resource.Unspecified())
-
-    Text(
-        text = "Announcement",
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Medium,
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.medium1,
-            top = MaterialTheme.spacing.medium1
-        )
-    )
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(MaterialTheme.spacing.medium1)
-            .clip(MaterialTheme.shapes.large)
-            .background(Blue)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.bg_intersecting_waves_scattered),
-            colorFilter = ColorFilter.tint(color = Color(0xFF3163C6)),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(MaterialTheme.spacing.medium2)
-        ) {
-            when (notices) {
-                is Resource.Loading -> {
-                    Text(
-                        text = "Loading...",
-                        color = Color.White,
-                        fontSize = 15.sp,
-                        textAlign = TextAlign.Justify
-                    )
-                }
-
-                is Resource.Success -> {
-                    (notices as Resource.Success<Notice>).data?.let {
-                        TextFlow(
-                            text = it.announcement,
-                            color = Color.White,
-                            fontSize = 15.sp,
-                            textAlign = TextAlign.Justify,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.img_announcement),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(color = Color.White),
-                                modifier = Modifier
-                                    .padding(end = MaterialTheme.spacing.small3)
-                                    .width(60.dp)
-                            )
-                        }
-                    }
-                }
-
-                is Resource.Error -> {
-                    (notices as Resource.Error<Notice>).message?.let {
-                        Text(
-                            text = it,
-                            color = Color.White,
-                            fontSize = 15.sp,
-                            textAlign = TextAlign.Justify
-                        )
-                    }
-                }
-
-                else -> {}
-            }
-        }
-    }
-}
-
-@Composable
-private fun NearbyBuses(
-    navigator: DestinationsNavigator,
+    paddingValues: PaddingValues,
+    noticeBoardViewModel: NoticeBoardViewModel = hiltViewModel(),
     nearbyBusesViewModel: NearbyBusesViewModel = hiltViewModel(),
     locationViewModel: LocationSharingViewModel = hiltViewModel()
 ) {
-    Text(
-        text = "Nearby Buses",
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Medium,
-        modifier = Modifier.padding(
-            top = MaterialTheme.spacing.medium1,
-            start = MaterialTheme.spacing.medium1,
-            bottom = MaterialTheme.spacing.medium1
-        )
-    )
+    HandlePermissions()
 
-    val context = LocalContext.current
+    val notices by noticeBoardViewModel.noticeBoard.collectAsState(initial = Resource.Unspecified())
     val buses by nearbyBusesViewModel.runningBuses.observeAsState(emptyList())
-    var showLoadingDialog by rememberSaveable { mutableStateOf(true) }
     val location by locationViewModel.locationFlow.collectAsState()
 
     val sortedBuses = location?.let { loc ->
@@ -241,77 +131,145 @@ private fun NearbyBuses(
         }
     } ?: buses
 
-    LaunchedEffect(nearbyBusesViewModel.state) {
-        nearbyBusesViewModel.state.collect { result ->
-            when (result) {
-                is Resource.Loading -> {
-                    showLoadingDialog = true
-                }
+    val showLoadingDialog by rememberUpdatedState(nearbyBusesViewModel.state is Resource.Loading<*>)
 
-                is Resource.Success -> {
-                    showLoadingDialog = false
-                }
-
-                is Resource.Error -> {
-                    showLoadingDialog = false
-
-                    Toast.makeText(
-                        context,
-                        result.message,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                else -> {
-                    showLoadingDialog = false
-                }
-            }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues = paddingValues)
+    ) {
+        item {
+            Text(
+                text = "Announcement",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(
+                    start = MaterialTheme.spacing.medium1,
+                    top = MaterialTheme.spacing.medium1
+                )
+            )
         }
-    }
 
-    if (sortedBuses.isEmpty()) {
-        if (showLoadingDialog) {
-            Column(
+        item {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = MaterialTheme.spacing.large3),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .padding(MaterialTheme.spacing.medium1)
+                    .clip(MaterialTheme.shapes.large)
+                    .background(Blue)
             ) {
-                CircularProgressIndicator(
+                Image(
+                    painter = painterResource(id = R.drawable.bg_intersecting_waves_scattered),
+                    colorFilter = ColorFilter.tint(color = Color(0xFF3163C6)),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Box(
                     modifier = Modifier
-                        .background(Color.White)
-                        .wrapContentSize()
-                )
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = MaterialTheme.spacing.large3),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "No bus found nearby!",
-                    textAlign = TextAlign.Center
-                )
+                        .fillMaxWidth()
+                        .padding(MaterialTheme.spacing.medium2)
+                ) {
+                    when (notices) {
+                        is Resource.Loading -> {
+                            Text(
+                                text = "Loading...",
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                textAlign = TextAlign.Justify
+                            )
+                        }
+
+                        is Resource.Success -> {
+                            (notices as Resource.Success<Notice>).data?.let {
+                                TextFlow(
+                                    text = it.announcement,
+                                    color = Color.White,
+                                    fontSize = 15.sp,
+                                    textAlign = TextAlign.Justify,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Image(
+                                        painter = painterResource(R.drawable.img_announcement),
+                                        contentDescription = null,
+                                        colorFilter = ColorFilter.tint(color = Color.White),
+                                        modifier = Modifier
+                                            .padding(end = MaterialTheme.spacing.small3)
+                                            .width(60.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            (notices as Resource.Error<Notice>).message?.let {
+                                Text(
+                                    text = it,
+                                    color = Color.White,
+                                    fontSize = 15.sp,
+                                    textAlign = TextAlign.Justify
+                                )
+                            }
+                        }
+
+                        else -> {}
+                    }
+                }
             }
         }
-    } else {
-        repeat(sortedBuses.size) { index ->
+
+        item {
+            Text(
+                text = "Nearby Buses",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(
+                    top = MaterialTheme.spacing.medium1,
+                    start = MaterialTheme.spacing.medium1,
+                    bottom = MaterialTheme.spacing.medium1
+                )
+            )
+        }
+
+        itemsIndexed(
+            sortedBuses,
+            key = { index, _ -> index }
+        ) { index, bus ->
             NearbyBusListItem(
                 index = index,
                 myLocation = location,
-                runningBus = sortedBuses[index],
+                runningBus = bus,
                 onClick = {
                     navigator.navigate(
                         NearbyBusLocationScreenDestination(
-                            busId = sortedBuses[index].uuid
+                            busId = bus.uuid
                         )
                     )
                 }
             )
+        }
+
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = MaterialTheme.spacing.large3),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                if (showLoadingDialog) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .wrapContentSize()
+                    )
+                } else if (sortedBuses.isEmpty()) {
+                    Text(
+                        text = "No bus found nearby!",
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }
