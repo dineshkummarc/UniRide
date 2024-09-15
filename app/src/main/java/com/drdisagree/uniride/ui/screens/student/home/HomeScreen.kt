@@ -326,7 +326,8 @@ private fun NearbyBusListItem(
     geocodingViewModel: GeocodingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val locationName by geocodingViewModel.locationName.observeAsState("Retrieving...")
+    val defaultLocationName = "Retrieving..."
+    val locationName by geocodingViewModel.locationName.observeAsState(defaultLocationName)
 
     LaunchedEffect(runningBus.currentlyAt?.latitude, runningBus.currentlyAt?.longitude) {
         geocodingViewModel.fetchLocationName(
@@ -392,7 +393,7 @@ private fun NearbyBusListItem(
                         }
                         append(
                             if (locationName != null) {
-                                if (myLocation != null && runningBus.currentlyAt != null) {
+                                if (myLocation != null && runningBus.currentlyAt != null && locationName != defaultLocationName) {
                                     String.format(
                                         Locale.getDefault(),
                                         "%s (%.1fkm)", locationName, distance(
