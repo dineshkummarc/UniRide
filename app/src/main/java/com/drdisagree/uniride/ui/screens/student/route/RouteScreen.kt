@@ -3,6 +3,7 @@ package com.drdisagree.uniride.ui.screens.student.route
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,14 +11,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Route
+import com.drdisagree.uniride.data.models.RouteCategory
 import com.drdisagree.uniride.ui.components.navigation.RoutesNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
@@ -97,6 +106,38 @@ private fun RouteContent(
         val context = LocalContext.current
         var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
         val routes by routeViewModel.routes.collectAsState(initial = Resource.Unspecified())
+        var routeCategories by rememberSaveable { mutableStateOf<List<RouteCategory>>(emptyList()) }
+        var selectedCategories by rememberSaveable { mutableStateOf<Set<String>>(emptySet()) }
+
+        LaunchedEffect(routes) {
+            if (routes is Resource.Success) {
+                val routeData = (routes as Resource.Success<List<Route>>).data
+
+                val uniqueCategories = routeData
+                    ?.groupBy { it.routeCategory }
+                    ?.map { (category, routes) ->
+                        category to routes.minOfOrNull { it.timeStamp }
+                    }
+                    ?.filter { it.second != null }
+                    ?.sortedBy { it.second }
+                    ?.map { it.first }
+
+                if (uniqueCategories != null) {
+                    routeCategories = uniqueCategories
+                }
+            }
+        }
+
+        val filteredRoutes = if (selectedCategories.isEmpty()) {
+            (routes as? Resource.Success<List<Route>>)?.data
+                ?.sortedBy { it.timeStamp }
+                ?: emptyList()
+        } else {
+            (routes as? Resource.Success<List<Route>>)?.data
+                ?.filter { it.routeCategory.name in selectedCategories }
+                ?.sortedBy { it.timeStamp }
+                ?: emptyList()
+        }
 
         when (routes) {
             is Resource.Loading -> {
@@ -106,26 +147,87 @@ private fun RouteContent(
             is Resource.Success -> {
                 showLoadingDialog = false
 
-                val routeList = (routes as Resource.Success<List<Route>>).data
-
-                if (routeList?.isNotEmpty() == true) {
+                if (filteredRoutes.isNotEmpty()) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues = paddingValues)
                     ) {
-                        items(
-                            count = routeList.size,
-                            key = { route -> routeList[route].uuid }
-                        ) { route ->
+                        item {
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(
+                                    horizontal = MaterialTheme.spacing.medium1,
+                                    vertical = MaterialTheme.spacing.medium1
+                                ),
+                                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small2)
+                            ) {
+                                items(
+                                    count = routeCategories.size,
+                                    key = { routeCategories[it].uuid }
+                                ) { index ->
+                                    val category = routeCategories[index]
+                                    val isSelected = category.name in selectedCategories
+                                    val (categoryPillBackgroundColor, categoryPillTextColor) = getCategoryColors(
+                                        category.name
+                                    )
+
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(28.dp))
+                                            .background(categoryPillBackgroundColor)
+                                            .border(
+                                                width = if (isSelected) 2.dp else 0.dp,
+                                                color = if (isSelected) categoryPillTextColor else Color.Transparent,
+                                                shape = RoundedCornerShape(28.dp)
+                                            )
+                                            .clickable {
+                                                selectedCategories = if (isSelected) {
+                                                    selectedCategories - category.name
+                                                } else {
+                                                    selectedCategories + category.name
+                                                }
+                                            }
+                                            .padding(
+                                                horizontal = MaterialTheme.spacing.medium1,
+                                                vertical = MaterialTheme.spacing.small1
+                                            )
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = category.name,
+                                                color = categoryPillTextColor,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.Medium
+                                            )
+
+                                            if (isSelected) {
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Icon(
+                                                    imageVector = Icons.Filled.Close,
+                                                    contentDescription = null,
+                                                    tint = categoryPillTextColor,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        itemsIndexed(
+                            items = filteredRoutes,
+                            key = { _, route -> route.uuid }
+                        ) { index, route ->
                             RoutesListItem(
-                                index = routeList[route].timeStamp.toInt(),
-                                route = routeList[route],
+                                index = index,
+                                route = route,
                                 onClick = {
                                     navigator.navigate(
-                                        RouteDetailsScreenDestination(
-                                            routeList[route]
-                                        )
+                                        RouteDetailsScreenDestination(route)
                                     )
                                 }
                             )
@@ -138,7 +240,7 @@ private fun RouteContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Route is empty!"
+                            text = "No routes available for the selected categories!"
                         )
                     }
                 }
@@ -172,21 +274,9 @@ private fun RoutesListItem(
     route: Route,
     onClick: (() -> Unit)? = null
 ) {
-    val categoryLowercase = route.routeCategory.name.lowercase(Locale.getDefault())
-    val categoryPillBackgroundColor = if (categoryLowercase.contains("shuttle")) {
-        Color(0xFFE9FAF4)
-    } else if (categoryLowercase.contains("friday")) {
-        Color(0xFFFFEEE6)
-    } else { // regular
-        Color(0xFFF0F0F2)
-    }
-    val categoryPillTextColor = if (categoryLowercase.contains("shuttle")) {
-        Color(0xFF0B710A)
-    } else if (categoryLowercase.contains("friday")) {
-        Color(0xFFAA6A48)
-    } else { // regular
-        Dark
-    }
+    val (categoryPillBackgroundColor, categoryPillTextColor) = getCategoryColors(
+        route.routeCategory.name
+    )
 
     Column(
         modifier = modifier
@@ -278,4 +368,20 @@ private fun RoutesListItem(
             )
         }
     }
+}
+
+@Composable
+fun getCategoryColors(categoryName: String): Pair<Color, Color> {
+    val categoryLowercase = categoryName.lowercase(Locale.getDefault())
+    val backgroundColor = when {
+        categoryLowercase.contains("shuttle") -> Color(0xFFE9FAF4)
+        categoryLowercase.contains("friday") -> Color(0xFFFFEEE6)
+        else -> Color(0xFFF0F0F2)
+    }
+    val textColor = when {
+        categoryLowercase.contains("shuttle") -> Color(0xFF0B710A)
+        categoryLowercase.contains("friday") -> Color(0xFFAA6A48)
+        else -> Dark
+    }
+    return backgroundColor to textColor
 }
