@@ -30,7 +30,7 @@ import com.drdisagree.uniride.ui.theme.LightGray
 fun TopAppBarNoButton(
     title: String,
     fontSize: TextUnit = 18.sp,
-    fontWeight: FontWeight? = FontWeight.Medium,
+    fontWeight: FontWeight? = FontWeight.SemiBold,
     fontFamily: FontFamily? = null
 ) {
     CenterAlignedTopAppBar(
@@ -59,7 +59,7 @@ fun TopAppBarWithBackButton(
             Text(
                 text = title,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -102,7 +102,7 @@ fun TopAppBarWithBackButtonAndEndIcon(
             Text(
                 text = title,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -138,7 +138,7 @@ fun TopAppBarWithBackButtonAndEndIcon(
 fun TopAppBarWithNavDrawerIcon(
     title: String,
     fontSize: TextUnit = 18.sp,
-    fontWeight: FontWeight? = FontWeight.Medium,
+    fontWeight: FontWeight? = FontWeight.SemiBold,
     fontFamily: FontFamily? = null,
     onNavigationIconClick: () -> Unit
 ) {

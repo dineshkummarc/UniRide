@@ -193,7 +193,7 @@ private fun ProfileSection(
         Text(
             text = student.userName ?: "Unknown",
             fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
         )
         Text(
@@ -373,11 +373,11 @@ private fun QuickActionsItem(
             Text(
                 text = stringResource(id = title),
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold
             )
             Text(
                 text = stringResource(id = subtitle),
-                fontSize = 12.sp,
+                fontSize = 13.sp,
                 lineHeight = 16.sp,
                 color = Dark
             )

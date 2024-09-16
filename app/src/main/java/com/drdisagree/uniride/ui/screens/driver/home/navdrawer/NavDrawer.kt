@@ -258,7 +258,7 @@ private fun DrawerHeader(
         Text(
             text = driver?.name ?: "Unknown",
             fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small3)
         )
         Text(

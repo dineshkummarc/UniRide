@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,11 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -45,7 +44,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
-import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
 import com.drdisagree.uniride.data.models.BusCategory
@@ -56,13 +54,13 @@ import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ContainerNavDrawer
+import com.drdisagree.uniride.ui.components.views.HomeHeader
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.NoInternetDialog
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.RequestNotificationPermission
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
-import com.drdisagree.uniride.ui.components.views.TopAppBarWithNavDrawerIcon
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
@@ -78,7 +76,7 @@ import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
 
 @RootNavGraph
 @Destination(style = SlideInOutTransition::class)
@@ -102,23 +100,13 @@ fun DriverHome(
         }
     ) {
         Scaffold(
-            topBar = {
-                TopAppBarWithNavDrawerIcon(
-                    title = stringResource(id = R.string.app_name),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.W600,
-                    fontFamily = FontFamily.Cursive,
-                    onNavigationIconClick = {
-                        coroutineScope.launch {
-                            drawerState.open()
-                        }
-                    }
-                )
-            },
+            topBar = {},
             content = { paddingValues ->
                 DriverHomeContent(
                     paddingValues = paddingValues,
-                    navigator = navigator
+                    navigator = navigator,
+                    coroutineScope = coroutineScope,
+                    drawerState = drawerState
                 )
             }
         )
@@ -128,7 +116,9 @@ fun DriverHome(
 @Composable
 private fun DriverHomeContent(
     paddingValues: PaddingValues,
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    coroutineScope: CoroutineScope,
+    drawerState: DrawerState
 ) {
     HandlePermissions()
 
@@ -139,6 +129,12 @@ private fun DriverHomeContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        HomeHeader(
+            driverScreen = true,
+            coroutineScope = coroutineScope,
+            drawerState = drawerState
+        )
+
         IncompleteProfileWarn(navigator = navigator)
 
         ShareLocationFields(navigator = navigator)
@@ -153,7 +149,7 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
             .padding(
                 start = MaterialTheme.spacing.medium1,
                 end = MaterialTheme.spacing.medium1,
-                top = MaterialTheme.spacing.medium1
+                top = MaterialTheme.spacing.small2
             )
             .clip(MaterialTheme.shapes.medium)
             .background(Color(0xFFEED2D1))
@@ -175,7 +171,7 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
                 SpanStyle(
                     color = DarkBlue,
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold
                 )
             ) {
                 pushStringAnnotation(tag = editProfile, annotation = editProfile)
@@ -188,7 +184,7 @@ private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
                 text = "আপনার প্রোফাইল অসম্পূর্ণ",
                 fontSize = 16.sp,
                 color = Color(0xFFBA5050),
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraSmall2)
             )
 
@@ -265,7 +261,7 @@ private fun ShareLocationFields(
     Text(
         text = "Let's start driving",
         fontSize = 16.sp,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
     )
 
@@ -350,7 +346,11 @@ private fun ShareLocationFields(
     ButtonPrimary(
         text = "Start Sharing Location",
         modifier = Modifier
-            .padding(horizontal = MaterialTheme.spacing.medium1)
+            .padding(
+                start = MaterialTheme.spacing.medium1,
+                end = MaterialTheme.spacing.medium1,
+                bottom = MaterialTheme.spacing.extraLarge2
+            )
             .fillMaxWidth()
     ) {
         if (selectedBus.name == defaultBusName.name ||

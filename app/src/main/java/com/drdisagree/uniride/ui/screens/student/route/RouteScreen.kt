@@ -45,7 +45,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -200,7 +199,7 @@ private fun RouteContent(
                                                 text = category.name,
                                                 color = categoryPillTextColor,
                                                 fontSize = 15.sp,
-                                                fontWeight = FontWeight.Medium
+                                                fontWeight = FontWeight.SemiBold
                                             )
 
                                             if (isSelected) {
@@ -327,9 +326,7 @@ private fun RoutesListItem(
                     Text(
                         text = "Route ${route.routeNo}",
                         fontSize = 16.sp,
-                        style = TextStyle(
-                            fontWeight = FontWeight.Medium
-                        )
+                        fontWeight = FontWeight.SemiBold
                     )
                     Box(
                         modifier = Modifier

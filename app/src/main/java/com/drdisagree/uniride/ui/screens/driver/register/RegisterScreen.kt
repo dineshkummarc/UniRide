@@ -131,7 +131,7 @@ private fun HeaderSection(
             pushStringAnnotation(tag = haveAccount, annotation = haveAccount)
             append(haveAccount)
         }
-        withStyle(SpanStyle(color = DarkBlue, fontSize = 18.sp, fontWeight = FontWeight.Medium)) {
+        withStyle(SpanStyle(color = DarkBlue, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)) {
             pushStringAnnotation(tag = login, annotation = login)
             append(login)
         }
