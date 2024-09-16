@@ -14,19 +14,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.LightGray
 
 @Composable
-fun BottomSheetStyleHeader(
-    driverScreen: Boolean = false
-) {
+fun BottomSheetStyleHeader() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(28.dp)
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .background(Gray15)
+            .background(LightGray)
             .padding(top = 4.dp),
         contentAlignment = Alignment.Center
     ) {
