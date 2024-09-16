@@ -72,7 +72,11 @@ fun StyledDropDownMenu(
                 modifier = Modifier
                     .then(
                         if (fillMaxWidth) Modifier
-                            .padding(top = 3.dp)
+                            .padding(
+                                top = 3.dp,
+                                start = MaterialTheme.spacing.small1,
+                                end = MaterialTheme.spacing.small1
+                            )
                             .fillMaxWidth() else Modifier
                     )
                     .menuAnchor(type = MenuAnchorType.PrimaryEditable),
@@ -108,7 +112,7 @@ fun StyledDropDownMenu(
                         text = {
                             Text(
                                 text = item,
-                                modifier = Modifier.padding(horizontal = 4.dp)
+                                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small3)
                             )
                         },
                         onClick = {
