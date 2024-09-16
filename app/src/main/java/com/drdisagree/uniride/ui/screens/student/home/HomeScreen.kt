@@ -41,11 +41,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -62,10 +60,10 @@ import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.HomeHeader
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.RequestLocationPermission
 import com.drdisagree.uniride.ui.components.views.RequestNotificationPermission
-import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
 import com.drdisagree.uniride.ui.screens.destinations.NearbyBusLocationScreenDestination
@@ -91,14 +89,7 @@ fun HomeScreen(
 ) {
     Container(shadow = false) {
         Scaffold(
-            topBar = {
-                TopAppBarNoButton(
-                    title = stringResource(id = R.string.app_name),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.W600,
-                    fontFamily = FontFamily.Cursive
-                )
-            },
+            topBar = {},
             content = { paddingValues ->
                 HomeContent(
                     navigator = navigator,
@@ -139,13 +130,17 @@ private fun HomeContent(
             .padding(paddingValues = paddingValues)
     ) {
         item {
+            HomeHeader()
+        }
+
+        item {
             Text(
                 text = "Announcement",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
                     start = MaterialTheme.spacing.medium1,
-                    top = MaterialTheme.spacing.medium1
+                    top = MaterialTheme.spacing.small2
                 )
             )
         }
@@ -222,7 +217,7 @@ private fun HomeContent(
             Text(
                 text = "Nearby Buses",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
                     top = MaterialTheme.spacing.medium1,
                     start = MaterialTheme.spacing.medium1,
@@ -336,7 +331,7 @@ private fun NearbyBusListItem(
                     text = runningBus.bus.name,
                     fontSize = 16.sp,
                     style = TextStyle(
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.SemiBold
                     )
                 )
                 Text(
@@ -346,7 +341,12 @@ private fun NearbyBusListItem(
                 )
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = Color.Black)) {
+                        withStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black
+                            )
+                        ) {
                             append("Location: ")
                         }
                         append(
@@ -382,7 +382,7 @@ private fun NearbyBusListItem(
                     text = "Departed at",
                     color = Color.Black,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold
                 )
 
                 Text(

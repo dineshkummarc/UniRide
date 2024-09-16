@@ -38,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -255,13 +254,16 @@ fun ScheduleListItem(
                 Text(
                     text = schedule.bus.name,
                     fontSize = 16.sp,
-                    style = TextStyle(
-                        fontWeight = FontWeight.Medium
-                    )
+                    fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = Color.Black)) {
+                        withStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black
+                            )
+                        ) {
                             append("From: ")
                         }
                         append(schedule.from.name)
@@ -271,7 +273,12 @@ fun ScheduleListItem(
                 )
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = Color.Black)) {
+                        withStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black
+                            )
+                        ) {
                             append("To: ")
                         }
                         append(schedule.to.name)
@@ -307,7 +314,7 @@ fun ScheduleListItem(
                     text = schedule.time,
                     color = Color.Black,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(end = MaterialTheme.spacing.small2)
                 )
             }

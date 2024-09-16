@@ -176,7 +176,7 @@ private fun VerificationContent(
         Text(
             text = "Front Side of\nNID Card",
             fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                 .weight(1f)
                 .padding(
@@ -191,7 +191,7 @@ private fun VerificationContent(
         Text(
             text = "Back Side of\nNID Card",
             fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                 .weight(1f)
                 .padding(
@@ -360,7 +360,7 @@ private fun VerificationContent(
         Text(
             text = "Front Side of\nDriving License",
             fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                 .weight(1f)
                 .padding(
@@ -375,7 +375,7 @@ private fun VerificationContent(
         Text(
             text = "Back Side of\nDriving License",
             fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                 .weight(1f)
                 .padding(

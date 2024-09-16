@@ -147,7 +147,7 @@ private fun HeaderSection(
             pushStringAnnotation(tag = noAccount, annotation = noAccount)
             append(noAccount)
         }
-        withStyle(SpanStyle(color = DarkBlue, fontSize = 18.sp, fontWeight = FontWeight.Medium)) {
+        withStyle(SpanStyle(color = DarkBlue, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)) {
             pushStringAnnotation(tag = register, annotation = register)
             append(register)
         }
@@ -379,7 +379,7 @@ private fun ForgotPasswordSection(
             pushStringAnnotation(tag = forgotPass, annotation = forgotPass)
             append(forgotPass)
         }
-        withStyle(SpanStyle(color = DarkBlue, fontSize = 14.sp, fontWeight = FontWeight.Medium)) {
+        withStyle(SpanStyle(color = DarkBlue, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)) {
             pushStringAnnotation(tag = recover, annotation = recover)
             append(recover)
         }
@@ -427,7 +427,7 @@ private fun ForgotPasswordSection(
                 Text(
                     text = "Reset Password",
                     fontSize = 17.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold
                 )
 
                 Text(
