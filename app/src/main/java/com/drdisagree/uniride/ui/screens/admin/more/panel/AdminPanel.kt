@@ -22,11 +22,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Observer
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
@@ -89,19 +85,7 @@ private fun MoreContent(
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
-    var isAdminState by remember { mutableStateOf<Boolean?>(null) }
-
-    DisposableEffect(key1 = accountStatusViewModel.isAdmin) {
-        val isAdminLiveData = accountStatusViewModel.isAdmin
-        val observer = Observer<Boolean?> { isAdmin ->
-            isAdminState = isAdmin
-        }
-        isAdminLiveData.observeForever(observer)
-
-        onDispose {
-            isAdminLiveData.removeObserver(observer)
-        }
-    }
+    val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
 
     when (isAdminState) {
         null -> {

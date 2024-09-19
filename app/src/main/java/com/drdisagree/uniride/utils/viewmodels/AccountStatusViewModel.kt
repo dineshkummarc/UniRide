@@ -1,14 +1,13 @@
 package com.drdisagree.uniride.utils.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.utils.Constant.ADMIN_COLLECTION
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -19,20 +18,22 @@ class AccountStatusViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
-    private val _isAdmin = MutableLiveData<Boolean?>(null)
-    val isAdmin: LiveData<Boolean?> get() = _isAdmin
+    private val _isAdmin = MutableStateFlow<Boolean?>(null)
+    val isAdmin = _isAdmin.asStateFlow()
 
     init {
-        firebaseAuth.currentUser?.uid?.let { fetchUserAdminStatus(it) }
+        fetchUserAdminStatus(firebaseAuth.currentUser?.uid)
     }
 
-    private fun fetchUserAdminStatus(userId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+    private fun fetchUserAdminStatus(userId: String?) {
+        if (userId == null) return
+
+        viewModelScope.launch {
             try {
                 val isAdmin = isUserAdmin(userId)
-                _isAdmin.postValue(isAdmin)
+                _isAdmin.emit(isAdmin)
             } catch (ignored: Exception) {
-                _isAdmin.postValue(false)
+                _isAdmin.emit(false)
             }
         }
     }

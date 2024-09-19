@@ -17,8 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Observer
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
@@ -42,8 +41,8 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -79,19 +78,7 @@ private fun NewBusContent(
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
-    var isAdminState by remember { mutableStateOf<Boolean?>(null) }
-
-    DisposableEffect(key1 = accountStatusViewModel.isAdmin) {
-        val isAdminLiveData = accountStatusViewModel.isAdmin
-        val observer = Observer<Boolean?> { isAdmin ->
-            isAdminState = isAdmin
-        }
-        isAdminLiveData.observeForever(observer)
-
-        onDispose {
-            isAdminLiveData.removeObserver(observer)
-        }
-    }
+    val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
 
     when (isAdminState) {
         null -> {
