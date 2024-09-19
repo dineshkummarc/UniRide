@@ -51,7 +51,7 @@ fun HomeHeader(
         modifier = Modifier
             .fillMaxWidth()
             .height(240.dp)
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         Image(
             painter = painterResource(R.drawable.header_background),
@@ -59,7 +59,7 @@ fun HomeHeader(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .alpha(0.2f)
+                .alpha(0.4f)
         )
         Box(
             modifier = Modifier
@@ -124,16 +124,16 @@ fun HomeHeader(
                     colorFilter = ColorFilter.tint(Black),
                     modifier = Modifier
                         .padding(
-                            bottom = 24.dp,
+                            bottom = 20.dp,
                             start = MaterialTheme.spacing.medium1
                         )
-                        .size(32.dp)
+                        .size(36.dp)
                 )
             }
             Text(
                 text = stringResource(R.string.app_name).uppercase(),
                 fontSize = 28.sp,
-                letterSpacing = 1.4.sp,
+                letterSpacing = 1.2.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
                     start = MaterialTheme.spacing.medium1
@@ -142,7 +142,7 @@ fun HomeHeader(
             Text(
                 text = "Ready to ${if (driverScreen) "drive" else "explore"}?",
                 fontSize = 20.sp,
-                letterSpacing = 0.6.sp,
+                letterSpacing = 0.4.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(
                     start = MaterialTheme.spacing.medium1
