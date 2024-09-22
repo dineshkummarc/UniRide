@@ -48,6 +48,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.models.Student
+import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
@@ -66,6 +67,7 @@ import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -110,7 +112,9 @@ fun MoreScreen(
                                 popUpTo(NavGraphs.root.startRoute)
                                 launchSingleTop = true
                             }
+
                             Prefs.clearPref(WHICH_USER_COLLECTION)
+                            Firebase.messaging.unsubscribeFromTopic(STUDENT_COLLECTION)
                         }
                     }
                 )

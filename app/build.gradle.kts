@@ -108,6 +108,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.play.services.auth)
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
 
     // Coroutines for firebase
     implementation(libs.kotlinx.coroutines.play.services)

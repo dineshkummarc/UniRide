@@ -1,6 +1,7 @@
 package com.drdisagree.uniride.ui.screens.driver.home
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -73,6 +74,8 @@ import com.drdisagree.uniride.utils.SystemUtils.isInternetAvailable
 import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
 import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
 import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -480,6 +483,16 @@ private fun HandlePermissions(
 
     LaunchedEffect(Unit) {
         Prefs.putString(WHICH_USER_COLLECTION, DRIVER_COLLECTION)
+        Firebase.messaging
+            .subscribeToTopic(DRIVER_COLLECTION)
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed to $DRIVER_COLLECTION"
+                if (!task.isSuccessful) {
+                    msg = "Failed to subscribe to $DRIVER_COLLECTION"
+                }
+                Log.d("FCM", msg)
+            }
+
         locationPermissionGranted = areLocationPermissionsGranted(context)
         notificationPermissionGranted = isNotificationPermissionGranted(context)
     }

@@ -1,6 +1,7 @@
 package com.drdisagree.uniride.ui.screens.student.home
 
 import android.location.Location
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -75,6 +76,8 @@ import com.drdisagree.uniride.utils.Formatter.getFormattedTime
 import com.drdisagree.uniride.utils.viewmodels.GeocodingViewModel
 import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
 import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import eu.wewox.textflow.TextFlow
@@ -409,6 +412,16 @@ private fun HandlePermissions(
 
     LaunchedEffect(Unit) {
         Prefs.putString(WHICH_USER_COLLECTION, STUDENT_COLLECTION)
+        Firebase.messaging
+            .subscribeToTopic(STUDENT_COLLECTION)
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed to $STUDENT_COLLECTION"
+                if (!task.isSuccessful) {
+                    msg = "Failed to subscribe to $STUDENT_COLLECTION"
+                }
+                Log.d("FCM", msg)
+            }
+
         locationPermissionGranted = areLocationPermissionsGranted(context)
         notificationPermissionGranted = isNotificationPermissionGranted(context)
     }
