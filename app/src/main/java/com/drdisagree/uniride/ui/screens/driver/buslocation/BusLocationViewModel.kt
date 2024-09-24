@@ -1,11 +1,14 @@
 package com.drdisagree.uniride.ui.screens.driver.buslocation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.BusStatus
 import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.DriveHistory
 import com.drdisagree.uniride.data.models.LatLngSerializable
 import com.drdisagree.uniride.data.models.RunningBus
+import com.drdisagree.uniride.data.utils.Constant.DRIVE_HISTORY_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -126,25 +129,37 @@ class BusLocationViewModel @Inject constructor(
             val updatedBus = bus.toObject(RunningBus::class.java)?.copy(status = newStatus)
 
             if (updatedBus != null) {
-                firestore.collection(RUNNING_BUS_COLLECTION)
-                    .document(bus.id)
-                    .set(updatedBus)
-                    .addOnSuccessListener {
-                        _runningBus.value = updatedBus
+                firestore.runTransaction { transaction ->
+                    val busRef = firestore.collection(RUNNING_BUS_COLLECTION).document(bus.id)
+                    val driveHistoryRef =
+                        firestore.collection(DRIVE_HISTORY_COLLECTION).document(updatedBus.uuid)
 
-                        viewModelScope.launch {
-                            _updateBusStatus.emit(
-                                Resource.Success(Unit)
-                            )
-                        }
+                    val driveHistory = DriveHistory(
+                        bus = updatedBus.bus,
+                        category = updatedBus.category,
+                        driver = updatedBus.driver,
+                        departedFrom = updatedBus.departedFrom,
+                        departedTo = updatedBus.departedTo,
+                        departedAt = System.currentTimeMillis()
+                    )
+
+                    transaction.set(busRef, updatedBus)
+                    transaction.set(driveHistoryRef, driveHistory)
+                }.addOnSuccessListener {
+                    _runningBus.value = updatedBus
+
+                    viewModelScope.launch {
+                        _updateBusStatus.emit(
+                            Resource.Success(Unit)
+                        )
                     }
-                    .addOnFailureListener {
-                        viewModelScope.launch {
-                            _updateBusStatus.emit(
-                                Resource.Error("Failed to update bus status")
-                            )
-                        }
+                }.addOnFailureListener {
+                    viewModelScope.launch {
+                        _updateBusStatus.emit(
+                            Resource.Error("Failed to update bus status")
+                        )
                     }
+                }
             } else {
                 _updateBusStatus.emit(
                     Resource.Error("Failed to convert bus document to RunningBus")
@@ -195,27 +210,49 @@ class BusLocationViewModel @Inject constructor(
                 )
 
             if (updatedBus != null) {
-                firestore.collection(RUNNING_BUS_COLLECTION)
-                    .document(bus.id)
-                    .set(updatedBus)
-                    .addOnSuccessListener {
-                        _runningBus.value = updatedBus
+                firestore.runTransaction { transaction ->
+                    val busRef = firestore.collection(RUNNING_BUS_COLLECTION).document(bus.id)
+                    val driveHistoryRef =
+                        firestore.collection(DRIVE_HISTORY_COLLECTION).document(updatedBus.uuid)
 
-                        viewModelScope.launch {
-                            _updateBusStatus.emit(
-                                Resource.Success(Unit)
-                            )
-                            onResult(true)
-                        }
+                    val currentDriveHistorySnapshot = transaction.get(driveHistoryRef)
+
+                    if (currentDriveHistorySnapshot.exists()) {
+                        val currentDriveHistory = currentDriveHistorySnapshot
+                            .toObject(DriveHistory::class.java)
+
+                        val updatedDriveHistory = currentDriveHistory?.copy(
+                            bus = updatedBus.bus,
+                            category = updatedBus.category,
+                            driver = updatedBus.driver,
+                            departedFrom = updatedBus.departedFrom,
+                            departedTo = updatedBus.departedTo,
+                            reachedAt = System.currentTimeMillis(),
+                            isBusFull = updatedBus.isBusFull
+                        ) ?: return@runTransaction
+
+                        transaction.set(driveHistoryRef, updatedDriveHistory)
                     }
-                    .addOnFailureListener {
-                        viewModelScope.launch {
-                            _updateBusStatus.emit(
-                                Resource.Error("Failed to update bus status")
-                            )
-                            onResult(false)
-                        }
+
+                    transaction.set(busRef, updatedBus)
+                }.addOnSuccessListener {
+                    _runningBus.value = updatedBus
+
+                    viewModelScope.launch {
+                        _updateBusStatus.emit(
+                            Resource.Success(Unit)
+                        )
+                        onResult(true)
                     }
+                }.addOnFailureListener { exception ->
+                    Log.e("BusLocationViewModel", "Failed to update bus status", exception)
+                    viewModelScope.launch {
+                        _updateBusStatus.emit(
+                            Resource.Error("Failed to update bus status")
+                        )
+                        onResult(false)
+                    }
+                }
             } else {
                 _updateBusStatus.emit(
                     Resource.Error("Failed to convert bus document to RunningBus")
