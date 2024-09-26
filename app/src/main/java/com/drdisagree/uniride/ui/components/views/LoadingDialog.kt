@@ -2,10 +2,12 @@ package com.drdisagree.uniride.ui.components.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -37,38 +39,45 @@ fun LoadingDialog(
         onDismissRequest = onDismissRequest,
         properties = dialogProperties
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
-                .shadow(
-                    elevation = MaterialTheme.spacing.medium1,
-                    shape = RoundedCornerShape(MaterialTheme.spacing.medium2)
-                )
-                .background(
-                    Color.White,
-                    shape = RoundedCornerShape(MaterialTheme.spacing.medium2)
-                )
-                .padding(
-                    start = MaterialTheme.spacing.large2,
-                    top = MaterialTheme.spacing.medium3,
-                    end = MaterialTheme.spacing.large2,
-                    bottom = MaterialTheme.spacing.medium2
-                )
+                .wrapContentSize()
+                .padding(MaterialTheme.spacing.medium3)
         ) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(56.dp)
-            )
-            Text(
-                text = text,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .padding(top = MaterialTheme.spacing.small2)
-                    .widthIn(max = 120.dp),
-                overflow = TextOverflow.Ellipsis
-            )
+                    .shadow(
+                        elevation = MaterialTheme.spacing.medium1,
+                        shape = RoundedCornerShape(MaterialTheme.spacing.medium2)
+                    )
+                    .background(
+                        Color.White,
+                        shape = RoundedCornerShape(MaterialTheme.spacing.medium2)
+                    )
+                    .padding(
+                        start = MaterialTheme.spacing.large2,
+                        top = MaterialTheme.spacing.medium3,
+                        end = MaterialTheme.spacing.large2,
+                        bottom = MaterialTheme.spacing.medium2
+                    )
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(56.dp)
+                )
+                Text(
+                    text = text,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(top = MaterialTheme.spacing.small2)
+                        .widthIn(max = 120.dp),
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

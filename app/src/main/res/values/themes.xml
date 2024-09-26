@@ -3,6 +3,7 @@
 
     <style name="Theme.UniRide" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:windowBackground">@color/white</item>
+        <item name="android:dialogTheme">@style/Theme.AlertDialog</item>
     </style>
 
     <style name="Theme.UniRide.SplashScreen" parent="Theme.SplashScreen">

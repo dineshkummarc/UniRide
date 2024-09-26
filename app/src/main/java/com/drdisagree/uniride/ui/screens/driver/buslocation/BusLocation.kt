@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -488,6 +489,8 @@ fun CheckGpsAndInternetPeriodically() {
 
     if (requestGps) {
         AlertDialog(
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(MaterialTheme.spacing.medium3),
             onDismissRequest = {},
             title = { Text(text = "GPS Not Enabled") },
             text = { Text(text = "Please enable GPS to share your location.") },
