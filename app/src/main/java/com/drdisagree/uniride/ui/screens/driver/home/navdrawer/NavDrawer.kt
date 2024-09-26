@@ -50,6 +50,7 @@ import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.data.utils.Constant
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.PHONE_NUMBER_PREFIX
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
@@ -140,6 +141,7 @@ fun NavigationDrawer(
 
                         driverLoginViewModel.signOut()
 
+                        navigator.popBackStack()
                         navigator.navigate(
                             OnBoardingScreenDestination()
                         ) {
@@ -260,6 +262,12 @@ private fun DrawerHeader(
             }
         }
 
+        val phoneNumber = if (driver?.phone?.startsWith(PHONE_NUMBER_PREFIX) == true) {
+            driver?.phone
+        } else {
+            "$PHONE_NUMBER_PREFIX${driver?.phone?.drop(1)}"
+        }
+
         Text(
             text = driver?.name ?: "Unknown",
             fontSize = 16.sp,
@@ -267,7 +275,7 @@ private fun DrawerHeader(
             modifier = Modifier.padding(top = MaterialTheme.spacing.small3)
         )
         Text(
-            text = driver?.email ?: "unknown@diu.edu.bd",
+            text = driver?.email ?: phoneNumber ?: "unknown@diu.edu.bd",
             fontSize = 14.sp,
             lineHeight = 18.sp,
             color = Dark

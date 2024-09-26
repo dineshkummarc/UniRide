@@ -11,7 +11,7 @@ data class Driver(
     val id: String,
     val name: String,
     val phone: String? = null,
-    val email: String,
+    val email: String? = null,
     val profileImage: String? = null,
     val documents: List<String>,
     val accountStatus: AccountStatus = AccountStatus.PENDING
@@ -19,7 +19,6 @@ data class Driver(
     constructor() : this(
         id = "",
         name = "",
-        email = "",
         documents = emptyList(),
     )
 }

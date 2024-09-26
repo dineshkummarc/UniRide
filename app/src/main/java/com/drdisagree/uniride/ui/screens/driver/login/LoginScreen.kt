@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.driver.login
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AlternateEmail
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,8 +59,10 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.OtpInputDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
+import com.drdisagree.uniride.ui.components.views.ToggleState
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.DriverHomeDestination
 import com.drdisagree.uniride.ui.screens.destinations.RegisterScreenDestination
@@ -67,6 +71,7 @@ import com.drdisagree.uniride.ui.screens.driver.login.utils.validateEmail
 import com.drdisagree.uniride.ui.theme.DarkBlue
 import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.google.firebase.auth.PhoneAuthProvider
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -95,7 +100,6 @@ fun LoginScreen(
             ) {
                 HeaderSection(navigator = navigator)
                 LoginFields(navigator = navigator)
-                ForgotPasswordSection()
             }
         }
     }
@@ -153,6 +157,7 @@ private fun HeaderSection(
         }
     }
 
+    @Suppress("DEPRECATION")
     ClickableText(
         text = annotatedString,
         onClick = { offset ->
@@ -168,7 +173,7 @@ private fun HeaderSection(
         modifier = Modifier
             .padding(
                 top = MaterialTheme.spacing.small2,
-                bottom = MaterialTheme.spacing.extraLarge2,
+                bottom = MaterialTheme.spacing.extraLarge1,
                 start = MaterialTheme.spacing.small2
             )
     )
@@ -180,89 +185,151 @@ private fun LoginFields(
     loginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    var phone by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+    var isCorrectPhone by rememberSaveable { mutableStateOf(true) }
     var isCorrectEmail by rememberSaveable { mutableStateOf(true) }
     var isCorrectPassword by rememberSaveable { mutableStateOf(true) }
+    var phoneErrorMessage by rememberSaveable { mutableStateOf("") }
     var emailErrorMessage by rememberSaveable { mutableStateOf("") }
     var passwordErrorMessage by rememberSaveable { mutableStateOf("") }
 
-    StyledTextField(
-        placeholder = "Email Address",
+    val states = listOf(
+        "Email",
+        "Phone"
+    )
+    var selectedOption by rememberSaveable { mutableStateOf(states[0]) }
+
+    val onSelectionChange: (String) -> Unit = { text ->
+        selectedOption = text
+    }
+
+    ToggleState(
         modifier = Modifier
             .padding(horizontal = MaterialTheme.spacing.small2),
-        onValueChange = {
-            email = it
-
-            isCorrectEmail = true
-        },
-        inputText = email,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email
-        ),
-        leadingIcon = Icons.Rounded.AlternateEmail,
-        isError = !isCorrectEmail,
-        errorIconOnClick = {
-            if (!isCorrectEmail) {
-                Toast.makeText(
-                    context,
-                    emailErrorMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+        states = states,
+        selectedOption = selectedOption,
+        onSelectionChange = onSelectionChange,
+        fullWidth = true
     )
 
-    StyledTextField(
-        placeholder = "Password",
-        modifier = Modifier
-            .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
-                top = MaterialTheme.spacing.medium1
+    if (selectedOption == states[0]) {
+        StyledTextField(
+            placeholder = "Email Address",
+            modifier = Modifier
+                .padding(
+                    start = MaterialTheme.spacing.small2,
+                    end = MaterialTheme.spacing.small2,
+                    top = MaterialTheme.spacing.medium1
+                ),
+            onValueChange = {
+                email = it
+
+                isCorrectEmail = true
+            },
+            inputText = email,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
             ),
-        onValueChange = {
-            password = it
+            leadingIcon = Icons.Rounded.AlternateEmail,
+            isError = !isCorrectEmail,
+            errorIconOnClick = {
+                if (!isCorrectEmail) {
+                    Toast.makeText(
+                        context,
+                        emailErrorMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        )
 
-            if (it.isEmpty()) {
-                isPasswordVisible = false
-            }
-            isCorrectPassword = true
-        },
-        inputText = password,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password
-        ),
-        visualTransformation = if (isPasswordVisible) {
-            VisualTransformation.None
-        } else {
-            PasswordVisualTransformation()
-        },
-        leadingIcon = Icons.Rounded.Lock,
-        trailingIcon = if (password.isNotEmpty()) {
-            if (isPasswordVisible) {
-                Icons.Rounded.Visibility
+        StyledTextField(
+            placeholder = "Password",
+            modifier = Modifier
+                .padding(
+                    start = MaterialTheme.spacing.small2,
+                    end = MaterialTheme.spacing.small2,
+                    top = MaterialTheme.spacing.medium1
+                ),
+            onValueChange = {
+                password = it
+
+                if (it.isEmpty()) {
+                    isPasswordVisible = false
+                }
+                isCorrectPassword = true
+            },
+            inputText = password,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
+            visualTransformation = if (isPasswordVisible) {
+                VisualTransformation.None
             } else {
-                Icons.Rounded.VisibilityOff
+                PasswordVisualTransformation()
+            },
+            leadingIcon = Icons.Rounded.Lock,
+            trailingIcon = if (password.isNotEmpty()) {
+                if (isPasswordVisible) {
+                    Icons.Rounded.Visibility
+                } else {
+                    Icons.Rounded.VisibilityOff
+                }
+            } else {
+                null
+            },
+            trailingIconOnClick = {
+                isPasswordVisible = !isPasswordVisible
+            },
+            isError = !isCorrectPassword,
+            errorIconOnClick = {
+                if (!isCorrectPassword) {
+                    Toast.makeText(
+                        context,
+                        passwordErrorMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        } else {
-            null
-        },
-        trailingIconOnClick = {
-            isPasswordVisible = !isPasswordVisible
-        },
-        isError = !isCorrectPassword,
-        errorIconOnClick = {
-            if (!isCorrectPassword) {
-                Toast.makeText(
-                    context,
-                    passwordErrorMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
+        )
+    } else {
+        StyledTextField(
+            placeholder = "Phone Number",
+            modifier = Modifier
+                .padding(
+                    start = MaterialTheme.spacing.small2,
+                    end = MaterialTheme.spacing.small2,
+                    top = MaterialTheme.spacing.medium1
+                ),
+            onValueChange = {
+                phone = it
+
+                isCorrectPhone = true
+            },
+            inputText = phone,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone
+            ),
+            leadingIcon = Icons.Rounded.Phone,
+            isError = !isCorrectPhone,
+            errorIconOnClick = {
+                if (!isCorrectPhone) {
+                    Toast.makeText(
+                        context,
+                        phoneErrorMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
-    )
+        )
+    }
+
+    var showLoadingDialog by remember { mutableStateOf(false) }
+    var showOtpDialog by remember { mutableStateOf(false) }
+    var sentVerificationId by remember { mutableStateOf("") }
 
     ButtonPrimary(
         modifier = Modifier
@@ -274,16 +341,36 @@ private fun LoginFields(
         text = "Login"
     ) {
         // Reset error messages
-        isCorrectEmail = true
-        isCorrectPassword = true
+        if (selectedOption == states[0]) {
+            isCorrectEmail = true
+            isCorrectPassword = true
+        } else {
+            isCorrectPhone = true
+        }
 
-        loginViewModel.login(
-            email = email,
-            password = password
-        )
+        if (selectedOption == states[0]) {
+            showOtpDialog = false
+
+            loginViewModel.loginWithEmailPassword(
+                email = email,
+                password = password
+            )
+        } else {
+            showOtpDialog = true
+
+            loginViewModel.loginWithPhoneNumber(
+                phone = phone,
+                activity = context as Activity,
+                onCodeSent = { verificationId, _ ->
+                    sentVerificationId = verificationId
+                }
+            )
+        }
     }
 
-    var showLoadingDialog by remember { mutableStateOf(false) }
+    if (selectedOption == states[0]) {
+        ForgotPasswordSection()
+    }
 
     LaunchedEffect(Unit) {
         loginViewModel.login.collect { result ->
@@ -294,6 +381,7 @@ private fun LoginFields(
 
                 is Resource.Success -> {
                     showLoadingDialog = false
+                    showOtpDialog = false
 
                     navigator.navigate(
                         DriverHomeDestination()
@@ -305,6 +393,7 @@ private fun LoginFields(
 
                 is Resource.Error -> {
                     showLoadingDialog = false
+                    showOtpDialog = false
 
                     var message = result.message.toString()
                     val messageLower = message.lowercase(Locale.ROOT)
@@ -337,6 +426,14 @@ private fun LoginFields(
                             message = "Invalid email or password"
                         }
 
+                        if (messageLower.contains("phone number") ||
+                            messageLower.contains("credential is incorrect")
+                        ) {
+                            isCorrectPhone = false
+                            phoneErrorMessage = message
+                            errorShown = true
+                        }
+
                         if (!errorShown) {
                             Toast.makeText(
                                 context,
@@ -349,6 +446,7 @@ private fun LoginFields(
 
                 else -> {
                     showLoadingDialog = false
+                    showOtpDialog = false
                 }
             }
         }
@@ -356,6 +454,41 @@ private fun LoginFields(
 
     if (showLoadingDialog) {
         LoadingDialog()
+    }
+
+    if (showOtpDialog) {
+        OtpInputDialog(
+            onDismissRequest = {
+                showOtpDialog = false
+                showLoadingDialog = false
+
+                Toast.makeText(
+                    context,
+                    "Login cancelled",
+                    Toast.LENGTH_LONG
+                ).show()
+            },
+            onSubmit = { otp ->
+                if (sentVerificationId.isNotEmpty() && otp.isNotEmpty()) {
+                    showOtpDialog = false
+                    loginViewModel.verifyPhoneNumberWithCode(
+                        phoneAuthCredential = PhoneAuthProvider.getCredential(
+                            sentVerificationId,
+                            otp
+                        )
+                    )
+                }
+            },
+            resendOtp = {
+                loginViewModel.loginWithPhoneNumber(
+                    phone = phone,
+                    activity = context as Activity,
+                    onCodeSent = { verificationId, _ ->
+                        sentVerificationId = verificationId
+                    }
+                )
+            }
+        )
     }
 }
 
@@ -385,6 +518,7 @@ private fun ForgotPasswordSection(
         }
     }
 
+    @Suppress("DEPRECATION")
     ClickableText(
         text = annotatedString,
         style = TextStyle(textAlign = TextAlign.Center),
@@ -518,7 +652,7 @@ private fun ForgotPasswordSection(
                     is Resource.Error -> {
                         Toast.makeText(
                             context,
-                            "${it.data.toString()}",
+                            it.data.toString(),
                             Toast.LENGTH_SHORT
                         ).show()
                     }

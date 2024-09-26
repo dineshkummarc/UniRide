@@ -21,3 +21,15 @@ fun validatePassword(password: String): LoginValidation {
         LoginValidation.Valid
     }
 }
+
+fun validatePhoneNumber(phone: String): LoginValidation {
+    return if (phone.isEmpty()) {
+        LoginValidation.Invalid("Phone number cannot be empty")
+    } else if (phone.length != 11 && phone.length != 14) {
+        LoginValidation.Invalid("Invalid phone number")
+    } else if (!Patterns.PHONE.matcher(phone).matches()) {
+        LoginValidation.Invalid("Invalid phone number format")
+    } else {
+        LoginValidation.Valid
+    }
+}

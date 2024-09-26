@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.AlternateEmail
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockClock
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +55,7 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
+import com.drdisagree.uniride.ui.components.views.ToggleState
 import com.drdisagree.uniride.ui.screens.destinations.DocumentVerificationScreenDestination
 import com.drdisagree.uniride.ui.theme.DarkBlue
 import com.drdisagree.uniride.ui.theme.DarkGray
@@ -94,7 +96,7 @@ private fun HeaderSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 84.dp),
+            .padding(top = MaterialTheme.spacing.extraLarge2),
         horizontalArrangement = Arrangement.Center
     ) {
         Image(
@@ -119,7 +121,7 @@ private fun HeaderSection(
         fontWeight = FontWeight(600),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = MaterialTheme.spacing.large3),
+            .padding(top = MaterialTheme.spacing.large2),
         textAlign = TextAlign.Center
     )
 
@@ -137,6 +139,7 @@ private fun HeaderSection(
         }
     }
 
+    @Suppress("DEPRECATION")
     ClickableText(
         text = annotatedString,
         onClick = { offset ->
@@ -149,7 +152,7 @@ private fun HeaderSection(
             .fillMaxWidth()
             .padding(
                 top = MaterialTheme.spacing.small2,
-                bottom = MaterialTheme.spacing.extraLarge2
+                bottom = MaterialTheme.spacing.extraLarge1
             ),
         style = TextStyle(
             textAlign = TextAlign.Center
@@ -163,24 +166,50 @@ private fun DriverRegisterFields(
 ) {
     val context = LocalContext.current
     var fullName by rememberSaveable { mutableStateOf("") }
+    var phone by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var repeatPassword by rememberSaveable { mutableStateOf("") }
     var isRepeatPasswordVisible by remember { mutableStateOf(false) }
+    var isCorrectPhone by rememberSaveable { mutableStateOf(true) }
     var isCorrectEmail by rememberSaveable { mutableStateOf(true) }
     var isCorrectPassword by rememberSaveable { mutableStateOf(true) }
     var isCorrectRepeatPassword by rememberSaveable { mutableStateOf(true) }
     var isCorrectFullName by rememberSaveable { mutableStateOf(true) }
     var fullNameErrorMessage by rememberSaveable { mutableStateOf("") }
+    var phoneErrorMessage by rememberSaveable { mutableStateOf("") }
     var emailErrorMessage by rememberSaveable { mutableStateOf("") }
     var passwordErrorMessage by rememberSaveable { mutableStateOf("") }
     var repeatPasswordErrorMessage by rememberSaveable { mutableStateOf("") }
 
+    val states = listOf(
+        "Email",
+        "Phone"
+    )
+    var selectedOption by rememberSaveable { mutableStateOf(states[0]) }
+
+    val onSelectionChange: (String) -> Unit = { text ->
+        selectedOption = text
+    }
+
+    ToggleState(
+        modifier = Modifier
+            .padding(horizontal = MaterialTheme.spacing.small2),
+        states = states,
+        selectedOption = selectedOption,
+        onSelectionChange = onSelectionChange,
+        fullWidth = true
+    )
+
     StyledTextField(
         placeholder = "Full Name",
         modifier = Modifier
-            .padding(horizontal = MaterialTheme.spacing.small2),
+            .padding(
+                start = MaterialTheme.spacing.small2,
+                end = MaterialTheme.spacing.small2,
+                top = MaterialTheme.spacing.medium1
+            ),
         onValueChange = {
             fullName = it
 
@@ -203,135 +232,167 @@ private fun DriverRegisterFields(
         }
     )
 
-    StyledTextField(
-        placeholder = "Email",
-        modifier = Modifier
-            .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
-                top = MaterialTheme.spacing.medium1
+    if (selectedOption == states[0]) {
+        StyledTextField(
+            placeholder = "Email",
+            modifier = Modifier
+                .padding(
+                    start = MaterialTheme.spacing.small2,
+                    end = MaterialTheme.spacing.small2,
+                    top = MaterialTheme.spacing.medium1
+                ),
+            onValueChange = {
+                email = it
+
+                isCorrectEmail = true
+            },
+            inputText = email,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
             ),
-        onValueChange = {
-            email = it
-
-            isCorrectEmail = true
-        },
-        inputText = email,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email
-        ),
-        leadingIcon = Icons.Rounded.AlternateEmail,
-        isError = !isCorrectEmail,
-        errorIconOnClick = {
-            if (!isCorrectEmail) {
-                Toast.makeText(
-                    context,
-                    emailErrorMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
+            leadingIcon = Icons.Rounded.AlternateEmail,
+            isError = !isCorrectEmail,
+            errorIconOnClick = {
+                if (!isCorrectEmail) {
+                    Toast.makeText(
+                        context,
+                        emailErrorMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
-    )
+        )
 
-    StyledTextField(
-        placeholder = "Password",
-        modifier = Modifier
-            .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
-                top = MaterialTheme.spacing.medium1
+        StyledTextField(
+            placeholder = "Password",
+            modifier = Modifier
+                .padding(
+                    start = MaterialTheme.spacing.small2,
+                    end = MaterialTheme.spacing.small2,
+                    top = MaterialTheme.spacing.medium1
+                ),
+            onValueChange = {
+                password = it
+
+                if (it.isEmpty()) {
+                    isPasswordVisible = false
+                }
+                isCorrectPassword = true
+            },
+            inputText = password,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
             ),
-        onValueChange = {
-            password = it
-
-            if (it.isEmpty()) {
-                isPasswordVisible = false
-            }
-            isCorrectPassword = true
-        },
-        inputText = password,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password
-        ),
-        visualTransformation = if (isPasswordVisible) {
-            VisualTransformation.None
-        } else {
-            PasswordVisualTransformation()
-        },
-        leadingIcon = Icons.Rounded.Lock,
-        trailingIcon = if (password.isNotEmpty()) {
-            if (isPasswordVisible) {
-                Icons.Rounded.Visibility
+            visualTransformation = if (isPasswordVisible) {
+                VisualTransformation.None
             } else {
-                Icons.Rounded.VisibilityOff
-            }
-        } else {
-            null
-        },
-        trailingIconOnClick = {
-            isPasswordVisible = !isPasswordVisible
-        },
-        isError = !isCorrectPassword,
-        errorIconOnClick = {
-            if (!isCorrectPassword) {
-                Toast.makeText(
-                    context,
-                    passwordErrorMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    )
-
-    StyledTextField(
-        placeholder = "Repeat Password",
-        modifier = Modifier
-            .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
-                top = MaterialTheme.spacing.medium1
-            ),
-        onValueChange = {
-            repeatPassword = it
-
-            if (it.isEmpty()) {
-                isRepeatPasswordVisible = false
-            }
-            isCorrectRepeatPassword = true
-        },
-        inputText = repeatPassword,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password
-        ),
-        visualTransformation = if (isRepeatPasswordVisible) {
-            VisualTransformation.None
-        } else {
-            PasswordVisualTransformation()
-        },
-        leadingIcon = Icons.Rounded.LockClock,
-        trailingIcon = if (repeatPassword.isNotEmpty()) {
-            if (isRepeatPasswordVisible) {
-                Icons.Rounded.Visibility
+                PasswordVisualTransformation()
+            },
+            leadingIcon = Icons.Rounded.Lock,
+            trailingIcon = if (password.isNotEmpty()) {
+                if (isPasswordVisible) {
+                    Icons.Rounded.Visibility
+                } else {
+                    Icons.Rounded.VisibilityOff
+                }
             } else {
-                Icons.Rounded.VisibilityOff
+                null
+            },
+            trailingIconOnClick = {
+                isPasswordVisible = !isPasswordVisible
+            },
+            isError = !isCorrectPassword,
+            errorIconOnClick = {
+                if (!isCorrectPassword) {
+                    Toast.makeText(
+                        context,
+                        passwordErrorMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        } else {
-            null
-        },
-        trailingIconOnClick = {
-            isRepeatPasswordVisible = !isRepeatPasswordVisible
-        },
-        isError = !isCorrectRepeatPassword,
-        errorIconOnClick = {
-            if (!isCorrectRepeatPassword) {
-                Toast.makeText(
-                    context,
-                    repeatPasswordErrorMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
+        )
+
+        StyledTextField(
+            placeholder = "Repeat Password",
+            modifier = Modifier
+                .padding(
+                    start = MaterialTheme.spacing.small2,
+                    end = MaterialTheme.spacing.small2,
+                    top = MaterialTheme.spacing.medium1
+                ),
+            onValueChange = {
+                repeatPassword = it
+
+                if (it.isEmpty()) {
+                    isRepeatPasswordVisible = false
+                }
+                isCorrectRepeatPassword = true
+            },
+            inputText = repeatPassword,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
+            visualTransformation = if (isRepeatPasswordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            leadingIcon = Icons.Rounded.LockClock,
+            trailingIcon = if (repeatPassword.isNotEmpty()) {
+                if (isRepeatPasswordVisible) {
+                    Icons.Rounded.Visibility
+                } else {
+                    Icons.Rounded.VisibilityOff
+                }
+            } else {
+                null
+            },
+            trailingIconOnClick = {
+                isRepeatPasswordVisible = !isRepeatPasswordVisible
+            },
+            isError = !isCorrectRepeatPassword,
+            errorIconOnClick = {
+                if (!isCorrectRepeatPassword) {
+                    Toast.makeText(
+                        context,
+                        repeatPasswordErrorMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
-    )
+        )
+    } else {
+        StyledTextField(
+            placeholder = "Phone Number",
+            modifier = Modifier
+                .padding(
+                    start = MaterialTheme.spacing.small2,
+                    end = MaterialTheme.spacing.small2,
+                    top = MaterialTheme.spacing.medium1
+                ),
+            onValueChange = {
+                phone = it
+
+                isCorrectPhone = true
+            },
+            inputText = phone,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone
+            ),
+            leadingIcon = Icons.Rounded.Phone,
+            isError = !isCorrectPhone,
+            errorIconOnClick = {
+                if (!isCorrectPhone) {
+                    Toast.makeText(
+                        context,
+                        phoneErrorMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        )
+    }
 
     ButtonPrimary(
         modifier = Modifier
@@ -351,43 +412,66 @@ private fun DriverRegisterFields(
             fullNameErrorMessage = "Name cannot be empty"
         }
 
-        if (email.isEmpty()) {
-            isCorrectEmail = false
-            emailErrorMessage = "Email cannot be empty"
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            isCorrectEmail = false
-            emailErrorMessage = "Invalid email"
+        if (selectedOption == states[0]) {
+            if (email.isEmpty()) {
+                isCorrectEmail = false
+                emailErrorMessage = "Email cannot be empty"
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                isCorrectEmail = false
+                emailErrorMessage = "Invalid email"
+            }
+
+            if (password.isEmpty()) {
+                isCorrectPassword = false
+                passwordErrorMessage = "Password cannot be empty"
+            } else if (password.length < 8) {
+                isCorrectPassword = false
+                passwordErrorMessage = "Password must be at least 8 characters long"
+            } else if (password.contains(" ")) {
+                isCorrectPassword = false
+                passwordErrorMessage = "Password cannot contain spaces"
+            }
+
+            if (repeatPassword.isEmpty()) {
+                isCorrectRepeatPassword = false
+                repeatPasswordErrorMessage = "Password cannot be empty"
+            } else if (repeatPassword != password) {
+                isCorrectRepeatPassword = false
+                repeatPasswordErrorMessage = "Passwords do not match"
+            }
+        } else {
+            if (phone.isEmpty()) {
+                isCorrectPhone = false
+                phoneErrorMessage = "Phone number cannot be empty"
+            } else if (!Patterns.PHONE.matcher(phone).matches()) {
+                isCorrectPhone = false
+                phoneErrorMessage = "Invalid phone number"
+            } else if (phone.length != 11 && phone.length != 14) {
+                isCorrectPhone = false
+                phoneErrorMessage = "Phone number is incorrect"
+            }
         }
 
-        if (password.isEmpty()) {
-            isCorrectPassword = false
-            passwordErrorMessage = "Password cannot be empty"
-        } else if (password.length < 8) {
-            isCorrectPassword = false
-            passwordErrorMessage = "Password must be at least 8 characters long"
-        } else if (password.contains(" ")) {
-            isCorrectPassword = false
-            passwordErrorMessage = "Password cannot contain spaces"
-        }
-
-        if (repeatPassword.isEmpty()) {
-            isCorrectRepeatPassword = false
-            repeatPasswordErrorMessage = "Password cannot be empty"
-        } else if (repeatPassword != password) {
-            isCorrectRepeatPassword = false
-            repeatPasswordErrorMessage = "Passwords do not match"
-        }
-
-        if (!isCorrectFullName || !isCorrectEmail || !isCorrectPassword || !isCorrectRepeatPassword) {
+        if (!isCorrectFullName ||
+            (selectedOption == states[0] && (!isCorrectEmail || !isCorrectPassword || !isCorrectRepeatPassword)) ||
+            (selectedOption == states[1] && !isCorrectPhone)
+        ) {
             return@ButtonPrimary
         }
 
         navigator.navigate(
-            DocumentVerificationScreenDestination(
-                name = fullName.trim(),
-                email = email.trim(),
-                password = password
-            )
+            if (selectedOption == states[0]) {
+                DocumentVerificationScreenDestination(
+                    name = fullName.trim(),
+                    email = email.trim(),
+                    password = password
+                )
+            } else {
+                DocumentVerificationScreenDestination(
+                    name = fullName.trim(),
+                    phone = phone
+                )
+            }
         ) {
             launchSingleTop = true
         }

@@ -27,6 +27,7 @@ object Constant {
         "@diu.edu.bd",
         "@daffodilvarsity.edu.bd"
     )
+    const val PHONE_NUMBER_PREFIX = "+880"
 
     // Driver Documents
     const val DRIVING_LICENSE_FRONT = "driving_license_front"

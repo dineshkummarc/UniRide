@@ -1,26 +1,38 @@
 package com.drdisagree.uniride.ui.screens.driver.login
 
+import android.app.Activity
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Driver
+import com.drdisagree.uniride.data.utils.Constant.DRIVER_DOCUMENT_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.PHONE_NUMBER_PREFIX
 import com.drdisagree.uniride.ui.screens.driver.login.utils.LoginValidation
 import com.drdisagree.uniride.ui.screens.driver.login.utils.validateEmail
+import com.drdisagree.uniride.ui.screens.driver.login.utils.validatePhoneNumber
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class DriverLoginViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val storage: StorageReference
 ) : ViewModel() {
 
     private val tag = DriverLoginViewModel::class.java.simpleName
@@ -34,8 +46,8 @@ class DriverLoginViewModel @Inject constructor(
     private val _authenticated = MutableSharedFlow<Resource<String>>()
     val authenticated = _authenticated.asSharedFlow()
 
-    fun login(email: String, password: String) {
-        if (checkValidation(email, password)) {
+    fun loginWithEmailPassword(email: String, password: String) {
+        if (isEmailPasswordValid(email, password)) {
             viewModelScope.launch {
                 _login.emit(Resource.Loading())
             }
@@ -85,6 +97,127 @@ class DriverLoginViewModel @Inject constructor(
         }
     }
 
+    fun loginWithPhoneNumber(
+        phone: String,
+        activity: Activity,
+        onCodeSent: (String, PhoneAuthProvider.ForceResendingToken) -> Unit,
+    ) {
+        if (isPhoneNumberValid(phone)) {
+            viewModelScope.launch {
+                _login.emit(Resource.Loading())
+            }
+
+            val phoneNumber = if (!phone.startsWith(PHONE_NUMBER_PREFIX)) {
+                "$PHONE_NUMBER_PREFIX${phone.drop(1)}"
+            } else {
+                phone
+            }
+
+            val callback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
+                    verifyPhoneNumberWithCode(phoneAuthCredential = phoneAuthCredential)
+                }
+
+                override fun onVerificationFailed(e: FirebaseException) {
+                    Log.e("createUserWithPhoneNumber", "onVerificationFailed: $e")
+
+                    viewModelScope.launch {
+                        when (e) {
+                            is FirebaseAuthInvalidCredentialsException -> {
+                                _login.emit(Resource.Error("Invalid OTP provided"))
+                            }
+
+                            is FirebaseTooManyRequestsException -> {
+                                _login.emit(Resource.Error("Too many requests, please try again later"))
+                            }
+
+                            is FirebaseAuthMissingActivityForRecaptchaException -> {
+                                _login.emit(Resource.Error("reCAPTCHA verification failed"))
+                            }
+
+                            else -> _login.emit(Resource.Error(e.message.toString()))
+                        }
+                    }
+                }
+
+                override fun onCodeSent(
+                    verificationId: String,
+                    token: PhoneAuthProvider.ForceResendingToken
+                ) {
+                    Log.d("createUserWithPhoneNumber", "onCodeSent: $verificationId")
+
+                    onCodeSent(verificationId, token)
+                }
+            }
+
+            val phoneAuthOptions = PhoneAuthOptions.newBuilder(firebaseAuth)
+                .setPhoneNumber(phoneNumber)
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(activity)
+                .setCallbacks(callback)
+                .build()
+
+            PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions)
+        } else {
+            viewModelScope.launch {
+                var errorSent = false
+                if (phone.isEmpty()) {
+                    _login.emit(Resource.Error("Phone number cannot be empty"))
+                    errorSent = true
+                } else if (phone.length != 11 && phone.length != 14) {
+                    _login.emit(Resource.Error("Invalid phone number"))
+                    errorSent = true
+                } else if (!Patterns.PHONE.matcher(phone).matches()) {
+                    _login.emit(Resource.Error("Invalid phone number format"))
+                    errorSent = true
+                }
+                if (!errorSent) {
+                    _login.emit(Resource.Error("Phone number is invalid"))
+                }
+            }
+        }
+    }
+
+    fun verifyPhoneNumberWithCode(phoneAuthCredential: PhoneAuthCredential) {
+        firebaseAuth.signInWithCredential(phoneAuthCredential)
+            .addOnSuccessListener { authResult ->
+                authResult.user?.let { user ->
+                    val userStorageRef = storage.child(DRIVER_DOCUMENT_COLLECTION).child(user.uid)
+
+                    userStorageRef.listAll()
+                        .addOnSuccessListener { listResult ->
+                            if (listResult.items.isNotEmpty()) {
+                                viewModelScope.launch {
+                                    _login.emit(Resource.Success(user))
+                                }
+                            } else {
+                                user.delete()
+                                viewModelScope.launch {
+                                    _login.emit(Resource.Error("Account not found"))
+                                }
+                            }
+                        }.addOnFailureListener { e ->
+                            Log.e(
+                                "verifyPhoneNumberWithCode",
+                                "Error checking account existence: $e"
+                            )
+                            viewModelScope.launch {
+                                _login.emit(Resource.Error(e.message.toString()))
+                            }
+                        }
+                }
+            }
+            .addOnFailureListener {
+                Log.e(
+                    "verifyPhoneNumberWithCode",
+                    "addOnFailureListener: ${it.message}"
+                )
+                viewModelScope.launch {
+                    _login.emit(Resource.Error(it.message.toString()))
+                }
+            }
+    }
+
     fun signOut() {
         viewModelScope.launch {
             try {
@@ -117,10 +250,14 @@ class DriverLoginViewModel @Inject constructor(
             }
     }
 
-    private fun checkValidation(email: String, password: String): Boolean {
+    private fun isEmailPasswordValid(email: String, password: String): Boolean {
         val emailValidation = validateEmail(email)
         val passwordValidation = password.isNotEmpty() && password.length >= 8
         return emailValidation is LoginValidation.Valid && passwordValidation
+    }
+
+    private fun isPhoneNumberValid(phone: String): Boolean {
+        return validatePhoneNumber(phone) is LoginValidation.Valid
     }
 
     fun resendVerificationMail() {

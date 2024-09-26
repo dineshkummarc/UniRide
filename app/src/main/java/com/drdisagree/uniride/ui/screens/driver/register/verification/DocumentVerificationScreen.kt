@@ -57,14 +57,17 @@ import com.drdisagree.uniride.data.utils.Constant.NID_CARD_BACK
 import com.drdisagree.uniride.data.utils.Constant.NID_CARD_FRONT
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
-import com.drdisagree.uniride.ui.components.views.LoadingDialog
-import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.OtpInputDialog
+import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.screens.destinations.LoginScreenDestination
+import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.ui.screens.driver.register.RegisterViewModel
 import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.google.firebase.auth.PhoneAuthProvider
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -73,8 +76,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun DocumentVerificationScreen(
     navigator: DestinationsNavigator,
     name: String,
-    email: String,
-    password: String
+    email: String? = null,
+    password: String? = null,
+    phone: String? = null
 ) {
     Container {
         Box(
@@ -94,7 +98,8 @@ fun DocumentVerificationScreen(
                     navigator = navigator,
                     name = name,
                     email = email,
-                    password = password
+                    password = password,
+                    phone = phone
                 )
             }
         }
@@ -157,9 +162,11 @@ private fun HeaderSection() {
 private fun VerificationContent(
     navigator: DestinationsNavigator,
     name: String,
-    email: String,
-    password: String,
-    registerViewModel: RegisterViewModel = hiltViewModel()
+    email: String? = null,
+    password: String? = null,
+    phone: String? = null,
+    registerViewModel: RegisterViewModel = hiltViewModel(),
+    driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current as Activity
 
@@ -533,6 +540,11 @@ private fun VerificationContent(
         }
     }
 
+    var documentsList: List<Pair<Uri?, String>> by remember { mutableStateOf(emptyList()) }
+    var showLoadingDialog by remember { mutableStateOf(false) }
+    var showOtpDialog by remember { mutableStateOf(false) }
+    var sentVerificationId by remember { mutableStateOf("") }
+
     ButtonPrimary(
         modifier = Modifier
             .padding(
@@ -558,24 +570,36 @@ private fun VerificationContent(
             return@ButtonPrimary
         }
 
-        val imagesByteArray = registerViewModel.getImageByteArray(
-            listOf(
-                Pair(drivingLicenseFrontImageUri!!, DRIVING_LICENSE_FRONT),
-                Pair(drivingLicenseBackImageUri!!, DRIVING_LICENSE_BACK),
-                Pair(nidFrontImageUri!!, NID_CARD_FRONT),
-                Pair(nidBackImageUri!!, NID_CARD_BACK)
+        documentsList = listOf(
+            Pair(drivingLicenseFrontImageUri, DRIVING_LICENSE_FRONT),
+            Pair(drivingLicenseBackImageUri, DRIVING_LICENSE_BACK),
+            Pair(nidFrontImageUri, NID_CARD_FRONT),
+            Pair(nidBackImageUri, NID_CARD_BACK)
+        )
+
+        if (!email.isNullOrEmpty() && !password.isNullOrEmpty()) {
+            showOtpDialog = false
+
+            registerViewModel.createUserWithEmailAndPassword(
+                name = name,
+                email = email,
+                password = password,
+                documents = documentsList
             )
-        )
+        } else if (!phone.isNullOrEmpty()) {
+            showOtpDialog = true
 
-        registerViewModel.createUserWithEmailAndPassword(
-            name = name,
-            email = email,
-            password = password,
-            documents = imagesByteArray
-        )
+            registerViewModel.createUserWithPhoneNumber(
+                name = name,
+                phone = phone,
+                documents = documentsList,
+                activity = context,
+                onCodeSent = { verificationId, _ ->
+                    sentVerificationId = verificationId
+                }
+            )
+        }
     }
-
-    var showLoadingDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = registerViewModel) {
         registerViewModel.register.collect {
@@ -586,21 +610,33 @@ private fun VerificationContent(
 
                 is Resource.Success -> {
                     showLoadingDialog = false
+                    showOtpDialog = false
 
                     navigator.popBackStack(
                         LoginScreenDestination.route,
                         inclusive = false
                     )
 
-                    Toast.makeText(
-                        context,
-                        "Please check your email and verify your account",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    if (!email.isNullOrEmpty() && !password.isNullOrEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "Please check your email and verify your account",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        driverLoginViewModel.signOut()
+
+                        Toast.makeText(
+                            context,
+                            "Registration successful, please login",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
 
                 is Resource.Error -> {
                     showLoadingDialog = false
+                    showOtpDialog = false
 
                     Toast.makeText(
                         context,
@@ -611,6 +647,7 @@ private fun VerificationContent(
 
                 else -> {
                     showLoadingDialog = false
+                    showOtpDialog = false
                 }
             }
         }
@@ -618,5 +655,45 @@ private fun VerificationContent(
 
     if (showLoadingDialog) {
         LoadingDialog()
+    }
+
+    if (showOtpDialog) {
+        OtpInputDialog(
+            onDismissRequest = {
+                showOtpDialog = false
+                showLoadingDialog = false
+
+                Toast.makeText(
+                    context,
+                    "Registration cancelled",
+                    Toast.LENGTH_LONG
+                ).show()
+            },
+            onSubmit = { otp ->
+                if (sentVerificationId.isNotEmpty() && otp.isNotEmpty()) {
+                    showOtpDialog = false
+                    registerViewModel.verifyPhoneNumberWithCode(
+                        phoneAuthCredential = PhoneAuthProvider.getCredential(
+                            sentVerificationId,
+                            otp
+                        ),
+                        name = name,
+                        phone = phone!!,
+                        documents = documentsList
+                    )
+                }
+            },
+            resendOtp = {
+                registerViewModel.createUserWithPhoneNumber(
+                    name = name,
+                    phone = phone!!,
+                    documents = documentsList,
+                    activity = context,
+                    onCodeSent = { verificationId, _ ->
+                        sentVerificationId = verificationId
+                    }
+                )
+            }
+        )
     }
 }
