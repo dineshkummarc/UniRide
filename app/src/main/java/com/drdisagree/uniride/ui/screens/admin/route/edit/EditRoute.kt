@@ -42,7 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Route
-import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
+import com.drdisagree.uniride.ui.components.navigation.RoutesNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
@@ -59,7 +59,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
 
-@MoreNavGraph
+@RoutesNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
 fun EditRoute(
