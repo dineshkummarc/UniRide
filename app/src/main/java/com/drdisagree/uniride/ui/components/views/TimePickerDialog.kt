@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -86,7 +87,7 @@ fun TimePickerDialog(
             TextButton(onClick = onCancel) {
                 Text("Cancel")
             }
-            TextButton(onClick = ::onConfirmClicked) {
+            Button(onClick = ::onConfirmClicked) {
                 Text("Confirm")
             }
         },
@@ -199,7 +200,7 @@ fun PickerDialog(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 8.dp, end = 6.dp, start = 6.dp),
+                                .padding(bottom = 8.dp, end = 12.dp, start = 6.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
                         ) {
                             buttons()
