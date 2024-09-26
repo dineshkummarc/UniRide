@@ -79,7 +79,7 @@ fun EditRoute(
                         Row {
                             Icon(
                                 imageVector = Icons.Filled.DeleteForever,
-                                contentDescription = "Logout",
+                                contentDescription = "Delete",
                                 tint = Color.Black.copy(alpha = 0.8f)
                             )
                         }
