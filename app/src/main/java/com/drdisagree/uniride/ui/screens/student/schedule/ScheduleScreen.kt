@@ -5,6 +5,7 @@ import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,11 +52,13 @@ import com.drdisagree.uniride.ui.components.navigation.ScheduleNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
+import com.drdisagree.uniride.ui.screens.destinations.EditScheduleDestination
 import com.drdisagree.uniride.ui.screens.destinations.ScheduleSearchScreenDestination
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.time.LocalTime
@@ -107,9 +110,11 @@ fun ScheduleScreen(
 private fun ScheduleContent(
     navigator: DestinationsNavigator,
     paddingValues: PaddingValues,
-    scheduleViewModel: ScheduleViewModel = hiltViewModel()
+    scheduleViewModel: ScheduleViewModel = hiltViewModel(),
+    accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
     val schedules by scheduleViewModel.allSchedules.collectAsState()
     val is24HourFormat = DateFormat.is24HourFormat(context)
 
@@ -148,7 +153,9 @@ private fun ScheduleContent(
                     ) { index ->
                         ScheduleListItem(
                             index = index,
-                            schedule = scheduleList[index]
+                            navigator = navigator,
+                            schedule = scheduleList[index],
+                            isAdmin = isAdminState ?: false
                         )
                     }
                 }
@@ -182,8 +189,10 @@ private fun ScheduleContent(
 @Composable
 fun ScheduleListItem(
     modifier: Modifier = Modifier,
+    navigator: DestinationsNavigator,
     index: Int,
-    schedule: Schedule
+    schedule: Schedule,
+    isAdmin: Boolean
 ) {
     val busNameLowercase = schedule.bus.name.lowercase(Locale.getDefault())
     val busIconColor = if (busNameLowercase.contains("surjomukhi")) {
@@ -217,7 +226,19 @@ fun ScheduleListItem(
     }
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .then(
+                if (isAdmin) {
+                    Modifier.clickable {
+                        navigator.navigate(
+                            EditScheduleDestination(schedule)
+                        )
+                    }
+                } else {
+                    Modifier
+                }
+            )
     ) {
         if (index != 0) {
             HorizontalDivider(

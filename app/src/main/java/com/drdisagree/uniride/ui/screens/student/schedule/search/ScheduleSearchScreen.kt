@@ -39,11 +39,12 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
-import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleListItem
 import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleViewModel
 import com.drdisagree.uniride.ui.screens.student.schedule.sortSchedulesByTime
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -85,16 +86,19 @@ private fun ScheduleSearchContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ScheduleSearchFieldsAndResult()
+        ScheduleSearchFieldsAndResult(navigator)
     }
 }
 
 @Composable
 private fun ScheduleSearchFieldsAndResult(
+    navigator: DestinationsNavigator,
     listsViewModel: ListsViewModel = hiltViewModel(),
-    scheduleViewModel: ScheduleViewModel = hiltViewModel()
+    scheduleViewModel: ScheduleViewModel = hiltViewModel(),
+    accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
     val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
     val placeList by listsViewModel.placeModels.collectAsState()
     val schedules by scheduleViewModel.allSchedules.collectAsState()
@@ -261,7 +265,9 @@ private fun ScheduleSearchFieldsAndResult(
                 repeat(scheduleList.size) { index ->
                     ScheduleListItem(
                         index = index,
-                        schedule = scheduleList[index]
+                        schedule = scheduleList[index],
+                        isAdmin = isAdminState ?: false,
+                        navigator = navigator
                     )
                 }
             } else if (selectedBusCategory.name != defaultBusCategory.name &&
