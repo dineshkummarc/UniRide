@@ -21,10 +21,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -321,6 +323,7 @@ private fun MapView(
             }
         }
 
+        var openDialog by remember { mutableStateOf(false) }
         val runningBus by busLocationViewModel.runningBus.collectAsState()
         val status = runningBus?.status ?: BusStatus.STANDBY
         var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
@@ -347,22 +350,58 @@ private fun MapView(
                 }
 
                 BusStatus.RUNNING -> {
-                    busLocationViewModel.stopBus { success ->
-                        if (success) {
-                            Intent(context.applicationContext, LocationService::class.java).apply {
-                                action = LocationService.ACTION_STOP
-                                context.startService(this)
-                            }
-
-                            navigator.navigateUp()
-                        }
-                    }
+                    openDialog = true
                 }
 
                 BusStatus.STOPPED -> {
                     busLocationViewModel.updateBusStatus(BusStatus.STANDBY)
                 }
             }
+        }
+
+        if (openDialog) {
+            AlertDialog(
+                containerColor = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(MaterialTheme.spacing.medium3),
+                onDismissRequest = {
+                    openDialog = false
+                },
+                title = {
+                    Text(text = "Are you sure?")
+                },
+                text = {
+                    Text("This action cannot be undone. Stop sharing location?")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            openDialog = false
+                            busLocationViewModel.stopBus { success ->
+                                if (success) {
+                                    Intent(
+                                        context.applicationContext,
+                                        LocationService::class.java
+                                    ).apply {
+                                        action = LocationService.ACTION_STOP
+                                        context.startService(this)
+                                    }
+
+                                    navigator.navigateUp()
+                                }
+                            }
+                        }) {
+                        Text("Stop")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            openDialog = false
+                        }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
 
         LaunchedEffect(busLocationViewModel.updateBusStatus) {
