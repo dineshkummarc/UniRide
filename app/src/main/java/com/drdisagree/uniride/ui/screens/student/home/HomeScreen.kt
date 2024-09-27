@@ -1,6 +1,5 @@
 package com.drdisagree.uniride.ui.screens.student.home
 
-import android.location.Location
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -108,7 +107,8 @@ private fun HomeContent(
     paddingValues: PaddingValues,
     noticeBoardViewModel: NoticeBoardViewModel = hiltViewModel(),
     nearbyBusesViewModel: NearbyBusesViewModel = hiltViewModel(),
-    locationViewModel: LocationSharingViewModel = hiltViewModel()
+    locationViewModel: LocationSharingViewModel = hiltViewModel(),
+    geocodingViewModel: GeocodingViewModel = hiltViewModel()
 ) {
     HandlePermissions()
 
@@ -124,6 +124,8 @@ private fun HomeContent(
         }
     } ?: buses
 
+    val defaultLocationName = "Retrieving..."
+    val locationNames by geocodingViewModel.locationNames.observeAsState(emptyMap())
     val showLoadingDialog by rememberUpdatedState(nearbyBusesViewModel.state is Resource.Loading<*>)
 
     LazyColumn(
@@ -232,9 +234,18 @@ private fun HomeContent(
             sortedBuses,
             key = { index, _ -> index }
         ) { index, bus ->
+            val locationName = locationNames[bus.uuid] ?: defaultLocationName
+
+            LaunchedEffect(bus.currentlyAt?.latitude, bus.currentlyAt?.longitude) {
+                geocodingViewModel.fetchLocationName(
+                    bus.uuid,
+                    bus.currentlyAt?.latitude,
+                    bus.currentlyAt?.longitude
+                )
+            }
+
             NearbyBusListItem(
                 index = index,
-                myLocation = location,
                 runningBus = bus,
                 onClick = {
                     navigator.navigate(
@@ -242,6 +253,19 @@ private fun HomeContent(
                             busId = bus.uuid
                         )
                     )
+                },
+                currentLocationName = if (location != null && bus.currentlyAt != null && locationName != defaultLocationName) {
+                    String.format(
+                        Locale.getDefault(),
+                        "%s (%.1fkm)", locationName, distance(
+                            location!!.latitude,
+                            location!!.longitude,
+                            bus.currentlyAt.latitude,
+                            bus.currentlyAt.longitude
+                        )
+                    )
+                } else {
+                    locationName
                 }
             )
         }
@@ -275,21 +299,11 @@ private fun HomeContent(
 private fun NearbyBusListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    myLocation: Location?,
+    currentLocationName: String,
     runningBus: RunningBus,
-    onClick: (() -> Unit)? = null,
-    geocodingViewModel: GeocodingViewModel = hiltViewModel()
+    onClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val defaultLocationName = "Retrieving..."
-    val locationName by geocodingViewModel.locationName.observeAsState(defaultLocationName)
-
-    LaunchedEffect(runningBus.currentlyAt?.latitude, runningBus.currentlyAt?.longitude) {
-        geocodingViewModel.fetchLocationName(
-            runningBus.currentlyAt?.latitude,
-            runningBus.currentlyAt?.longitude
-        )
-    }
 
     Column(
         modifier = modifier
@@ -350,23 +364,7 @@ private fun NearbyBusListItem(
                             append("Location: ")
                         }
                         append(
-                            if (locationName != null) {
-                                if (myLocation != null && runningBus.currentlyAt != null && locationName != defaultLocationName) {
-                                    String.format(
-                                        Locale.getDefault(),
-                                        "%s (%.1fkm)", locationName, distance(
-                                            myLocation.latitude,
-                                            myLocation.longitude,
-                                            runningBus.currentlyAt.latitude,
-                                            runningBus.currentlyAt.longitude
-                                        )
-                                    )
-                                } else {
-                                    locationName
-                                }
-                            } else {
-                                "Unknown"
-                            }
+                            currentLocationName
                         )
                     },
                     color = Dark,
