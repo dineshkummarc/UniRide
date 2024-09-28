@@ -43,8 +43,8 @@ class DriverLoginViewModel @Inject constructor(
     private val _resetPassword = MutableSharedFlow<Resource<String>>()
     val resetPassword = _resetPassword.asSharedFlow()
 
-    private val _authenticated = MutableSharedFlow<Resource<String>>()
-    val authenticated = _authenticated.asSharedFlow()
+    private val _verifyEmail = MutableSharedFlow<Resource<String>>()
+    val verifyEmail = _verifyEmail.asSharedFlow()
 
     fun loginWithEmailPassword(email: String, password: String) {
         if (isEmailPasswordValid(email, password)) {
@@ -63,7 +63,7 @@ class DriverLoginViewModel @Inject constructor(
                             }
                         } else {
                             viewModelScope.launch {
-                                _login.emit(Resource.Error("Please verify your email"))
+                                _login.emit(Resource.Error("EmailNotVerified"))
                             }
                         }
                     }
@@ -262,19 +262,22 @@ class DriverLoginViewModel @Inject constructor(
 
     fun resendVerificationMail() {
         viewModelScope.launch {
-            _authenticated.emit(Resource.Loading())
+            _verifyEmail.emit(Resource.Loading())
         }
 
         firebaseAuth.currentUser?.sendEmailVerification()
             ?.addOnSuccessListener {
                 viewModelScope.launch {
-                    _authenticated.emit(Resource.Success("Verification email sent"))
+                    _verifyEmail.emit(Resource.Success("Verification email sent"))
                 }
             }
             ?.addOnFailureListener {
                 viewModelScope.launch {
-                    _authenticated.emit(Resource.Error(it.message.toString()))
+                    _verifyEmail.emit(Resource.Error(it.message.toString()))
                 }
+            }
+            ?: viewModelScope.launch {
+                _verifyEmail.emit(Resource.Error("User not found"))
             }
     }
 }

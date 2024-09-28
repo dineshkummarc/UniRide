@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,10 +22,13 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -352,6 +356,7 @@ private fun LoginFields(
     }
 
     var showLoadingDialog by remember { mutableStateOf(false) }
+    var showResendVerificationEmail by remember { mutableStateOf(false) }
     var showOtpDialog by remember { mutableStateOf(false) }
     var sentVerificationId by remember { mutableStateOf("") }
 
@@ -408,6 +413,7 @@ private fun LoginFields(
                 is Resource.Success -> {
                     showLoadingDialog = false
                     showOtpDialog = false
+                    showResendVerificationEmail = false
 
                     navigator.navigate(
                         DriverHomeDestination()
@@ -420,11 +426,14 @@ private fun LoginFields(
                 is Resource.Error -> {
                     showLoadingDialog = false
                     showOtpDialog = false
+                    showResendVerificationEmail = false
 
                     var message = result.message.toString()
                     val messageLower = message.lowercase(Locale.ROOT)
 
-                    if (messageLower.contains("email") &&
+                    if (message.contains("EmailNotVerified")) {
+                        showResendVerificationEmail = true
+                    } else if (messageLower.contains("email") &&
                         messageLower.contains("password")
                     ) {
                         isCorrectEmail = false
@@ -473,6 +482,45 @@ private fun LoginFields(
                 else -> {
                     showLoadingDialog = false
                     showOtpDialog = false
+                    showResendVerificationEmail = false
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        loginViewModel.verifyEmail.collect { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    showLoadingDialog = true
+                    showResendVerificationEmail = false
+                }
+
+                is Resource.Success -> {
+                    showLoadingDialog = false
+                    showResendVerificationEmail = false
+
+                    Toast.makeText(
+                        context,
+                        result.message.toString(),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                is Resource.Error -> {
+                    showLoadingDialog = false
+                    showResendVerificationEmail = false
+
+                    Toast.makeText(
+                        context,
+                        result.message.toString(),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {
+                    showLoadingDialog = false
+                    showResendVerificationEmail = false
                 }
             }
         }
@@ -480,6 +528,39 @@ private fun LoginFields(
 
     if (showLoadingDialog) {
         LoadingDialog()
+    }
+
+    if (showResendVerificationEmail) {
+        AlertDialog(
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(MaterialTheme.spacing.medium3),
+            onDismissRequest = {
+                showResendVerificationEmail = false
+            },
+            title = {
+                Text(text = "Email not verified")
+            },
+            text = {
+                Text("Please check your email for verification link.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showResendVerificationEmail = false
+                    }) {
+                    Text("Close")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showResendVerificationEmail = false
+                        loginViewModel.resendVerificationMail()
+                    }) {
+                    Text("Resend")
+                }
+            }
+        )
     }
 
     if (showOtpDialog) {
