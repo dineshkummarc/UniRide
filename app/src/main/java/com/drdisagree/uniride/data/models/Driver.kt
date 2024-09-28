@@ -12,6 +12,8 @@ data class Driver(
     val name: String,
     val phone: String? = null,
     val email: String? = null,
+    val contactPhone: String? = null,
+    val contactEmail: String? = null,
     val profileImage: String? = null,
     val documents: List<String>,
     val accountStatus: AccountStatus = AccountStatus.PENDING

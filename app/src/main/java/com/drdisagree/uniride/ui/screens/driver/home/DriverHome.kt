@@ -145,70 +145,96 @@ private fun DriverHomeContent(
 }
 
 @Composable
-private fun IncompleteProfileWarn(navigator: DestinationsNavigator) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = MaterialTheme.spacing.medium1,
-                end = MaterialTheme.spacing.medium1,
-                top = MaterialTheme.spacing.small2
-            )
-            .clip(MaterialTheme.shapes.medium)
-            .background(Color(0xFFEED2D1))
-            .padding(MaterialTheme.spacing.medium2)
-    ) {
-        val incompleteProfileWarn =
-            "আপনার অ্যাকাউন্টে কিছু তথ্য অনুপস্থিত বা অসম্পূর্ণ বলে মনে হচ্ছে। অ্যাকাউন্ট সাসপেনশন বা জরিমানা এড়াতে অনুগ্রহ করে আপনার তথ্য আপডেট করুন।\n"
-        val editProfile = "» প্রোফাইল সম্পাদনা করুন «"
+private fun IncompleteProfileWarn(
+    navigator: DestinationsNavigator,
+    getDriverViewModel: GetDriverViewModel = hiltViewModel()
+) {
+    var showIncompleteProfileWarn by rememberSaveable { mutableStateOf(false) }
 
-        val annotatedString = buildAnnotatedString {
-            withStyle(SpanStyle(color = Color(0xFF74423D), fontSize = 15.sp)) {
-                pushStringAnnotation(
-                    tag = incompleteProfileWarn,
-                    annotation = incompleteProfileWarn
-                )
-                append(incompleteProfileWarn)
-            }
-            withStyle(
-                SpanStyle(
-                    color = DarkBlue,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            ) {
-                pushStringAnnotation(tag = editProfile, annotation = editProfile)
-                append(editProfile)
+    LaunchedEffect(getDriverViewModel.getDriver) {
+        getDriverViewModel.getDriver.collect { result ->
+            when (result) {
+                is Resource.Success -> {
+                    showIncompleteProfileWarn = result.data?.contactPhone.isNullOrEmpty()
+                            && result.data?.contactEmail.isNullOrEmpty()
+                }
+
+                is Resource.Error -> {
+                    Unit
+                }
+
+                else -> {
+                    Unit
+                }
             }
         }
+    }
 
-        Column {
-            Text(
-                text = "আপনার প্রোফাইল অসম্পূর্ণ",
-                fontSize = 16.sp,
-                color = Color(0xFFBA5050),
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraSmall2)
-            )
-
-            @Suppress("DEPRECATION")
-            ClickableText(
-                text = annotatedString,
-                onClick = { offset ->
-                    annotatedString.getStringAnnotations(
-                        tag = editProfile,
-                        start = offset,
-                        end = offset
-                    )
-                        .firstOrNull()?.let {
-                            navigator.navigate(EditProfileScreenDestination)
-                        }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                style = TextStyle(
-                    textAlign = TextAlign.Justify
+    if (showIncompleteProfileWarn) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = MaterialTheme.spacing.medium1,
+                    end = MaterialTheme.spacing.medium1,
+                    top = MaterialTheme.spacing.small2
                 )
-            )
+                .clip(MaterialTheme.shapes.medium)
+                .background(Color(0xFFEED2D1))
+                .padding(MaterialTheme.spacing.medium2)
+        ) {
+            val incompleteProfileWarn =
+                "আপনার অ্যাকাউন্টে কিছু তথ্য অনুপস্থিত বা অসম্পূর্ণ বলে মনে হচ্ছে। অ্যাকাউন্ট সাসপেনশন বা জরিমানা এড়াতে অনুগ্রহ করে আপনার তথ্য আপডেট করুন।\n"
+            val editProfile = "» প্রোফাইল সম্পাদনা করুন «"
+
+            val annotatedString = buildAnnotatedString {
+                withStyle(SpanStyle(color = Color(0xFF74423D), fontSize = 15.sp)) {
+                    pushStringAnnotation(
+                        tag = incompleteProfileWarn,
+                        annotation = incompleteProfileWarn
+                    )
+                    append(incompleteProfileWarn)
+                }
+                withStyle(
+                    SpanStyle(
+                        color = DarkBlue,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                ) {
+                    pushStringAnnotation(tag = editProfile, annotation = editProfile)
+                    append(editProfile)
+                }
+            }
+
+            Column {
+                Text(
+                    text = "আপনার প্রোফাইল অসম্পূর্ণ",
+                    fontSize = 16.sp,
+                    color = Color(0xFFBA5050),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraSmall2)
+                )
+
+                @Suppress("DEPRECATION")
+                ClickableText(
+                    text = annotatedString,
+                    onClick = { offset ->
+                        annotatedString.getStringAnnotations(
+                            tag = editProfile,
+                            start = offset,
+                            end = offset
+                        )
+                            .firstOrNull()?.let {
+                                navigator.navigate(EditProfileScreenDestination)
+                            }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    style = TextStyle(
+                        textAlign = TextAlign.Justify
+                    )
+                )
+            }
         }
     }
 }
@@ -263,7 +289,7 @@ private fun ShareLocationFields(
 
     Text(
         text = "Let's start driving",
-        fontSize = 16.sp,
+        fontSize = 20.sp,
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
     )

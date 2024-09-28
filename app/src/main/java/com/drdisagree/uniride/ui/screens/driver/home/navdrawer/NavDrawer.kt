@@ -15,28 +15,28 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,7 +47,6 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.data.utils.Constant
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.PHONE_NUMBER_PREFIX
@@ -57,7 +56,6 @@ import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestinati
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.ui.theme.Dark
-import com.drdisagree.uniride.ui.theme.DarkBlue
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
@@ -79,9 +77,6 @@ fun NavigationDrawer(
     driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
     DrawerHeader(
-        navigator = navigator,
-        drawerState = drawerState,
-        coroutineScope = coroutineScope,
         getDriverViewModel = getDriverViewModel
     )
     Spacer(
@@ -98,13 +93,14 @@ fun NavigationDrawer(
     DrawerBody(
         items = listOf(
             MenuItemModel(
-                id = "home",
-                title = "Home",
-                contentDescription = "Go to home screen",
-                icon = Icons.Default.Home,
+                id = "profile",
+                title = "Edit profile",
+                contentDescription = "Go to edit profile screen",
+                icon = Icons.Default.Person,
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()
+                        navigator.navigate(EditProfileScreenDestination)
                     }
                 }
             ),
@@ -160,19 +156,22 @@ fun NavigationDrawer(
 
 @Composable
 private fun DrawerHeader(
-    navigator: DestinationsNavigator,
-    drawerState: DrawerState,
-    coroutineScope: CoroutineScope,
     getDriverViewModel: GetDriverViewModel
 ) {
     val context = LocalContext.current
-    var driver: Driver? by remember { mutableStateOf(null) }
+    var name by rememberSaveable { mutableStateOf("Unknown") }
+    var phone by rememberSaveable { mutableStateOf<String?>(null) }
+    var email by rememberSaveable { mutableStateOf<String?>(null) }
+    var imageUrl by rememberSaveable { mutableStateOf<String?>(null) }
 
     LaunchedEffect(getDriverViewModel.getDriver) {
         getDriverViewModel.getDriver.collect { result ->
             when (result) {
                 is Resource.Success -> {
-                    driver = result.data
+                    name = result.data?.name ?: "Unknown"
+                    phone = result.data?.phone
+                    email = result.data?.email
+                    imageUrl = result.data?.profileImage
                 }
 
                 is Resource.Error -> {
@@ -202,10 +201,9 @@ private fun DrawerHeader(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val placeholder = R.drawable.img_profile_pic_default
-        val imageUrl = driver?.profileImage
+        val placeholder by remember { mutableIntStateOf(R.drawable.img_profile_pic_default) }
 
-        val imageRequest = ImageRequest.Builder(LocalContext.current)
+        val imageRequest = ImageRequest.Builder(context)
             .data(imageUrl)
             .dispatcher(Dispatchers.IO)
             .memoryCacheKey(imageUrl)
@@ -215,67 +213,42 @@ private fun DrawerHeader(
             .fallback(placeholder)
             .diskCachePolicy(CachePolicy.ENABLED)
             .memoryCachePolicy(CachePolicy.ENABLED)
+            .crossfade(true)
+            .crossfade(250)
             .build()
 
         Box(
-            modifier = Modifier.size(120.dp),
-            contentAlignment = Alignment.BottomEnd
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(100))
+                .background(Gray)
+                .padding(MaterialTheme.spacing.small1)
         ) {
-            Box(
+            AsyncImage(
+                model = imageRequest,
+                placeholder = painterResource(id = R.drawable.img_loading),
+                contentDescription = "Profile Picture",
                 modifier = Modifier
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(100))
-                    .background(Gray)
-                    .padding(MaterialTheme.spacing.small2)
-            ) {
-                AsyncImage(
-                    model = imageRequest,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(100)),
-                    contentScale = ContentScale.Crop,
-                )
-            }
-            IconButton(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100))
-                    .background(DarkBlue)
-                    .size(30.dp),
-                onClick = {
-                    coroutineScope.launch {
-                        drawerState.close()
-                        navigator.navigate(EditProfileScreenDestination)
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit profile",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(
-                            MaterialTheme.spacing.small1
-                        ),
-                    tint = Color.White
-                )
-            }
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(100)),
+                contentScale = ContentScale.Crop,
+            )
         }
 
-        val phoneNumber = if (driver?.phone?.startsWith(PHONE_NUMBER_PREFIX) == true) {
-            driver?.phone
+        val phoneNumber = if (phone?.startsWith(PHONE_NUMBER_PREFIX) == true) {
+            phone
         } else {
-            "$PHONE_NUMBER_PREFIX${driver?.phone?.drop(1)}"
+            "$PHONE_NUMBER_PREFIX${phone?.drop(1)}"
         }
 
         Text(
-            text = driver?.name ?: "Unknown",
+            text = name,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small3)
         )
         Text(
-            text = driver?.email ?: phoneNumber ?: "unknown@diu.edu.bd",
+            text = email ?: phoneNumber ?: "unknown@email.com",
             fontSize = 14.sp,
             lineHeight = 18.sp,
             color = Dark

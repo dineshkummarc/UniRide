@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Driver
-import com.drdisagree.uniride.data.utils.Constant
+import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +29,7 @@ class GetDriverViewModel @Inject constructor(
     }
 
     private fun getSignedInDriver() {
-        firestore.collection(Constant.DRIVER_COLLECTION)
+        firestore.collection(DRIVER_COLLECTION)
             .document(firebaseAuth.currentUser!!.uid)
             .get()
             .addOnSuccessListener { document ->
@@ -50,6 +50,28 @@ class GetDriverViewModel @Inject constructor(
                     _getDriver.emit(
                         Resource.Error(it.message.toString())
                     )
+                }
+            }
+
+        firestore.collection(DRIVER_COLLECTION)
+            .document(firebaseAuth.currentUser!!.uid)
+            .addSnapshotListener { value, error ->
+                firebaseAuth.currentUser?.let {
+                    if (error != null) {
+                        viewModelScope.launch {
+                            _getDriver.emit(
+                                Resource.Error(
+                                    error.message.toString()
+                                )
+                            )
+                        }
+                    } else {
+                        value?.toObject(Driver::class.java)?.let { driver ->
+                            viewModelScope.launch {
+                                _getDriver.emit(Resource.Success(driver))
+                            }
+                        }
+                    }
                 }
             }
     }

@@ -30,6 +30,7 @@ object Constant {
     const val PHONE_NUMBER_PREFIX = "+880"
 
     // Driver Documents
+    const val DRIVER_PROFILE_PICTURE = "driver_profile_picture"
     const val DRIVING_LICENSE_FRONT = "driving_license_front"
     const val DRIVING_LICENSE_BACK = "driving_license_back"
     const val NID_CARD_FRONT = "nid_card_front"
