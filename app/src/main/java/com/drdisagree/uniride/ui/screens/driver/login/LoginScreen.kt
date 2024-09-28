@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,15 +35,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -185,6 +190,7 @@ private fun LoginFields(
     loginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     var phone by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -231,7 +237,13 @@ private fun LoginFields(
             },
             inputText = email,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
             ),
             leadingIcon = Icons.Rounded.AlternateEmail,
             isError = !isCorrectEmail,
@@ -264,7 +276,13 @@ private fun LoginFields(
             },
             inputText = password,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
             ),
             visualTransformation = if (isPasswordVisible) {
                 VisualTransformation.None
@@ -311,7 +329,13 @@ private fun LoginFields(
             },
             inputText = phone,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
             ),
             leadingIcon = Icons.Rounded.Phone,
             isError = !isCorrectPhone,
@@ -369,7 +393,9 @@ private fun LoginFields(
     }
 
     if (selectedOption == states[0]) {
-        ForgotPasswordSection()
+        ForgotPasswordSection(
+            focusManager = focusManager
+        )
     }
 
     LaunchedEffect(Unit) {
@@ -495,14 +521,15 @@ private fun LoginFields(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ForgotPasswordSection(
+    focusManager: FocusManager,
     driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var email by rememberSaveable { mutableStateOf("") }
     var isCorrectEmail by rememberSaveable { mutableStateOf(true) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isSheetOpen by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     val forgotPass = "Forgot password? "
     val recover = "Recover now"
@@ -580,7 +607,18 @@ private fun ForgotPasswordSection(
                     },
                     inputText = email,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Send
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSend = {
+                            focusManager.clearFocus()
+                            isCorrectEmail = validateEmail(email) is LoginValidation.Valid
+
+                            if (isCorrectEmail) {
+                                driverLoginViewModel.resetPassword(email)
+                            }
+                        }
                     ),
                     leadingIcon = Icons.Rounded.AlternateEmail,
                     isError = !isCorrectEmail,

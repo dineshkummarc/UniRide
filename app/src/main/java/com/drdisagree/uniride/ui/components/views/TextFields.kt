@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -51,7 +53,8 @@ fun StyledTextField(
     placeholder: String = "",
     singleLine: Boolean = true,
     minLines: Int = 1,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    focusRequester: FocusRequester? = null
 ) {
     BasicTextField(
         modifier = modifier
@@ -63,7 +66,8 @@ fun StyledTextField(
                 color = Gray,
                 shape = RoundedCornerShape(MaterialTheme.spacing.medium1)
             )
-            .padding(horizontal = MaterialTheme.spacing.small2),
+            .padding(horizontal = MaterialTheme.spacing.small2)
+            .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier),
         singleLine = singleLine,
         minLines = minLines,
         maxLines = maxLines,
