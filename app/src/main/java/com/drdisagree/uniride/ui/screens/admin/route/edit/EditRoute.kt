@@ -11,19 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +43,7 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.MyAlertDialog
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
@@ -412,34 +409,20 @@ private fun EditRouteFields(
     }
 
     if (openDialog) {
-        AlertDialog(
-            containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(MaterialTheme.spacing.medium3),
-            onDismissRequest = {
+        MyAlertDialog(
+            title = "Are you sure?",
+            message = "This action cannot be undone. Delete this route?",
+            confirmButtonText = "Delete",
+            dismissButtonText = "Cancel",
+            onConfirmButtonClick = {
+                onCloseDialog()
+                editRouteViewModel.deleteRoute(route.uuid)
+            },
+            onDismissButtonClick = {
                 onCloseDialog()
             },
-            title = {
-                Text(text = "Are you sure?")
-            },
-            text = {
-                Text("This action cannot be undone. Delete this route?")
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        onCloseDialog()
-                        editRouteViewModel.deleteRoute(route.uuid)
-                    }) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        onCloseDialog()
-                    }) {
-                    Text("Cancel")
-                }
+            onDismissRequest = {
+                onCloseDialog()
             }
         )
     }

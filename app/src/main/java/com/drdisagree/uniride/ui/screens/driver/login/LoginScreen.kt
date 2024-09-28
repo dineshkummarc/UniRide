@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,13 +21,10 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,6 +64,7 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.MyAlertDialog
 import com.drdisagree.uniride.ui.components.views.OtpInputDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
@@ -531,34 +528,20 @@ private fun LoginFields(
     }
 
     if (showResendVerificationEmail) {
-        AlertDialog(
-            containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(MaterialTheme.spacing.medium3),
-            onDismissRequest = {
+        MyAlertDialog(
+            title = "Email not verified",
+            message = "Please check your email for verification link.",
+            confirmButtonText = "Close",
+            dismissButtonText = "Resend",
+            onConfirmButtonClick = {
                 showResendVerificationEmail = false
             },
-            title = {
-                Text(text = "Email not verified")
+            onDismissButtonClick = {
+                showResendVerificationEmail = false
+                loginViewModel.resendVerificationMail()
             },
-            text = {
-                Text("Please check your email for verification link.")
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showResendVerificationEmail = false
-                    }) {
-                    Text("Close")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showResendVerificationEmail = false
-                        loginViewModel.resendVerificationMail()
-                    }) {
-                    Text("Resend")
-                }
+            onDismissRequest = {
+                showResendVerificationEmail = false
             }
         )
     }

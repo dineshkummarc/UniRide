@@ -19,14 +19,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +50,7 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.DisableBackHandler
 import com.drdisagree.uniride.ui.components.views.KeepScreenOn
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.MyAlertDialog
 import com.drdisagree.uniride.ui.components.views.NoInternetDialog
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
@@ -360,46 +356,32 @@ private fun MapView(
         }
 
         if (openDialog) {
-            AlertDialog(
-                containerColor = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(MaterialTheme.spacing.medium3),
-                onDismissRequest = {
+            MyAlertDialog(
+                title = "Are you sure?",
+                message = "This action cannot be undone. Stop sharing location?",
+                confirmButtonText = "Stop",
+                dismissButtonText = "Cancel",
+                onConfirmButtonClick = {
+                    openDialog = false
+                    busLocationViewModel.stopBus { success ->
+                        if (success) {
+                            Intent(
+                                context.applicationContext,
+                                LocationService::class.java
+                            ).apply {
+                                action = LocationService.ACTION_STOP
+                                context.startService(this)
+                            }
+
+                            navigator.navigateUp()
+                        }
+                    }
+                },
+                onDismissButtonClick = {
                     openDialog = false
                 },
-                title = {
-                    Text(text = "Are you sure?")
-                },
-                text = {
-                    Text("This action cannot be undone. Stop sharing location?")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            openDialog = false
-                            busLocationViewModel.stopBus { success ->
-                                if (success) {
-                                    Intent(
-                                        context.applicationContext,
-                                        LocationService::class.java
-                                    ).apply {
-                                        action = LocationService.ACTION_STOP
-                                        context.startService(this)
-                                    }
-
-                                    navigator.navigateUp()
-                                }
-                            }
-                        }) {
-                        Text("Stop")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            openDialog = false
-                        }) {
-                        Text("Cancel")
-                    }
+                onDismissRequest = {
+                    openDialog = false
                 }
             )
         }
@@ -527,13 +509,9 @@ fun CheckGpsAndInternetPeriodically() {
     }
 
     if (requestGps) {
-        AlertDialog(
-            containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(MaterialTheme.spacing.medium3),
-            onDismissRequest = {},
-            title = { Text(text = "GPS Not Enabled") },
-            text = { Text(text = "Please enable GPS to share your location.") },
-            confirmButton = {}
+        MyAlertDialog(
+            title = "GPS Not Enabled",
+            message = "Please enable GPS to share your location.",
         )
 
         RequestGpsEnable(

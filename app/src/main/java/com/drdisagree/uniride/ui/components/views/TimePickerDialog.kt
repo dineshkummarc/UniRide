@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.drdisagree.uniride.ui.theme.Black
 import java.util.Calendar
@@ -77,7 +78,12 @@ fun TimePickerDialog(
     PickerDialog(
         modifier = modifier,
         onDismissRequest = onCancel,
-        title = { Text("Select Time") },
+        title = {
+            Text(
+                text = "Select Time",
+                fontSize = 22.sp
+            )
+        },
         buttons = {
             DisplayModeToggleButton(
                 displayMode = mode,
