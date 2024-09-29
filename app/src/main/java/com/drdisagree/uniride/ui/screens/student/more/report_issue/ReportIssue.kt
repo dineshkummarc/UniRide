@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
@@ -102,15 +104,14 @@ private fun ReportIssueFields(
     var contactInformation by rememberSaveable { mutableStateOf("") }
 
     Text(
-        text = "Which of the following best describes the type of issue you are encountering?",
-        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small2)
+        text = "1. Which of the following best describes the type of issue you are encountering?",
+        fontWeight = FontWeight.Medium,
+        lineHeight = 20.sp
     )
     StyledRadioButton(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
                 top = MaterialTheme.spacing.small2
             ),
         options = issueTypes,
@@ -119,18 +120,16 @@ private fun ReportIssueFields(
     )
 
     Text(
-        text = "Please describe the issue below as descriptively as possible, so we can route you to the proper channel in our team.",
+        text = "2. Please describe the issue below as descriptively as possible, so we can route you to the proper channel in our team.",
+        fontWeight = FontWeight.Medium,
+        lineHeight = 20.sp,
         modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
             top = MaterialTheme.spacing.medium1
         )
     )
     StyledTextField(
         placeholder = "Describe the issue here...",
         modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
             top = MaterialTheme.spacing.small2
         ),
         onValueChange = { issueDescription = it },
@@ -141,18 +140,16 @@ private fun ReportIssueFields(
     )
 
     Text(
-        text = "Provide your contact information.",
+        text = "3. Provide your contact information.",
+        fontWeight = FontWeight.Medium,
+        lineHeight = 20.sp,
         modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
             top = MaterialTheme.spacing.medium1
         )
     )
     StyledTextField(
         placeholder = "Email or Phone number",
         modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2,
             top = MaterialTheme.spacing.small2
         ),
         onValueChange = { contactInformation = it },
@@ -164,10 +161,7 @@ private fun ReportIssueFields(
     ButtonPrimary(
         modifier = Modifier
             .padding(
-                start = MaterialTheme.spacing.small2,
-                end = MaterialTheme.spacing.small2,
-                top = MaterialTheme.spacing.medium1,
-                bottom = MaterialTheme.spacing.medium1
+                vertical = MaterialTheme.spacing.medium1,
             )
             .fillMaxWidth(),
         text = "Submit"
