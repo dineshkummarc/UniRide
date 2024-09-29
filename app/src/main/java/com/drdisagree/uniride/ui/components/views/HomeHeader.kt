@@ -59,7 +59,7 @@ fun HomeHeader(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .alpha(0.4f)
+                .alpha(0.2f)
         )
         Box(
             modifier = Modifier
