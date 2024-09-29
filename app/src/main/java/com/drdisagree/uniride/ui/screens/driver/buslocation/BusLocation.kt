@@ -50,7 +50,7 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.DisableBackHandler
 import com.drdisagree.uniride.ui.components.views.KeepScreenOn
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
-import com.drdisagree.uniride.ui.components.views.MyAlertDialog
+import com.drdisagree.uniride.ui.components.views.StyledAlertDialog
 import com.drdisagree.uniride.ui.components.views.NoInternetDialog
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
@@ -356,7 +356,7 @@ private fun MapView(
         }
 
         if (openDialog) {
-            MyAlertDialog(
+            StyledAlertDialog(
                 title = "Are you sure?",
                 message = "This action cannot be undone. Stop sharing location?",
                 confirmButtonText = "Stop",
@@ -509,7 +509,7 @@ fun CheckGpsAndInternetPeriodically() {
     }
 
     if (requestGps) {
-        MyAlertDialog(
+        StyledAlertDialog(
             title = "GPS Not Enabled",
             message = "Please enable GPS to share your location.",
         )

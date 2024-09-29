@@ -64,7 +64,7 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
-import com.drdisagree.uniride.ui.components.views.MyAlertDialog
+import com.drdisagree.uniride.ui.components.views.StyledAlertDialog
 import com.drdisagree.uniride.ui.components.views.OtpInputDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
 import com.drdisagree.uniride.ui.components.views.StyledTextField
@@ -528,7 +528,7 @@ private fun LoginFields(
     }
 
     if (showResendVerificationEmail) {
-        MyAlertDialog(
+        StyledAlertDialog(
             title = "Email not verified",
             message = "Please check your email for verification link.",
             confirmButtonText = "Close",

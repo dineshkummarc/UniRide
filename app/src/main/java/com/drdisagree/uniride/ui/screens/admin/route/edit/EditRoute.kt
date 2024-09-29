@@ -43,7 +43,7 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
-import com.drdisagree.uniride.ui.components.views.MyAlertDialog
+import com.drdisagree.uniride.ui.components.views.StyledAlertDialog
 import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
@@ -409,7 +409,7 @@ private fun EditRouteFields(
     }
 
     if (openDialog) {
-        MyAlertDialog(
+        StyledAlertDialog(
             title = "Are you sure?",
             message = "This action cannot be undone. Delete this route?",
             confirmButtonText = "Delete",

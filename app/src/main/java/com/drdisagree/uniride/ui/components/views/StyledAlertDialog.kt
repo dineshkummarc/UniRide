@@ -12,7 +12,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.drdisagree.uniride.ui.theme.spacing
 
 @Composable
-fun MyAlertDialog(
+fun StyledAlertDialog(
     title: String,
     message: String,
     confirmButtonText: String? = null,
