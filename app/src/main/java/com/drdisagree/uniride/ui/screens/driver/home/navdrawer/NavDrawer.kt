@@ -116,8 +116,8 @@ fun NavigationDrawer(
                 }
             ),
             MenuItemModel(
-                id = "help",
-                title = "Help",
+                id = "help_and_support",
+                title = "Help & Support",
                 contentDescription = "Get help",
                 icon = Icons.Default.Info,
                 onClick = {
