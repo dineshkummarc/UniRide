@@ -44,4 +44,10 @@ object Constant {
     const val DRIVING_LICENSE_BACK = "driving_license_back"
     const val NID_CARD_FRONT = "nid_card_front"
     const val NID_CARD_BACK = "nid_card_back"
+
+    // Resources
+    const val TOTAL_VEHICLES = 50
+    const val TOTAL_DRIVERS_AND_HELPERS = 100
+    const val TOTAL_ROUTES = 15
+    const val TOTAL_TECHNICIANS = 5
 }

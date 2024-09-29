@@ -10,17 +10,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Route
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -54,6 +63,10 @@ import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Notice
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.TOTAL_DRIVERS_AND_HELPERS
+import com.drdisagree.uniride.data.utils.Constant.TOTAL_ROUTES
+import com.drdisagree.uniride.data.utils.Constant.TOTAL_TECHNICIANS
+import com.drdisagree.uniride.data.utils.Constant.TOTAL_VEHICLES
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
@@ -66,6 +79,7 @@ import com.drdisagree.uniride.ui.components.views.RequestNotificationPermission
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isNotificationPermissionGranted
 import com.drdisagree.uniride.ui.screens.destinations.NearbyBusLocationScreenDestination
+import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -140,7 +154,7 @@ private fun HomeContent(
         item {
             Text(
                 text = "Announcement",
-                fontSize = 16.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
                     start = MaterialTheme.spacing.medium1,
@@ -219,8 +233,67 @@ private fun HomeContent(
 
         item {
             Text(
+                text = "Our Resources",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(
+                    start = MaterialTheme.spacing.medium1,
+                    bottom = MaterialTheme.spacing.medium1
+                )
+            )
+        }
+
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = MaterialTheme.spacing.medium1
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    StatCard(
+                        icon = Icons.Default.DirectionsBus,
+                        count = TOTAL_VEHICLES,
+                        label = "Total Vehicles",
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    StatCard(
+                        icon = Icons.Default.Person,
+                        count = TOTAL_DRIVERS_AND_HELPERS,
+                        label = "Drivers & Helpers",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium1))
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    StatCard(
+                        icon = Icons.Default.Route,
+                        count = TOTAL_ROUTES,
+                        label = "Total Routes",
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    StatCard(
+                        icon = Icons.Default.Star,
+                        count = TOTAL_TECHNICIANS,
+                        label = "Technicians",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
+        item {
+            Text(
                 text = "Nearby Buses",
-                fontSize = 16.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
                     top = MaterialTheme.spacing.medium1,
@@ -283,11 +356,13 @@ private fun HomeContent(
                         modifier = Modifier
                             .background(Color.White)
                             .wrapContentSize()
+                            .padding(bottom = MaterialTheme.spacing.extraLarge2)
                     )
                 } else if (sortedBuses.isEmpty()) {
                     Text(
                         text = "No bus found nearby!",
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraLarge2)
                     )
                 }
             }
@@ -458,5 +533,38 @@ private fun HandlePermissions(
         )
 
         gpsStateManager.setGpsRequested(true)
+    }
+}
+
+@Composable
+fun StatCard(modifier: Modifier = Modifier, icon: ImageVector, count: Int, label: String) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(40.dp),
+            tint = Black.copy(alpha = 0.8f)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "$count+",
+                fontSize = 24.sp,
+                color = Blue,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = label,
+                fontSize = 15.sp,
+                color = Black,
+                fontWeight = FontWeight.Medium,
+                lineHeight = 18.sp
+            )
+        }
     }
 }
