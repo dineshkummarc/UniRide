@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.student.mylocation
+package com.drdisagree.uniride.ui.screens.student.more.mylocation
 
 import android.content.Context.SENSOR_SERVICE
 import android.hardware.Sensor
