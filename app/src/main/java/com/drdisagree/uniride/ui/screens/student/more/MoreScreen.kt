@@ -59,6 +59,7 @@ import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.AdminPanelDestination
 import com.drdisagree.uniride.ui.screens.destinations.MyLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
+import com.drdisagree.uniride.ui.screens.destinations.ReportIssueDestination
 import com.drdisagree.uniride.ui.screens.student.account.StudentSignInViewModel
 import com.drdisagree.uniride.ui.screens.student.main.getRootNavigator
 import com.drdisagree.uniride.ui.theme.Dark
@@ -273,6 +274,9 @@ private fun QuickActionsSection(
             backgroundColor = Color(0xFFEEE6E2),
             backgroundWaveColor = Color(0xFFE0D5D0),
             iconBackgroundColor = Color(0xFFDECBC3),
+            onClick = {
+                navigator.navigate(ReportIssueDestination)
+            }
         )
     }
 

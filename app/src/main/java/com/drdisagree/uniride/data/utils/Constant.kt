@@ -21,6 +21,7 @@ object Constant {
     const val DRIVER_DOCUMENT_COLLECTION = "driver_documents_list"
     const val ANNOUNCEMENT_COLLECTION = "announcement_list"
     const val DRIVE_HISTORY_COLLECTION = "drive_history_list"
+    const val ISSUE_COLLECTION = "issue_list"
 
     // Allowed Student Email Suffix
     val STUDENT_MAIL_SUFFIX = listOf(
