@@ -545,7 +545,7 @@ fun StatCard(modifier: Modifier = Modifier, icon: ImageVector, count: Int, label
         Icon(
             imageVector = icon,
             contentDescription = null,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(36.dp),
             tint = Black.copy(alpha = 0.8f)
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -554,7 +554,7 @@ fun StatCard(modifier: Modifier = Modifier, icon: ImageVector, count: Int, label
         ) {
             Text(
                 text = "$count+",
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 color = Blue,
                 fontWeight = FontWeight.Bold
             )
