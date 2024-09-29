@@ -40,14 +40,17 @@ fun StyledDropDownMenu(
     selectedText: String,
     itemList: Array<String> = emptyArray(),
     onItemSelected: ((String) -> Unit)? = null,
-    fillMaxWidth: Boolean = false
+    fillMaxWidth: Boolean = false,
+    isEnabled: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = {
-            expanded = !expanded
+            if (isEnabled) {
+                expanded = !expanded
+            }
         },
         modifier = modifier
             .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
@@ -91,7 +94,8 @@ fun StyledDropDownMenu(
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
                 ),
-                visualTransformation = ellipsisVisualTransformation()
+                visualTransformation = ellipsisVisualTransformation(),
+                enabled = isEnabled
             )
         }
 

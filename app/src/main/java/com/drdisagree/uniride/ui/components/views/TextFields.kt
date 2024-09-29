@@ -54,7 +54,8 @@ fun StyledTextField(
     singleLine: Boolean = true,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
-    focusRequester: FocusRequester? = null
+    focusRequester: FocusRequester? = null,
+    isEnabled: Boolean = true
 ) {
     BasicTextField(
         modifier = modifier
@@ -72,6 +73,7 @@ fun StyledTextField(
         minLines = minLines,
         maxLines = maxLines,
         value = inputText,
+        enabled = isEnabled,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         onValueChange = {

@@ -20,6 +20,7 @@ import com.drdisagree.uniride.ui.theme.spacing
 fun ButtonPrimary(
     modifier: Modifier = Modifier,
     text: String,
+    isEnabled: Boolean = true,
     onClick: () -> Unit
 ) {
     ButtonBase(
@@ -30,6 +31,7 @@ fun ButtonPrimary(
             containerColor = SemiBlack,
             contentColor = Color.White
         ),
+        isEnabled = isEnabled,
         onClick = onClick
     )
 }
@@ -38,6 +40,7 @@ fun ButtonPrimary(
 fun ButtonSecondary(
     modifier: Modifier = Modifier,
     text: String,
+    isEnabled: Boolean = true,
     onClick: () -> Unit
 ) {
     ButtonBase(
@@ -48,6 +51,7 @@ fun ButtonSecondary(
             containerColor = Gray,
             contentColor = Color.Black
         ),
+        isEnabled = isEnabled,
         onClick = onClick
     )
 }
@@ -57,6 +61,7 @@ private fun ButtonBase(
     modifier: Modifier = Modifier,
     text: String,
     colors: ButtonColors,
+    isEnabled: Boolean = true,
     onClick: () -> Unit
 ) {
     Button(
@@ -73,7 +78,8 @@ private fun ButtonBase(
             focusedElevation = 8.dp,
             hoveredElevation = 8.dp,
             disabledElevation = 0.dp
-        )
+        ),
+        enabled = isEnabled
     ) {
         Text(
             text = text,
@@ -84,6 +90,5 @@ private fun ButtonBase(
 
 @Composable
 private fun Modifier.getButtonModifier() = this.then(
-    Modifier
-        .height(MaterialTheme.spacing.fieldHeight)
+    Modifier.height(MaterialTheme.spacing.fieldHeight)
 )
