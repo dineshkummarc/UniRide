@@ -57,6 +57,7 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.AdminPanelDestination
+import com.drdisagree.uniride.ui.screens.destinations.EmergencyDestination
 import com.drdisagree.uniride.ui.screens.destinations.MyLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.ReportIssueDestination
@@ -244,6 +245,9 @@ private fun QuickActionsSection(
             backgroundColor = Color(0xFFEBEBFF),
             backgroundWaveColor = Color(0xFFDFDEFC),
             iconBackgroundColor = Color(0xFFD7D5FC),
+            onClick = {
+                navigator.navigate(EmergencyDestination)
+            }
         )
     }
 

@@ -28,7 +28,15 @@ object Constant {
         "@diu.edu.bd",
         "@daffodilvarsity.edu.bd"
     )
+
+    // Phone Number Prefix
     const val PHONE_NUMBER_PREFIX = "+880"
+
+    // Emergency Phone Numbers
+    val EMERGENCY_PHONE_NUMBERS = listOf(
+        "+8809617901212" to "DIU Help Line",
+        "+8801847140037" to "Transport Office",
+    )
 
     // Driver Documents
     const val DRIVER_PROFILE_PICTURE = "driver_profile_picture"
