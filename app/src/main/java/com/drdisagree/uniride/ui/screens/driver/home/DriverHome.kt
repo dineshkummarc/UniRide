@@ -3,6 +3,10 @@ package com.drdisagree.uniride.ui.screens.driver.home
 import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,9 +49,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
+import com.drdisagree.uniride.data.events.AccountStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
 import com.drdisagree.uniride.data.models.BusCategory
+import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
@@ -138,29 +144,30 @@ private fun DriverHomeContent(
             drawerState = drawerState
         )
 
-        IncompleteProfileWarn(navigator = navigator)
+        AccountWarnings(navigator = navigator)
 
         ShareLocationFields(navigator = navigator)
     }
 }
 
 @Composable
-private fun IncompleteProfileWarn(
+private fun AccountWarnings(
     navigator: DestinationsNavigator,
     getDriverViewModel: GetDriverViewModel = hiltViewModel()
 ) {
+    var driverAccount: Driver? by remember { mutableStateOf(null) }
+    var showUnapprovedAccountWarn by rememberSaveable { mutableStateOf(false) }
     var showIncompleteProfileWarn by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(getDriverViewModel.getDriver) {
         getDriverViewModel.getDriver.collect { result ->
             when (result) {
                 is Resource.Success -> {
-                    showIncompleteProfileWarn = result.data?.contactPhone.isNullOrEmpty()
-                            && result.data?.contactEmail.isNullOrEmpty()
-                }
-
-                is Resource.Error -> {
-                    Unit
+                    driverAccount = result.data
+                    showUnapprovedAccountWarn =
+                        driverAccount?.accountStatus != AccountStatus.APPROVED
+                    showIncompleteProfileWarn = driverAccount?.contactPhone.isNullOrEmpty()
+                            && driverAccount?.contactEmail.isNullOrEmpty()
                 }
 
                 else -> {
@@ -170,7 +177,65 @@ private fun IncompleteProfileWarn(
         }
     }
 
-    if (showIncompleteProfileWarn) {
+    AnimatedVisibility(
+        visible = showUnapprovedAccountWarn,
+        enter = fadeIn(
+            initialAlpha = 0.5f,
+            animationSpec = tween(durationMillis = 300)
+        ) + scaleIn(
+            initialScale = 0.9f,
+            animationSpec = tween(durationMillis = 300)
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = MaterialTheme.spacing.medium1,
+                    end = MaterialTheme.spacing.medium1,
+                    top = MaterialTheme.spacing.small2
+                )
+                .clip(MaterialTheme.shapes.medium)
+                .background(Color(0xFFEED2D1))
+                .padding(MaterialTheme.spacing.medium2)
+        ) {
+            val unapprovedProfileWarn = if (driverAccount?.accountStatus == AccountStatus.PENDING) {
+                "আপনার অ্যাকাউন্টের তথ্য এবং Documents এখনও যাচাইকরণের অধীনে রয়েছে৷ পরে আবার চেক করুন।"
+            } else {
+                "আপনার Documents বাতিল করা হয়েছে. অনুগ্রহ করে DIU Transport Office এ যোগাযোগ করুন।"
+            }
+
+            Column {
+                Text(
+                    text = "অ্যাকাউন্ট স্ট্যাটাস",
+                    fontSize = 16.sp,
+                    color = Color(0xFFBA5050),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraSmall2)
+                )
+                Text(
+                    text = unapprovedProfileWarn,
+                    fontSize = 15.sp,
+                    color = Color(0xFF74423D),
+                    modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraSmall2),
+                    style = TextStyle(
+                        textAlign = TextAlign.Justify
+                    )
+                )
+            }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = showIncompleteProfileWarn,
+        enter = fadeIn(
+            initialAlpha = 0.5f,
+            animationSpec = tween(durationMillis = 300)
+        ) + scaleIn(
+            initialScale = 0.9f,
+            animationSpec = tween(durationMillis = 300)
+        )
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -245,8 +310,28 @@ private fun ShareLocationFields(
     navigator: DestinationsNavigator,
     listsViewModel: ListsViewModel = hiltViewModel(),
     driverViewModel: GetDriverViewModel = hiltViewModel(),
-    driverHomeViewModel: DriverHomeViewModel = hiltViewModel()
+    driverHomeViewModel: DriverHomeViewModel = hiltViewModel(),
+    getDriverViewModel: GetDriverViewModel = hiltViewModel()
 ) {
+    var driverAccount: Driver? by remember { mutableStateOf(null) }
+    var isUnapprovedAccount by rememberSaveable { mutableStateOf(true) }
+
+    LaunchedEffect(getDriverViewModel.getDriver) {
+        getDriverViewModel.getDriver.collect { result ->
+            when (result) {
+                is Resource.Success -> {
+                    driverAccount = result.data
+                    isUnapprovedAccount =
+                        driverAccount?.accountStatus != AccountStatus.APPROVED
+                }
+
+                else -> {
+                    Unit
+                }
+            }
+        }
+    }
+
     val context = LocalContext.current
     val busList by listsViewModel.busModels.collectAsState()
     val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
@@ -315,7 +400,8 @@ private fun ShareLocationFields(
                 bus.name == it
             }
         },
-        fillMaxWidth = true
+        fillMaxWidth = true,
+        isEnabled = !isUnapprovedAccount
     )
 
     Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
@@ -335,7 +421,8 @@ private fun ShareLocationFields(
                 category.name == it
             }
         },
-        fillMaxWidth = true
+        fillMaxWidth = true,
+        isEnabled = !isUnapprovedAccount
     )
 
     Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
@@ -351,7 +438,8 @@ private fun ShareLocationFields(
                 place.name == it
             }
         },
-        fillMaxWidth = true
+        fillMaxWidth = true,
+        isEnabled = !isUnapprovedAccount
     )
 
     Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
@@ -367,7 +455,8 @@ private fun ShareLocationFields(
                 place.name == it
             }
         },
-        fillMaxWidth = true
+        fillMaxWidth = true,
+        isEnabled = !isUnapprovedAccount
     )
 
     Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
@@ -380,7 +469,8 @@ private fun ShareLocationFields(
                 end = MaterialTheme.spacing.medium1,
                 bottom = MaterialTheme.spacing.extraLarge2
             )
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        isEnabled = !isUnapprovedAccount
     ) {
         if (selectedBus.name == defaultBusName.name ||
             busCategory.name == defaultBusCategory.name ||

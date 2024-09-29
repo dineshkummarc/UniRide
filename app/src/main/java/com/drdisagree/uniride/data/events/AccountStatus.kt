@@ -7,6 +7,5 @@ import kotlinx.parcelize.Parcelize
 enum class AccountStatus : Parcelable {
     PENDING,
     APPROVED,
-    REJECTED,
-    ADMIN
+    REJECTED
 }
