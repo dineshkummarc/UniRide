@@ -12,6 +12,7 @@ data class Issue(
     val type: String,
     val description: String,
     val contactInfo: String,
+    val isResolved: Boolean = false,
     val timeStamp: Long = System.currentTimeMillis()
 ) : Parcelable {
     constructor() : this(

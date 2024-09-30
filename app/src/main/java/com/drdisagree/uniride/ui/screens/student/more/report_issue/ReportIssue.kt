@@ -37,6 +37,7 @@ import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledRadioButton
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.screens.student.account.StudentSignInViewModel
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -85,6 +86,7 @@ private fun ReportIssueContent(
 
 @Composable
 private fun ReportIssueFields(
+    studentSignInViewModel: StudentSignInViewModel = hiltViewModel(),
     reportIssueViewModel: ReportIssueViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current

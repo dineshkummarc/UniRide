@@ -48,6 +48,7 @@ import com.drdisagree.uniride.ui.screens.destinations.NewRouteCategoryDestinatio
 import com.drdisagree.uniride.ui.screens.destinations.NewRouteDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewScheduleDestination
 import com.drdisagree.uniride.ui.screens.destinations.PendingDriversDestination
+import com.drdisagree.uniride.ui.screens.destinations.ReportedIssuesDestination
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
@@ -168,7 +169,10 @@ private fun MoreContent(
                 )
                 PanelListItem(
                     icon = R.drawable.ic_warning_outline,
-                    title = R.string.view_reported_issues
+                    title = R.string.view_reported_issues,
+                    onClick = {
+                        navigator.navigate(ReportedIssuesDestination)
+                    }
                 )
             }
         }
