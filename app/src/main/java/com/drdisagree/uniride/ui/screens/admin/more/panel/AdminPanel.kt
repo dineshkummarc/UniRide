@@ -47,6 +47,7 @@ import com.drdisagree.uniride.ui.screens.destinations.NewNoticeDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewRouteCategoryDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewRouteDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewScheduleDestination
+import com.drdisagree.uniride.ui.screens.destinations.PendingDriversDestination
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
@@ -160,14 +161,13 @@ private fun MoreContent(
                 )
                 PanelListItem(
                     icon = R.drawable.ic_user_list,
-                    title = R.string.view_driver_list
+                    title = R.string.view_pending_driver_list,
+                    onClick = {
+                        navigator.navigate(PendingDriversDestination)
+                    }
                 )
                 PanelListItem(
                     icon = R.drawable.ic_warning_outline,
-                    title = R.string.view_emergency_situations
-                )
-                PanelListItem(
-                    icon = R.drawable.ic_sms_edit_outline,
                     title = R.string.view_reported_issues
                 )
             }

@@ -17,8 +17,8 @@
     <string name="post_notice">Post announcement</string>
     <string name="add_new_bus_route">Add new bus route</string>
     <string name="add_new_bus_schedule">Add new bus schedule</string>
-    <string name="view_driver_list">View driver list</string>
-    <string name="view_emergency_situations">View emergency situations</string>
+    <string name="view_pending_driver_list">View pending driver list</string>
+    <string name="pending_driver_list">Driver List</string>
     <string name="view_reported_issues">View reported issues</string>
     <string name="new_route">New Route</string>
     <string name="edit_route">Edit Route</string>

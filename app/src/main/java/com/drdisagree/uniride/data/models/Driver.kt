@@ -16,7 +16,8 @@ data class Driver(
     val contactEmail: String? = null,
     val profileImage: String? = null,
     val documents: List<String>,
-    val accountStatus: AccountStatus = AccountStatus.PENDING
+    val accountStatus: AccountStatus = AccountStatus.PENDING,
+    val timeStamp: Long = System.currentTimeMillis()
 ) : Parcelable {
     constructor() : this(
         id = "",
