@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Issue
+import com.drdisagree.uniride.data.models.Student
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
@@ -47,7 +48,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination(style = FadeInOutTransition::class)
 @Composable
 fun ReportIssue(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    student: Student
 ) {
     Container(shadow = false) {
         Scaffold(
@@ -62,7 +64,8 @@ fun ReportIssue(
             content = { paddingValues ->
                 ReportIssueContent(
                     paddingValues = paddingValues,
-                    navigator = navigator
+                    navigator = navigator,
+                    student = student
                 )
             }
         )
@@ -72,7 +75,8 @@ fun ReportIssue(
 @Composable
 private fun ReportIssueContent(
     paddingValues: PaddingValues,
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    student: Student
 ) {
     Column(
         modifier = Modifier
@@ -81,12 +85,15 @@ private fun ReportIssueContent(
             .verticalScroll(rememberScrollState())
             .padding(MaterialTheme.spacing.medium1)
     ) {
-        ReportIssueFields()
+        ReportIssueFields(
+            student = student
+        )
     }
 }
 
 @Composable
 private fun ReportIssueFields(
+    student: Student,
     studentSignInViewModel: StudentSignInViewModel = hiltViewModel(),
     reportIssueViewModel: ReportIssueViewModel = hiltViewModel()
 ) {
@@ -104,7 +111,7 @@ private fun ReportIssueFields(
         selectedIssueTypeIndex = index
     }
 
-    var contactInformation by rememberSaveable { mutableStateOf("") }
+    var contactInformation by rememberSaveable { mutableStateOf(student.email ?: "") }
 
     Text(
         text = "1. Which of the following best describes the type of issue you are encountering?",

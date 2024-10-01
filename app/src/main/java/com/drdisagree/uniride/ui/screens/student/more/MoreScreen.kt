@@ -145,7 +145,10 @@ private fun MoreContent(
             .verticalScroll(rememberScrollState())
     ) {
         ProfileSection(student = student)
-        QuickActionsSection(navigator = navigator)
+        QuickActionsSection(
+            navigator = navigator,
+            student = student
+        )
     }
 }
 
@@ -210,6 +213,7 @@ private fun ProfileSection(
 @Composable
 private fun QuickActionsSection(
     navigator: DestinationsNavigator,
+    student: Student,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
     Row(
@@ -279,7 +283,11 @@ private fun QuickActionsSection(
             backgroundWaveColor = Color(0xFFE0D5D0),
             iconBackgroundColor = Color(0xFFDECBC3),
             onClick = {
-                navigator.navigate(ReportIssueDestination)
+                navigator.navigate(
+                    ReportIssueDestination(
+                        student = student
+                    )
+                )
             }
         )
     }
