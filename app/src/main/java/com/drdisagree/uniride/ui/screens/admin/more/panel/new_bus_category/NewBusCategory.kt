@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_location
+package com.drdisagree.uniride.ui.screens.admin.more.panel.new_bus_category
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -33,7 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Place
+import com.drdisagree.uniride.data.models.BusCategory
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
@@ -49,21 +49,21 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
-fun NewLocation(
+fun NewBusCategory(
     navigator: DestinationsNavigator
 ) {
     Container(shadow = false) {
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = stringResource(R.string.new_place),
+                    title = stringResource(R.string.new_bus_category),
                     onBackClick = {
                         navigator.navigateUp()
                     }
                 )
             },
             content = { paddingValues ->
-                NewLocationContent(
+                NewBusCategoryContent(
                     paddingValues = paddingValues,
                     navigator = navigator
                 )
@@ -73,7 +73,7 @@ fun NewLocation(
 }
 
 @Composable
-private fun NewLocationContent(
+private fun NewBusCategoryContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
@@ -105,7 +105,7 @@ private fun NewLocationContent(
                     .verticalScroll(rememberScrollState())
                     .padding(MaterialTheme.spacing.medium1)
             ) {
-                NewLocationFields()
+                NewBusCategoryFields()
             }
         }
 
@@ -126,20 +126,20 @@ private fun NewLocationContent(
 }
 
 @Composable
-private fun NewLocationFields(
-    newLocationViewModel: NewLocationViewModel = hiltViewModel()
+private fun NewBusCategoryFields(
+    newBusCategoryViewModel: NewBusCategoryViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var placeName by remember { mutableStateOf("") }
+    var busCategoryName by remember { mutableStateOf("") }
 
     StyledTextField(
-        placeholder = "Place name",
+        placeholder = "Category name",
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2
         ),
-        onValueChange = { placeName = it },
-        inputText = placeName,
+        onValueChange = { busCategoryName = it },
+        inputText = busCategoryName,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         singleLine = false
     )
@@ -155,19 +155,19 @@ private fun NewLocationFields(
             .fillMaxWidth(),
         text = "Submit"
     ) {
-        if (placeName.isEmpty()) {
+        if (busCategoryName.isEmpty()) {
             Toast.makeText(
                 context,
-                "Please fill in place name field",
+                "Please fill in category name field",
                 Toast.LENGTH_SHORT
             ).show()
 
             return@ButtonPrimary
         }
 
-        newLocationViewModel.saveLocation(
-            Place(
-                name = placeName
+        newBusCategoryViewModel.saveBusCategory(
+            BusCategory(
+                name = busCategoryName
             )
         )
     }
@@ -175,7 +175,7 @@ private fun NewLocationFields(
     var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        newLocationViewModel.state.collect { result ->
+        newBusCategoryViewModel.state.collect { result ->
             when (result) {
                 is Resource.Loading -> {
                     showLoadingDialog = true
@@ -184,7 +184,7 @@ private fun NewLocationFields(
                 is Resource.Success -> {
                     showLoadingDialog = false
 
-                    placeName = ""
+                    busCategoryName = ""
 
                     Toast.makeText(
                         context,

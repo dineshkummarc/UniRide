@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_bus
+package com.drdisagree.uniride.ui.screens.admin.more.panel.new_notice
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -21,7 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,7 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Bus
+import com.drdisagree.uniride.data.models.Notice
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
@@ -49,21 +48,21 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
-fun NewBus(
+fun NewNotice(
     navigator: DestinationsNavigator
 ) {
     Container(shadow = false) {
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = stringResource(R.string.new_bus),
+                    title = stringResource(id = R.string.post_notice),
                     onBackClick = {
                         navigator.navigateUp()
                     }
                 )
             },
             content = { paddingValues ->
-                NewBusContent(
+                NewNoticeContent(
                     paddingValues = paddingValues,
                     navigator = navigator
                 )
@@ -73,7 +72,7 @@ fun NewBus(
 }
 
 @Composable
-private fun NewBusContent(
+private fun NewNoticeContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
@@ -105,7 +104,7 @@ private fun NewBusContent(
                     .verticalScroll(rememberScrollState())
                     .padding(MaterialTheme.spacing.medium1)
             ) {
-                NewBusFields()
+                NewRouteFields()
             }
         }
 
@@ -126,22 +125,20 @@ private fun NewBusContent(
 }
 
 @Composable
-private fun NewBusFields(
-    newBusViewModel: NewBusViewModel = hiltViewModel()
+private fun NewRouteFields(
+    newNoticeViewModel: NewNoticeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var busName by remember { mutableStateOf("") }
+    var announcement by rememberSaveable { mutableStateOf("") }
 
     StyledTextField(
-        placeholder = "Bus name",
-        modifier = Modifier.padding(
-            start = MaterialTheme.spacing.small2,
-            end = MaterialTheme.spacing.small2
-        ),
-        onValueChange = { busName = it },
-        inputText = busName,
+        placeholder = "Write your announcement here...",
+        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small2),
+        onValueChange = { announcement = it },
+        inputText = announcement,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        singleLine = false
+        singleLine = false,
+        minLines = 5
     )
 
     ButtonPrimary(
@@ -153,21 +150,23 @@ private fun NewBusFields(
                 bottom = MaterialTheme.spacing.medium1
             )
             .fillMaxWidth(),
-        text = "Submit"
+        text = "Post"
     ) {
-        if (busName.isEmpty()) {
+        if (
+            announcement.trim().isEmpty()
+        ) {
             Toast.makeText(
                 context,
-                "Please fill in bus name field",
+                "Announcement cannot be empty",
                 Toast.LENGTH_SHORT
             ).show()
 
             return@ButtonPrimary
         }
 
-        newBusViewModel.saveBus(
-            Bus(
-                name = busName
+        newNoticeViewModel.postAnnouncement(
+            Notice(
+                announcement = announcement
             )
         )
     }
@@ -175,7 +174,7 @@ private fun NewBusFields(
     var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        newBusViewModel.state.collect { result ->
+        newNoticeViewModel.state.collect { result ->
             when (result) {
                 is Resource.Loading -> {
                     showLoadingDialog = true
@@ -183,8 +182,6 @@ private fun NewBusFields(
 
                 is Resource.Success -> {
                     showLoadingDialog = false
-
-                    busName = ""
 
                     Toast.makeText(
                         context,

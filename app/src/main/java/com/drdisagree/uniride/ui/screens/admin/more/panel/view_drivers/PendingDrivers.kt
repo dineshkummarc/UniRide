@@ -1,5 +1,6 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.view_issues
+package com.drdisagree.uniride.ui.screens.admin.more.panel.view_drivers
 
+import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,8 +49,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.AccountStatus
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Issue
+import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
@@ -65,7 +67,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
-fun ReportedIssues(
+fun PendingDrivers(
     navigator: DestinationsNavigator
 ) {
     var openSearch by rememberSaveable { mutableStateOf(false) }
@@ -74,7 +76,7 @@ fun ReportedIssues(
         Scaffold(
             topBar = {
                 TopAppBarWithBackButtonAndEndIcon(
-                    title = stringResource(R.string.reported_issues),
+                    title = stringResource(R.string.pending_driver_list),
                     onBackClick = {
                         navigator.navigateUp()
                     },
@@ -91,7 +93,7 @@ fun ReportedIssues(
                 )
             },
             content = { paddingValues ->
-                ReportedIssuesContent(
+                PendingDriversContent(
                     paddingValues = paddingValues,
                     navigator = navigator,
                     isShowingSearch = openSearch
@@ -102,17 +104,17 @@ fun ReportedIssues(
 }
 
 @Composable
-private fun ReportedIssuesContent(
+private fun PendingDriversContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
     isShowingSearch: Boolean = false,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel(),
-    reportedIssuesViewModel: ReportedIssuesViewModel = hiltViewModel()
+    pendingDriversViewModel: PendingDriversViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
-    val issues by reportedIssuesViewModel.issues.collectAsState()
+    val drivers by pendingDriversViewModel.drivers.collectAsState()
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(isShowingSearch) {
@@ -121,19 +123,22 @@ private fun ReportedIssuesContent(
         }
     }
 
-    val filteredIssues = rememberSaveable(issues, searchQuery) {
-        when (issues) {
+    val filteredDrivers = rememberSaveable(drivers, searchQuery) {
+        when (drivers) {
             is Resource.Success -> {
-                val issueList = (issues as Resource.Success<List<Issue>>).data.orEmpty()
+                val driverList = (drivers as Resource.Success<List<Driver>>).data.orEmpty()
                 val trimmedQuery = searchQuery.trim()
 
                 if (isShowingSearch && trimmedQuery.isNotEmpty()) {
-                    issueList.filter { issue ->
-                        issue.type.contains(trimmedQuery, ignoreCase = true) ||
-                                issue.uuid.contains(trimmedQuery, ignoreCase = true)
+                    driverList.filter { driver ->
+                        driver.name.contains(trimmedQuery, ignoreCase = true) ||
+                                driver.id.contains(trimmedQuery, ignoreCase = true) ||
+                                driver.phone?.contains(trimmedQuery, ignoreCase = true) == true ||
+                                driver.email?.contains(trimmedQuery, ignoreCase = true) == true ||
+                                driver.accountStatus.name.contains(trimmedQuery, ignoreCase = true)
                     }
                 } else {
-                    issueList
+                    driverList
                 }
             }
 
@@ -166,7 +171,7 @@ private fun ReportedIssuesContent(
             ) {
                 if (isShowingSearch) {
                     StyledTextField(
-                        placeholder = "Search issue...",
+                        placeholder = "Search driver...",
                         modifier = Modifier
                             .padding(MaterialTheme.spacing.medium1),
                         onValueChange = {
@@ -190,7 +195,7 @@ private fun ReportedIssuesContent(
                     )
                 }
 
-                when (issues) {
+                when (drivers) {
                     is Resource.Loading -> {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -206,18 +211,18 @@ private fun ReportedIssuesContent(
                     }
 
                     is Resource.Success -> {
-                        if (filteredIssues.isNotEmpty()) {
+                        if (filteredDrivers.isNotEmpty()) {
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 items(
-                                    count = filteredIssues.size,
-                                    key = { filteredIssues[it].uuid }
+                                    count = filteredDrivers.size,
+                                    key = { filteredDrivers[it].id }
                                 ) { index ->
-                                    IssueListItem(
+                                    DriverListItem(
                                         index = index,
                                         navigator = navigator,
-                                        issue = filteredIssues[index]
+                                        driver = filteredDrivers[index]
                                     )
                                 }
                             }
@@ -230,14 +235,14 @@ private fun ReportedIssuesContent(
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 Text(
-                                    text = "No reported issue found!"
+                                    text = "No pending drivers found!"
                                 )
                             }
                         }
                     }
 
                     is Resource.Error -> {
-                        (issues as Resource.Error<*>).message?.let {
+                        (drivers as Resource.Error<*>).message?.let {
                             Toast.makeText(
                                 context,
                                 it,
@@ -268,19 +273,26 @@ private fun ReportedIssuesContent(
 }
 
 @Composable
-fun IssueListItem(
+fun DriverListItem(
     modifier: Modifier = Modifier,
     navigator: DestinationsNavigator,
     index: Int,
-    issue: Issue
+    driver: Driver
 ) {
-    val (pillBackgroundColor, pillTextColor) = when (issue.isResolved) {
-        true -> {
+    val context = LocalContext.current
+    val is24HourFormat = DateFormat.is24HourFormat(context)
+
+    val (pillBackgroundColor, pillTextColor) = when (driver.accountStatus) {
+        AccountStatus.APPROVED -> {
             Color(0xFFE9FAF4) to Color(0xFF0B710A)
         }
 
-        false -> {
+        AccountStatus.PENDING -> {
             Color(0xFFFCEFE7) to Color(0xFFE26A08)
+        }
+
+        AccountStatus.REJECTED -> {
+            Color(0xFFFBEBEC) to Color(0xFF881418)
         }
     }
 
@@ -288,7 +300,7 @@ fun IssueListItem(
         modifier = modifier
             .fillMaxSize()
             .clickable {
-                // TODO: Navigate to edit issue screen
+                // TODO: Navigate to edit driver screen
             }
     ) {
         if (index != 0) {
@@ -297,6 +309,9 @@ fun IssueListItem(
                 modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1)
             )
         }
+
+        val emailOrPhoneTitle = if (driver.email == null) "Phone" else "Email"
+        val emailOrPhone = driver.email ?: driver.phone
 
         Column(
             modifier = modifier
@@ -319,7 +334,7 @@ fun IssueListItem(
                     ) {
                         append("ID: ")
                     }
-                    append(issue.uuid)
+                    append(driver.id)
                 },
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
@@ -333,9 +348,9 @@ fun IssueListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Issue Type: ")
+                        append("Name: ")
                     }
-                    append(issue.type)
+                    append(driver.name)
                 },
                 color = Dark,
                 fontSize = 14.sp
@@ -348,9 +363,24 @@ fun IssueListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Submitted on: ")
+                        append("$emailOrPhoneTitle: ")
                     }
-                    append(issue.timeStamp.millisToTime("dd/MM/yyyy"))
+                    append(emailOrPhone)
+                },
+                color = Dark,
+                fontSize = 14.sp
+            )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("Time: ")
+                    }
+                    append(driver.timeStamp.millisToTime("dd/MM/yyyy - ${if (is24HourFormat) "HH:mm" else "hh:mm a"}"))
                 },
                 color = Dark,
                 fontSize = 14.sp
@@ -371,7 +401,13 @@ fun IssueListItem(
                             color = pillTextColor
                         )
                     ) {
-                        append(if (issue.isResolved) "Resolved" else "Unresolved")
+                        append(
+                            when (driver.accountStatus) {
+                                AccountStatus.APPROVED -> "Approved"
+                                AccountStatus.PENDING -> "Pending"
+                                AccountStatus.REJECTED -> "Rejected"
+                            }
+                        )
                     }
                 },
                 color = Dark,

@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_schedule
+package com.drdisagree.uniride.ui.screens.admin.more.panel.new_schedule
 
 import android.text.format.DateFormat
 import android.widget.Toast

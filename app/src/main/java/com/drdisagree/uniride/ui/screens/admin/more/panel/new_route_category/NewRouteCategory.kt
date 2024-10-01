@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_route_category
+package com.drdisagree.uniride.ui.screens.admin.more.panel.new_route_category
 
 import android.widget.Toast
 import androidx.compose.foundation.background

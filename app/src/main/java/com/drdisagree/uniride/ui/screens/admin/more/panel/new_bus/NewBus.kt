@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_bus_category
+package com.drdisagree.uniride.ui.screens.admin.more.panel.new_bus
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -33,7 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.BusCategory
+import com.drdisagree.uniride.data.models.Bus
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
@@ -49,21 +49,21 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
-fun NewBusCategory(
+fun NewBus(
     navigator: DestinationsNavigator
 ) {
     Container(shadow = false) {
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = stringResource(R.string.new_bus_category),
+                    title = stringResource(R.string.new_bus),
                     onBackClick = {
                         navigator.navigateUp()
                     }
                 )
             },
             content = { paddingValues ->
-                NewBusCategoryContent(
+                NewBusContent(
                     paddingValues = paddingValues,
                     navigator = navigator
                 )
@@ -73,7 +73,7 @@ fun NewBusCategory(
 }
 
 @Composable
-private fun NewBusCategoryContent(
+private fun NewBusContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
@@ -105,7 +105,7 @@ private fun NewBusCategoryContent(
                     .verticalScroll(rememberScrollState())
                     .padding(MaterialTheme.spacing.medium1)
             ) {
-                NewBusCategoryFields()
+                NewBusFields()
             }
         }
 
@@ -126,20 +126,20 @@ private fun NewBusCategoryContent(
 }
 
 @Composable
-private fun NewBusCategoryFields(
-    newBusCategoryViewModel: NewBusCategoryViewModel = hiltViewModel()
+private fun NewBusFields(
+    newBusViewModel: NewBusViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var busCategoryName by remember { mutableStateOf("") }
+    var busName by remember { mutableStateOf("") }
 
     StyledTextField(
-        placeholder = "Category name",
+        placeholder = "Bus name",
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2
         ),
-        onValueChange = { busCategoryName = it },
-        inputText = busCategoryName,
+        onValueChange = { busName = it },
+        inputText = busName,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         singleLine = false
     )
@@ -155,19 +155,19 @@ private fun NewBusCategoryFields(
             .fillMaxWidth(),
         text = "Submit"
     ) {
-        if (busCategoryName.isEmpty()) {
+        if (busName.isEmpty()) {
             Toast.makeText(
                 context,
-                "Please fill in category name field",
+                "Please fill in bus name field",
                 Toast.LENGTH_SHORT
             ).show()
 
             return@ButtonPrimary
         }
 
-        newBusCategoryViewModel.saveBusCategory(
-            BusCategory(
-                name = busCategoryName
+        newBusViewModel.saveBus(
+            Bus(
+                name = busName
             )
         )
     }
@@ -175,7 +175,7 @@ private fun NewBusCategoryFields(
     var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        newBusCategoryViewModel.state.collect { result ->
+        newBusViewModel.state.collect { result ->
             when (result) {
                 is Resource.Loading -> {
                     showLoadingDialog = true
@@ -184,7 +184,7 @@ private fun NewBusCategoryFields(
                 is Resource.Success -> {
                     showLoadingDialog = false
 
-                    busCategoryName = ""
+                    busName = ""
 
                     Toast.makeText(
                         context,

@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_notice
+package com.drdisagree.uniride.ui.screens.admin.more.panel.new_location
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,7 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Notice
+import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
@@ -48,21 +49,21 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
 @Composable
-fun NewNotice(
+fun NewLocation(
     navigator: DestinationsNavigator
 ) {
     Container(shadow = false) {
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = stringResource(id = R.string.post_notice),
+                    title = stringResource(R.string.new_place),
                     onBackClick = {
                         navigator.navigateUp()
                     }
                 )
             },
             content = { paddingValues ->
-                NewNoticeContent(
+                NewLocationContent(
                     paddingValues = paddingValues,
                     navigator = navigator
                 )
@@ -72,7 +73,7 @@ fun NewNotice(
 }
 
 @Composable
-private fun NewNoticeContent(
+private fun NewLocationContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
@@ -104,7 +105,7 @@ private fun NewNoticeContent(
                     .verticalScroll(rememberScrollState())
                     .padding(MaterialTheme.spacing.medium1)
             ) {
-                NewRouteFields()
+                NewLocationFields()
             }
         }
 
@@ -125,20 +126,22 @@ private fun NewNoticeContent(
 }
 
 @Composable
-private fun NewRouteFields(
-    newNoticeViewModel: NewNoticeViewModel = hiltViewModel()
+private fun NewLocationFields(
+    newLocationViewModel: NewLocationViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    var announcement by rememberSaveable { mutableStateOf("") }
+    var placeName by remember { mutableStateOf("") }
 
     StyledTextField(
-        placeholder = "Write your announcement here...",
-        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small2),
-        onValueChange = { announcement = it },
-        inputText = announcement,
+        placeholder = "Place name",
+        modifier = Modifier.padding(
+            start = MaterialTheme.spacing.small2,
+            end = MaterialTheme.spacing.small2
+        ),
+        onValueChange = { placeName = it },
+        inputText = placeName,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        singleLine = false,
-        minLines = 5
+        singleLine = false
     )
 
     ButtonPrimary(
@@ -150,23 +153,21 @@ private fun NewRouteFields(
                 bottom = MaterialTheme.spacing.medium1
             )
             .fillMaxWidth(),
-        text = "Post"
+        text = "Submit"
     ) {
-        if (
-            announcement.trim().isEmpty()
-        ) {
+        if (placeName.isEmpty()) {
             Toast.makeText(
                 context,
-                "Announcement cannot be empty",
+                "Please fill in place name field",
                 Toast.LENGTH_SHORT
             ).show()
 
             return@ButtonPrimary
         }
 
-        newNoticeViewModel.postAnnouncement(
-            Notice(
-                announcement = announcement
+        newLocationViewModel.saveLocation(
+            Place(
+                name = placeName
             )
         )
     }
@@ -174,7 +175,7 @@ private fun NewRouteFields(
     var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        newNoticeViewModel.state.collect { result ->
+        newLocationViewModel.state.collect { result ->
             when (result) {
                 is Resource.Loading -> {
                     showLoadingDialog = true
@@ -182,6 +183,8 @@ private fun NewRouteFields(
 
                 is Resource.Success -> {
                     showLoadingDialog = false
+
+                    placeName = ""
 
                     Toast.makeText(
                         context,

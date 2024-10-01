@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.new_bus
+package com.drdisagree.uniride.ui.screens.admin.more.panel.new_bus
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.ui.screens.admin.more.panel.features.view_issues
+package com.drdisagree.uniride.ui.screens.admin.more.panel.view_issues
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
