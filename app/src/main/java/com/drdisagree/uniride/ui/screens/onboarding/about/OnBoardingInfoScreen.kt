@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,8 +41,10 @@ import com.drdisagree.uniride.BuildConfig
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.components.navigation.MainScreenGraph
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
-import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.screens.destinations.PrivacyPolicyScreenDestination
+import com.drdisagree.uniride.ui.screens.destinations.TermsAndConditionsScreenDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.Gray
@@ -66,18 +70,25 @@ fun InfoScreen(
                 )
             },
             content = { paddingValues ->
-                InfoContent(paddingValues)
+                InfoContent(
+                    paddingValues = paddingValues,
+                    navigator = navigator
+                )
             }
         )
     }
 }
 
 @Composable
-private fun InfoContent(paddingValues: PaddingValues) {
+private fun InfoContent(
+    paddingValues: PaddingValues,
+    navigator: DestinationsNavigator
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues = paddingValues)
+            .verticalScroll(rememberScrollState())
     ) {
         Image(
             modifier = Modifier
@@ -155,7 +166,13 @@ private fun InfoContent(paddingValues: PaddingValues) {
             fontSize = 15.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { }
+                .clickable {
+                    navigator.navigate(
+                        TermsAndConditionsScreenDestination
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
                 .padding(
                     vertical = MaterialTheme.spacing.small3,
                     horizontal = MaterialTheme.spacing.medium3
@@ -167,7 +184,13 @@ private fun InfoContent(paddingValues: PaddingValues) {
             fontSize = 15.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { }
+                .clickable {
+                    navigator.navigate(
+                        PrivacyPolicyScreenDestination
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
                 .padding(
                     vertical = MaterialTheme.spacing.small3,
                     horizontal = MaterialTheme.spacing.medium3
