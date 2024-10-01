@@ -224,6 +224,33 @@ private fun ReportedIssueDetailsContent(
                     fontSize = 15.sp,
                     textAlign = TextAlign.Justify
                 )
+                Text(
+                    text = "Contact Info:",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp,
+                    modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
+                )
+                BasicText(
+                    text = issue.contactInfo,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Dark,
+                        fontSize = 15.sp
+                    ),
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = {
+                                clipboardManager.setText(AnnotatedString(issue.contactInfo))
+
+                                Toast.makeText(
+                                    context,
+                                    "Copied to clipboard",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        )
+                    }
+                )
 
                 if (!issue.resolved) {
                     ButtonPrimary(
