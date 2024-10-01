@@ -39,14 +39,14 @@ fun PrivacyPolicyScreen(
                 )
             },
             content = { paddingValues ->
-                InfoContent(paddingValues)
+                PrivacyPolicyContent(paddingValues)
             }
         )
     }
 }
 
 @Composable
-private fun InfoContent(paddingValues: PaddingValues) {
+private fun PrivacyPolicyContent(paddingValues: PaddingValues) {
     Column(
         modifier = Modifier
             .fillMaxSize()

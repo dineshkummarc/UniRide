@@ -39,14 +39,14 @@ fun TermsAndConditionsScreen(
                 )
             },
             content = { paddingValues ->
-                InfoContent(paddingValues)
+                TermsAndConditionsContent(paddingValues)
             }
         )
     }
 }
 
 @Composable
-private fun InfoContent(paddingValues: PaddingValues) {
+private fun TermsAndConditionsContent(paddingValues: PaddingValues) {
     Column(
         modifier = Modifier
             .fillMaxSize()
