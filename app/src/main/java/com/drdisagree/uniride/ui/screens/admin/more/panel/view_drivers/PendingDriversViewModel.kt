@@ -43,20 +43,6 @@ class PendingDriversViewModel @Inject constructor(
         }
 
         firestore.collection(DRIVER_COLLECTION)
-            .get()
-            .addOnSuccessListener { result ->
-                viewModelScope.launch {
-                    val drivers = result.toObjects(Driver::class.java)
-                    _drivers.emit(Resource.Success(sortDrivers(drivers)))
-                }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    _drivers.emit(Resource.Error(it.message.toString()))
-                }
-            }
-
-        firestore.collection(DRIVER_COLLECTION)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     viewModelScope.launch {

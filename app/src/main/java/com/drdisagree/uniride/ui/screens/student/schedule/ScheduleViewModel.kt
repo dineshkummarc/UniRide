@@ -31,31 +31,8 @@ class ScheduleViewModel @Inject constructor(
             _allSchedules.emit(Resource.Loading())
         }
 
-        val query = firestore.collection(SCHEDULE_COLLECTION)
-
-        query.get()
-            .addOnSuccessListener {
-                viewModelScope.launch {
-                    _allSchedules.emit(
-                        Resource.Success(
-                            it.toObjects(
-                                Schedule::class.java
-                            )
-                        )
-                    )
-                }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    _allSchedules.emit(
-                        Resource.Error(
-                            it.message.toString()
-                        )
-                    )
-                }
-            }
-
-        query.addSnapshotListener { value, error ->
+        firestore.collection(SCHEDULE_COLLECTION)
+            .addSnapshotListener { value, error ->
                 if (error != null) {
                     viewModelScope.launch {
                         _allSchedules.emit(

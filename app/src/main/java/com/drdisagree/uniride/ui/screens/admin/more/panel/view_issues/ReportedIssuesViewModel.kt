@@ -41,20 +41,6 @@ class ReportedIssuesViewModel @Inject constructor(
         }
 
         firestore.collection(ISSUE_COLLECTION)
-            .get()
-            .addOnSuccessListener { result ->
-                viewModelScope.launch {
-                    val issues = result.toObjects(Issue::class.java)
-                    _issues.emit(Resource.Success(sortDrivers(issues)))
-                }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    _issues.emit(Resource.Error(it.message.toString()))
-                }
-            }
-
-        firestore.collection(ISSUE_COLLECTION)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     viewModelScope.launch {

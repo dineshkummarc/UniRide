@@ -25,57 +25,32 @@ class NoticeBoardViewModel @Inject constructor(
         getLastAnnouncement()
     }
 
-    fun getLastAnnouncement() {
+    private fun getLastAnnouncement() {
         viewModelScope.launch {
             _noticeBoard.emit(Resource.Loading())
         }
 
-        val query = firestore.collection(ANNOUNCEMENT_COLLECTION)
+        firestore.collection(ANNOUNCEMENT_COLLECTION)
             .orderBy("timeStamp", Query.Direction.DESCENDING)
             .limit(1)
-
-        query.get()
-            .addOnSuccessListener { querySnapshot ->
-                if (!querySnapshot.isEmpty) {
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
                     viewModelScope.launch {
-                        _noticeBoard.emit(
-                            Resource.Success(
-                                querySnapshot.toObjects(Notice::class.java)[0]
-                            )
-                        )
+                        _noticeBoard.emit(Resource.Error(error.message.toString()))
                     }
                 } else {
-                    viewModelScope.launch {
-                        _noticeBoard.emit(
-                            Resource.Error("No announcement found")
-                        )
-                    }
-                }
-            }
-            .addOnFailureListener { exception ->
-                viewModelScope.launch {
-                    _noticeBoard.emit(Resource.Error(exception.message.toString()))
-                }
-            }
-
-        query.addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                viewModelScope.launch {
-                    _noticeBoard.emit(Resource.Error(error.message.toString()))
-                }
-            } else {
-                snapshot?.let {
-                    if (!it.isEmpty) {
-                        viewModelScope.launch {
-                            _noticeBoard.emit(
-                                Resource.Success(
-                                    it.toObjects(Notice::class.java)[0]
+                    snapshot?.let {
+                        if (!it.isEmpty) {
+                            viewModelScope.launch {
+                                _noticeBoard.emit(
+                                    Resource.Success(
+                                        it.toObjects(Notice::class.java)[0]
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
             }
-        }
     }
 }

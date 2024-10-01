@@ -32,30 +32,6 @@ class RouteViewModel @Inject constructor(
 
         firestore.collection(ROUTE_COLLECTION)
             .orderBy("timeStamp", Query.Direction.ASCENDING)
-            .get()
-            .addOnSuccessListener {
-                viewModelScope.launch {
-                    _routes.emit(
-                        Resource.Success(
-                            it.toObjects(
-                                Route::class.java
-                            )
-                        )
-                    )
-                }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    _routes.emit(
-                        Resource.Error(
-                            it.message.toString()
-                        )
-                    )
-                }
-            }
-
-        firestore.collection(ROUTE_COLLECTION)
-            .orderBy("timeStamp", Query.Direction.ASCENDING)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     viewModelScope.launch {

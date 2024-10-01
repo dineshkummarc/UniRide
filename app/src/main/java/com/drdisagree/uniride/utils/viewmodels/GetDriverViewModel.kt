@@ -31,30 +31,6 @@ class GetDriverViewModel @Inject constructor(
     private fun getSignedInDriver() {
         firestore.collection(DRIVER_COLLECTION)
             .document(firebaseAuth.currentUser!!.uid)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    document.toObject(Driver::class.java)?.let { driver ->
-                        viewModelScope.launch {
-                            _getDriver.emit(Resource.Success(driver))
-                        }
-                    }
-                } else {
-                    viewModelScope.launch {
-                        _getDriver.emit(Resource.Error("Account information not found"))
-                    }
-                }
-            }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    _getDriver.emit(
-                        Resource.Error(it.message.toString())
-                    )
-                }
-            }
-
-        firestore.collection(DRIVER_COLLECTION)
-            .document(firebaseAuth.currentUser!!.uid)
             .addSnapshotListener { value, error ->
                 firebaseAuth.currentUser?.let {
                     if (error != null) {
