@@ -1,8 +1,2 @@
 <resources>
-    <string name="edit_profile">প্রোফাইল সম্পাদনা করুন</string>
-    <string name="switch_language">ভাষা পরিবর্তন করুন</string>
-    <string name="help_support">সাহায্য এবং সমর্থন</string>
-    <string name="privacy_policy">গোপনীয়তা নীতি</string>
-    <string name="road_transport_act">সড়ক পরিবহন আইন</string>
-    <string name="sign_out">সাইন আউট করুন</string>
 </resources>

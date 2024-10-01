@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Policy
+import androidx.compose.material.icons.outlined.Reviews
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +59,7 @@ import com.drdisagree.uniride.data.utils.Constant.ROAD_TRANSPORT_ACT_URL
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
+import com.drdisagree.uniride.ui.screens.destinations.HelpAndSupportScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.ui.theme.Dark
@@ -102,7 +104,7 @@ fun NavigationDrawer(
     DrawerBody(
         items = listOf(
             MenuItemModel(
-                id = "profile",
+                id = "edit_profile",
                 title = stringResource(R.string.edit_profile),
                 contentDescription = "Go to edit profile screen",
                 icon = Icons.Outlined.Person,
@@ -110,6 +112,17 @@ fun NavigationDrawer(
                     coroutineScope.launch {
                         drawerState.close()
                         navigator.navigate(EditProfileScreenDestination)
+                    }
+                }
+            ),
+            MenuItemModel(
+                id = "reviews_about_me",
+                title = stringResource(R.string.reviews_about_me),
+                contentDescription = "Check reviews about me",
+                icon = Icons.Outlined.Reviews,
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
                     }
                 }
             ),
@@ -133,6 +146,11 @@ fun NavigationDrawer(
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()
+                        navigator.navigate(
+                            HelpAndSupportScreenDestination
+                        ) {
+                            launchSingleTop = true
+                        }
                     }
                 }
             ),
