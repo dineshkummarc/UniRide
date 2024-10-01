@@ -308,7 +308,7 @@ private fun EditScheduleFields(
         contentAlignment = Alignment.CenterStart
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = 14.dp),
+            modifier = Modifier.padding(horizontal = 22.dp),
             text = departureTime
         )
     }
