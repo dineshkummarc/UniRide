@@ -556,7 +556,7 @@ fun StatCard(modifier: Modifier = Modifier, icon: ImageVector, count: Int, label
                 text = "$count+",
                 fontSize = 20.sp,
                 color = Blue,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
             Text(
                 text = label,
