@@ -31,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,8 +57,10 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
+import com.drdisagree.uniride.ui.screens.destinations.PendingDriverDetailsDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.ColorUtils.getDriverPillColors
 import com.drdisagree.uniride.utils.TimeUtils.millisToTime
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -122,7 +125,7 @@ private fun PendingDriversContent(
         }
     }
 
-    val filteredDrivers = rememberSaveable(drivers, searchQuery) {
+    val filteredDrivers = remember(drivers, searchQuery) {
         when (drivers) {
             is Resource.Success -> {
                 val driverList = (drivers as Resource.Success<List<Driver>>).data.orEmpty()
@@ -278,25 +281,19 @@ fun DriverListItem(
     index: Int,
     driver: Driver
 ) {
-    val (pillBackgroundColor, pillTextColor) = when (driver.accountStatus) {
-        AccountStatus.APPROVED -> {
-            Color(0xFFE9FAF4) to Color(0xFF0B710A)
-        }
-
-        AccountStatus.PENDING -> {
-            Color(0xFFFCEFE7) to Color(0xFFE26A08)
-        }
-
-        AccountStatus.REJECTED -> {
-            Color(0xFFFBEBEC) to Color(0xFF881418)
-        }
+    val (pillBackgroundColor, pillTextColor) = remember(driver.accountStatus) {
+        getDriverPillColors(driver.accountStatus)
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .clickable {
-                // TODO: Navigate to edit driver screen
+                navigator.navigate(
+                    PendingDriverDetailsDestination(
+                        driver = driver
+                    )
+                )
             }
     ) {
         if (index != 0) {

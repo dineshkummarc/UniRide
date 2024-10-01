@@ -1,6 +1,7 @@
 package com.drdisagree.uniride.utils
 
 import androidx.compose.ui.graphics.Color
+import com.drdisagree.uniride.data.events.AccountStatus
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Dark
 import java.util.Locale
@@ -52,6 +53,22 @@ object ColorUtils {
             Color(0xFFFFEEE6) to Color(0xFFAA6A48)
         } else { // common
             Color(0xFFF0F0F2) to Dark
+        }
+    }
+
+    fun getDriverPillColors(accountStatus: AccountStatus): Pair<Color, Color> {
+        return when (accountStatus) {
+            AccountStatus.APPROVED -> {
+                Color(0xFFE9FAF4) to Color(0xFF0B710A)
+            }
+
+            AccountStatus.PENDING -> {
+                Color(0xFFFCEFE7) to Color(0xFFE26A08)
+            }
+
+            AccountStatus.REJECTED -> {
+                Color(0xFFF5D7D9) to Color(0xFF881418)
+            }
         }
     }
 }

@@ -19,6 +19,7 @@
     <string name="add_new_bus_schedule">Add new bus schedule</string>
     <string name="view_pending_driver_list">View pending driver list</string>
     <string name="pending_driver_list">Driver List</string>
+    <string name="pending_driver">Pending Driver</string>
     <string name="view_reported_issues">View reported issues</string>
     <string name="reported_issues">Reported Issues</string>
     <string name="reported_issue">Reported Issue</string>
