@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,14 +29,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
@@ -49,6 +53,7 @@ import com.drdisagree.uniride.ui.screens.destinations.NewRouteDestination
 import com.drdisagree.uniride.ui.screens.destinations.NewScheduleDestination
 import com.drdisagree.uniride.ui.screens.destinations.PendingDriversDestination
 import com.drdisagree.uniride.ui.screens.destinations.ReportedIssuesDestination
+import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
@@ -85,6 +90,7 @@ fun AdminPanel(
 private fun MoreContent(
     paddingValues: PaddingValues,
     navigator: DestinationsNavigator,
+    adminPanelViewModel: AdminPanelViewModel = hiltViewModel(),
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
     val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
@@ -105,6 +111,9 @@ private fun MoreContent(
         }
 
         true -> {
+            val issueCount by adminPanelViewModel.issueCount.collectAsState()
+            val pendingDriverCount by adminPanelViewModel.pendingDriverCount.collectAsState()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -165,6 +174,27 @@ private fun MoreContent(
                     title = R.string.view_pending_driver_list,
                     onClick = {
                         navigator.navigate(PendingDriversDestination)
+                    },
+                    endIcon = {
+                        when (pendingDriverCount) {
+                            is Resource.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            is Resource.Error -> {
+                                CountIndicator(count = -1)
+                            }
+
+                            is Resource.Success -> {
+                                CountIndicator(
+                                    count = (pendingDriverCount as Resource.Success<Int>).data ?: 0
+                                )
+                            }
+
+                            else -> {}
+                        }
                     }
                 )
                 PanelListItem(
@@ -172,6 +202,27 @@ private fun MoreContent(
                     title = R.string.view_reported_issues,
                     onClick = {
                         navigator.navigate(ReportedIssuesDestination)
+                    },
+                    endIcon = {
+                        when (issueCount) {
+                            is Resource.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            is Resource.Error -> {
+                                CountIndicator(count = -1)
+                            }
+
+                            is Resource.Success -> {
+                                CountIndicator(
+                                    count = (issueCount as Resource.Success<Int>).data ?: 0
+                                )
+                            }
+
+                            else -> {}
+                        }
                     }
                 )
             }
@@ -196,7 +247,8 @@ private fun PanelListItem(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int,
     @StringRes title: Int,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    endIcon: @Composable (() -> Unit)? = null
 ) {
     Row(
         modifier = modifier
@@ -227,6 +279,34 @@ private fun PanelListItem(
             style = TextStyle(
                 fontWeight = FontWeight.SemiBold
             )
+        )
+
+        if (endIcon != null) {
+            Spacer(modifier = Modifier.weight(1f))
+            endIcon()
+        }
+    }
+}
+
+@Composable
+private fun CountIndicator(count: Int) {
+    Box(
+        modifier = Modifier
+            .padding(start = MaterialTheme.spacing.small2)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Blue)
+            .padding(
+                horizontal = MaterialTheme.spacing.small1,
+                vertical = MaterialTheme.spacing.extraSmall1
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = count.toString(),
+            color = White,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center
         )
     }
 }
