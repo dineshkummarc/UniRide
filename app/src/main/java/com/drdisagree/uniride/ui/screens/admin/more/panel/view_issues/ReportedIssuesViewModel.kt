@@ -32,7 +32,7 @@ class ReportedIssuesViewModel @Inject constructor(
         val sortDrivers = { issues: List<Issue> ->
             issues.sortedWith(
                 compareBy<Issue> { issue ->
-                    when (issue.isResolved) {
+                    when (issue.resolved) {
                         false -> 0
                         true -> 1
                     }

@@ -31,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,8 +56,10 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
+import com.drdisagree.uniride.ui.screens.destinations.ReportedIssueDetailsDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.ColorUtils.getIssuePillColors
 import com.drdisagree.uniride.utils.TimeUtils.millisToTime
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -121,7 +124,7 @@ private fun ReportedIssuesContent(
         }
     }
 
-    val filteredIssues = rememberSaveable(issues, searchQuery) {
+    val filteredIssues = remember(issues, searchQuery) {
         when (issues) {
             is Resource.Success -> {
                 val issueList = (issues as Resource.Success<List<Issue>>).data.orEmpty()
@@ -274,21 +277,19 @@ fun IssueListItem(
     index: Int,
     issue: Issue
 ) {
-    val (pillBackgroundColor, pillTextColor) = when (issue.isResolved) {
-        true -> {
-            Color(0xFFE9FAF4) to Color(0xFF0B710A)
-        }
-
-        false -> {
-            Color(0xFFFCEFE7) to Color(0xFFE26A08)
-        }
+    val (pillBackgroundColor, pillTextColor) = remember(issue.resolved) {
+        getIssuePillColors(issue.resolved)
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .clickable {
-                // TODO: Navigate to edit issue screen
+                navigator.navigate(
+                    ReportedIssueDetailsDestination(
+                        issue = issue
+                    )
+                )
             }
     ) {
         if (index != 0) {
@@ -371,7 +372,7 @@ fun IssueListItem(
                             color = pillTextColor
                         )
                     ) {
-                        append(if (issue.isResolved) "Resolved" else "Unresolved")
+                        append(if (issue.resolved) "Resolved" else "Unresolved")
                     }
                 },
                 color = Dark,

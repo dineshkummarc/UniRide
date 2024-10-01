@@ -21,6 +21,7 @@
     <string name="pending_driver_list">Driver List</string>
     <string name="view_reported_issues">View reported issues</string>
     <string name="reported_issues">Reported Issues</string>
+    <string name="reported_issue">Reported Issue</string>
     <string name="new_route">New Route</string>
     <string name="edit_route">Edit Route</string>
     <string name="edit_schedule">Edit Schedule</string>

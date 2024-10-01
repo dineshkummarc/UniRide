@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.student.more.report_issue
 
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -176,6 +177,18 @@ private fun ReportIssueFields(
             Toast.makeText(
                 context,
                 "Please fill in all fields",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(contactInformation).matches()
+            && !Patterns.PHONE.matcher(contactInformation).matches()
+        ) {
+            Toast.makeText(
+                context,
+                "Please enter a valid email or phone number",
                 Toast.LENGTH_SHORT
             ).show()
 
