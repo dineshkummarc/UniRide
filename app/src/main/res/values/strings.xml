@@ -35,4 +35,10 @@
     <string name="new_route_category">New Route Category</string>
     <string name="add_new_place">Add new place</string>
     <string name="new_place">New Place</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="switch_language">Switch Language</string>
+    <string name="help_support"><![CDATA[Help & Support]]></string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="road_transport_act">Road Transport Act</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

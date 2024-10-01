@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,6 +65,7 @@ import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.openUrl
+import com.drdisagree.uniride.utils.switchLanguage
 import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -101,7 +103,7 @@ fun NavigationDrawer(
         items = listOf(
             MenuItemModel(
                 id = "profile",
-                title = "Edit profile",
+                title = stringResource(R.string.edit_profile),
                 contentDescription = "Go to edit profile screen",
                 icon = Icons.Outlined.Person,
                 onClick = {
@@ -113,19 +115,20 @@ fun NavigationDrawer(
             ),
             MenuItemModel(
                 id = "switch_language",
-                title = "Switch Language",
+                title = stringResource(R.string.switch_language),
                 contentDescription = "Change language of the app",
                 icon = Icons.Outlined.Language,
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()
+                        switchLanguage(context)
                     }
                 }
             ),
             MenuItemModel(
                 id = "help_and_support",
-                title = "Help & Support",
-                contentDescription = "Get help",
+                title = stringResource(R.string.help_support),
+                contentDescription = "Get help and support",
                 icon = Icons.Outlined.Info,
                 onClick = {
                     coroutineScope.launch {
@@ -135,7 +138,7 @@ fun NavigationDrawer(
             ),
             MenuItemModel(
                 id = "privacy_policy",
-                title = "Privacy Policy",
+                title = stringResource(R.string.privacy_policy),
                 contentDescription = "Privacy policy for drivers",
                 icon = Icons.Outlined.Policy,
                 onClick = {
@@ -147,7 +150,7 @@ fun NavigationDrawer(
             ),
             MenuItemModel(
                 id = "road_transport_act",
-                title = "Road Transport Act",
+                title = stringResource(R.string.road_transport_act),
                 contentDescription = "Road Transport Act, 2018",
                 icon = Icons.Outlined.EmojiTransportation,
                 onClick = {
@@ -159,8 +162,8 @@ fun NavigationDrawer(
             ),
             MenuItemModel(
                 id = "sign_out",
-                title = "Sign out",
-                contentDescription = "Sign out",
+                title = stringResource(R.string.sign_out),
+                contentDescription = "Sign out from the app",
                 icon = Icons.AutoMirrored.Outlined.Logout,
                 onClick = {
                     coroutineScope.launch {
