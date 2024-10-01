@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.EmojiTransportation
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Policy
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +51,9 @@ import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.utils.Constant
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION
+import com.drdisagree.uniride.data.utils.Constant.DRIVER_PRIVACY_POLICY_URL
 import com.drdisagree.uniride.data.utils.Constant.PHONE_NUMBER_PREFIX
+import com.drdisagree.uniride.data.utils.Constant.ROAD_TRANSPORT_ACT_URL
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
@@ -59,6 +63,7 @@ import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.openUrl
 import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -76,6 +81,8 @@ fun NavigationDrawer(
     getDriverViewModel: GetDriverViewModel = hiltViewModel(),
     driverLoginViewModel: DriverLoginViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     DrawerHeader(
         getDriverViewModel = getDriverViewModel
     )
@@ -96,7 +103,7 @@ fun NavigationDrawer(
                 id = "profile",
                 title = "Edit profile",
                 contentDescription = "Go to edit profile screen",
-                icon = Icons.Default.Person,
+                icon = Icons.Outlined.Person,
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()
@@ -105,10 +112,10 @@ fun NavigationDrawer(
                 }
             ),
             MenuItemModel(
-                id = "settings",
-                title = "Settings",
-                contentDescription = "Go to settings screen",
-                icon = Icons.Default.Settings,
+                id = "switch_language",
+                title = "Switch Language",
+                contentDescription = "Change language of the app",
+                icon = Icons.Outlined.Language,
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()
@@ -119,7 +126,7 @@ fun NavigationDrawer(
                 id = "help_and_support",
                 title = "Help & Support",
                 contentDescription = "Get help",
-                icon = Icons.Default.Info,
+                icon = Icons.Outlined.Info,
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()
@@ -127,10 +134,34 @@ fun NavigationDrawer(
                 }
             ),
             MenuItemModel(
+                id = "privacy_policy",
+                title = "Privacy Policy",
+                contentDescription = "Privacy policy for drivers",
+                icon = Icons.Outlined.Policy,
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                        openUrl(context = context, url = DRIVER_PRIVACY_POLICY_URL)
+                    }
+                }
+            ),
+            MenuItemModel(
+                id = "road_transport_act",
+                title = "Road Transport Act",
+                contentDescription = "Road Transport Act, 2018",
+                icon = Icons.Outlined.EmojiTransportation,
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                        openUrl(context = context, url = ROAD_TRANSPORT_ACT_URL)
+                    }
+                }
+            ),
+            MenuItemModel(
                 id = "sign_out",
                 title = "Sign out",
                 contentDescription = "Sign out",
-                icon = Icons.AutoMirrored.Filled.Logout,
+                icon = Icons.AutoMirrored.Outlined.Logout,
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()

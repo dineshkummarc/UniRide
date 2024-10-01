@@ -45,6 +45,10 @@ object Constant {
     const val NID_CARD_FRONT = "nid_card_front"
     const val NID_CARD_BACK = "nid_card_back"
 
+    // Driver privacy policy
+    const val DRIVER_PRIVACY_POLICY_URL = "https://drive.google.com/file/d/1mQ3pznvkVc0iNYTNCim4fcajVv-sshPt/view"
+    const val ROAD_TRANSPORT_ACT_URL = "https://drive.google.com/file/d/1q5VO9USOz7-gOb_z7yrg01uNHzgUDoDE/view"
+
     // Resources
     const val TOTAL_VEHICLES = 50
     const val TOTAL_DRIVERS_AND_HELPERS = 100
