@@ -1,6 +1,5 @@
 package com.drdisagree.uniride.ui.screens.admin.more.panel.view_drivers
 
-import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -279,9 +278,6 @@ fun DriverListItem(
     index: Int,
     driver: Driver
 ) {
-    val context = LocalContext.current
-    val is24HourFormat = DateFormat.is24HourFormat(context)
-
     val (pillBackgroundColor, pillTextColor) = when (driver.accountStatus) {
         AccountStatus.APPROVED -> {
             Color(0xFFE9FAF4) to Color(0xFF0B710A)
@@ -380,7 +376,7 @@ fun DriverListItem(
                     ) {
                         append("Time: ")
                     }
-                    append(driver.timeStamp.millisToTime("dd/MM/yyyy - ${if (is24HourFormat) "HH:mm" else "hh:mm a"}"))
+                    append(driver.timeStamp.millisToTime("dd/MM/yyyy"))
                 },
                 color = Dark,
                 fontSize = 14.sp

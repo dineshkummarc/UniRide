@@ -8,7 +8,7 @@ object TimeUtils {
 
     fun Long.millisToTime(format: String): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
-        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        dateFormat.timeZone = TimeZone.getDefault()
         return dateFormat.format(this)
     }
 }

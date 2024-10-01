@@ -349,7 +349,7 @@ fun IssueListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Submitted on: ")
+                        append("Submitted On: ")
                     }
                     append(issue.timeStamp.millisToTime("dd/MM/yyyy"))
                 },

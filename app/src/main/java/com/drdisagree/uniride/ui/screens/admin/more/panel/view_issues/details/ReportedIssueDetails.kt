@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.admin.more.panel.view_issues.details
 
+import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -57,6 +58,7 @@ import com.drdisagree.uniride.ui.screens.destinations.ReportedIssuesDestination
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.ColorUtils.getIssuePillColors
+import com.drdisagree.uniride.utils.TimeUtils.millisToTime
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -119,6 +121,7 @@ private fun ReportedIssueDetailsContent(
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
+    val is24HourFormat = DateFormat.is24HourFormat(context)
     val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
 
     val (_, pillTextColor) = remember(issue.resolved) {
@@ -184,6 +187,17 @@ private fun ReportedIssueDetailsContent(
                 )
                 Text(
                     text = issue.type,
+                    color = Dark,
+                    fontSize = 15.sp
+                )
+                Text(
+                    text = "Submitted On:",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp,
+                    modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
+                )
+                Text(
+                    text = issue.timeStamp.millisToTime("dd/MM/yyyy - ${if (is24HourFormat) "HH:mm" else "hh:mm a"}"),
                     color = Dark,
                     fontSize = 15.sp
                 )
