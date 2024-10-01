@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,10 +55,11 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.screens.destinations.EditScheduleDestination
 import com.drdisagree.uniride.ui.screens.destinations.ScheduleSearchScreenDestination
-import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.ColorUtils.getBusIconColor
+import com.drdisagree.uniride.utils.ColorUtils.getSchedulePillColors
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -194,35 +196,11 @@ fun ScheduleListItem(
     schedule: Schedule,
     isAdmin: Boolean
 ) {
-    val busNameLowercase = schedule.bus.name.lowercase(Locale.getDefault())
-    val busIconColor = if (busNameLowercase.contains("surjomukhi")) {
-        Color(0xFFC67C3D)
-    } else if (busNameLowercase.contains("dolphin")) {
-        Color(0xFF25722F)
-    } else if (busNameLowercase.contains("rojonigondha")) {
-        Color(0xFF185190)
-    } else { // unknown
-        Black
+    val busIconColor = remember(schedule.bus.name) {
+        getBusIconColor(schedule.bus.name)
     }
-
-    val categoryLowercase = schedule.category.name.lowercase(Locale.getDefault())
-    val categoryPillBackgroundColor = if (categoryLowercase.contains("employee")) {
-        Color(0xFFE9FAF4)
-    } else if (categoryLowercase.contains("fixed")) {
-        Color(0xFFE7EFFC)
-    } else if (categoryLowercase.contains("friday")) {
-        Color(0xFFFBEBEC)
-    } else { // common
-        Color(0xFFF0F0F2)
-    }
-    val categoryPillTextColor = if (categoryLowercase.contains("employee")) {
-        Color(0xFF0B710A)
-    } else if (categoryLowercase.contains("fixed")) {
-        Color(0xFF085DE2)
-    } else if (categoryLowercase.contains("friday")) {
-        Color(0xFF881418)
-    } else { // common
-        Dark
+    val (categoryPillBackgroundColor, categoryPillTextColor) = remember(schedule.category.name) {
+        getSchedulePillColors(schedule.category.name)
     }
 
     Column(

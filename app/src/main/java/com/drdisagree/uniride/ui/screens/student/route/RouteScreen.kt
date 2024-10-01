@@ -36,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,9 +62,9 @@ import com.drdisagree.uniride.ui.screens.destinations.RouteDetailsScreenDestinat
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.ColorUtils.getRoutePillColors
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import java.util.Locale
 
 @RoutesNavGraph(start = true)
 @Destination(style = FadeInOutTransition::class)
@@ -167,17 +168,17 @@ private fun RouteContent(
                                 ) { index ->
                                     val category = routeCategories[index]
                                     val isSelected = category.name in selectedCategories
-                                    val (categoryPillBackgroundColor, categoryPillTextColor) = getCategoryColors(
-                                        category.name
-                                    )
+                                    val (pillBackgroundColor, pillTextColor) = remember(category.name) {
+                                        getRoutePillColors(category.name)
+                                    }
 
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(28.dp))
-                                            .background(categoryPillBackgroundColor)
+                                            .background(pillBackgroundColor)
                                             .border(
                                                 width = if (isSelected) 2.dp else 0.dp,
-                                                color = if (isSelected) categoryPillTextColor else Color.Transparent,
+                                                color = if (isSelected) pillTextColor else Color.Transparent,
                                                 shape = RoundedCornerShape(28.dp)
                                             )
                                             .clickable {
@@ -197,7 +198,7 @@ private fun RouteContent(
                                         ) {
                                             Text(
                                                 text = category.name,
-                                                color = categoryPillTextColor,
+                                                color = pillTextColor,
                                                 fontSize = 15.sp,
                                                 fontWeight = FontWeight.SemiBold
                                             )
@@ -207,7 +208,7 @@ private fun RouteContent(
                                                 Icon(
                                                     imageVector = Icons.Filled.Close,
                                                     contentDescription = null,
-                                                    tint = categoryPillTextColor,
+                                                    tint = pillTextColor,
                                                     modifier = Modifier.size(16.dp)
                                                 )
                                             }
@@ -273,9 +274,9 @@ private fun RoutesListItem(
     route: Route,
     onClick: (() -> Unit)? = null
 ) {
-    val (categoryPillBackgroundColor, categoryPillTextColor) = getCategoryColors(
-        route.routeCategory.name
-    )
+    val (pillBackgroundColor, pillTextColor) = remember(route.routeCategory.name) {
+        getRoutePillColors(route.routeCategory.name)
+    }
 
     Column(
         modifier = modifier
@@ -332,7 +333,7 @@ private fun RoutesListItem(
                         modifier = Modifier
                             .padding(start = MaterialTheme.spacing.small1)
                             .clip(RoundedCornerShape(28.dp))
-                            .background(categoryPillBackgroundColor)
+                            .background(pillBackgroundColor)
                             .padding(
                                 horizontal = MaterialTheme.spacing.small2,
                                 vertical = MaterialTheme.spacing.extraSmall1
@@ -340,7 +341,7 @@ private fun RoutesListItem(
                     ) {
                         Text(
                             text = route.routeCategory.name,
-                            color = categoryPillTextColor,
+                            color = pillTextColor,
                             fontSize = 14.sp
                         )
                     }
@@ -365,20 +366,4 @@ private fun RoutesListItem(
             )
         }
     }
-}
-
-@Composable
-fun getCategoryColors(categoryName: String): Pair<Color, Color> {
-    val categoryLowercase = categoryName.lowercase(Locale.getDefault())
-    val backgroundColor = when {
-        categoryLowercase.contains("shuttle") -> Color(0xFFE9FAF4)
-        categoryLowercase.contains("friday") -> Color(0xFFFFEEE6)
-        else -> Color(0xFFF0F0F2)
-    }
-    val textColor = when {
-        categoryLowercase.contains("shuttle") -> Color(0xFF0B710A)
-        categoryLowercase.contains("friday") -> Color(0xFFAA6A48)
-        else -> Dark
-    }
-    return backgroundColor to textColor
 }
