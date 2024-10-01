@@ -196,7 +196,7 @@ private fun BottomNavBar(
             } else if (isInternetAvailable && isNoInternetDialogShown) {
                 isNoInternetDialogShown = false
             }
-            delay(15000)
+            delay(30000)
         }
     }
 
