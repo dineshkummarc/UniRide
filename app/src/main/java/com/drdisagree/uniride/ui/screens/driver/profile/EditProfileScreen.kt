@@ -179,8 +179,8 @@ private fun EditProfileFields(
     val imageRequest = ImageRequest.Builder(context)
         .data(image)
         .dispatcher(Dispatchers.IO)
-        .memoryCacheKey(image)
-        .diskCacheKey(image)
+        .memoryCacheKey(image + "_low")
+        .diskCacheKey(image + "_low")
         .placeholder(placeholder)
         .error(placeholder)
         .fallback(placeholder)
@@ -188,6 +188,7 @@ private fun EditProfileFields(
         .memoryCachePolicy(CachePolicy.ENABLED)
         .crossfade(true)
         .crossfade(250)
+        .size(256)
         .build()
 
     Box(

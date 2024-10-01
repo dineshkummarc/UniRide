@@ -206,8 +206,8 @@ private fun DrawerHeader(
         val imageRequest = ImageRequest.Builder(context)
             .data(imageUrl)
             .dispatcher(Dispatchers.IO)
-            .memoryCacheKey(imageUrl)
-            .diskCacheKey(imageUrl)
+            .memoryCacheKey(imageUrl + "_low")
+            .diskCacheKey(imageUrl + "_low")
             .placeholder(placeholder)
             .error(placeholder)
             .fallback(placeholder)
@@ -215,6 +215,7 @@ private fun DrawerHeader(
             .memoryCachePolicy(CachePolicy.ENABLED)
             .crossfade(true)
             .crossfade(250)
+            .size(256)
             .build()
 
         Box(
