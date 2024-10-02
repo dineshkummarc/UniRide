@@ -188,7 +188,7 @@ private fun ScheduleSearchFieldsAndResult(
                 bottom = MaterialTheme.spacing.medium3
             )
             .fillMaxWidth(),
-        text = "Search"
+        text = stringResource(R.string.search)
     ) {
         var hasError = false
 

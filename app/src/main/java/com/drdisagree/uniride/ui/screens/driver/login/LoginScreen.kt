@@ -707,7 +707,7 @@ private fun ForgotPasswordSection(
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = MaterialTheme.spacing.small2),
-                        text = stringResource(R.string.cancel),
+                        text = "Cancel",
                         onClick = {
                             scope.launch {
                                 sheetState.hide()

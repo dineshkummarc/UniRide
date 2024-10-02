@@ -52,10 +52,4 @@ object Constant {
         "https://drive.google.com/file/d/1mQ3pznvkVc0iNYTNCim4fcajVv-sshPt/view"
     const val ROAD_TRANSPORT_ACT_URL =
         "https://drive.google.com/file/d/1q5VO9USOz7-gOb_z7yrg01uNHzgUDoDE/view"
-
-    // Resources
-    const val TOTAL_VEHICLES = 50
-    const val TOTAL_DRIVERS_AND_HELPERS = 100
-    const val TOTAL_ROUTES = 15
-    const val TOTAL_TECHNICIANS = 5
 }

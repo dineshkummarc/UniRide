@@ -64,10 +64,6 @@ import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Notice
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
-import com.drdisagree.uniride.data.utils.Constant.TOTAL_DRIVERS_AND_HELPERS
-import com.drdisagree.uniride.data.utils.Constant.TOTAL_ROUTES
-import com.drdisagree.uniride.data.utils.Constant.TOTAL_TECHNICIANS
-import com.drdisagree.uniride.data.utils.Constant.TOTAL_VEHICLES
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
@@ -258,14 +254,14 @@ private fun HomeContent(
                 ) {
                     StatCard(
                         icon = Icons.Default.DirectionsBus,
-                        count = TOTAL_VEHICLES,
+                        count = stringResource(R.string.total_vehicles_count),
                         label = stringResource(R.string.total_vehicles),
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     StatCard(
                         icon = Icons.Default.Person,
-                        count = TOTAL_DRIVERS_AND_HELPERS,
+                        count = stringResource(R.string.drivers_helpers_count),
                         label = stringResource(R.string.drivers_helpers),
                         modifier = Modifier.weight(1f)
                     )
@@ -276,14 +272,14 @@ private fun HomeContent(
                 ) {
                     StatCard(
                         icon = Icons.Default.Route,
-                        count = TOTAL_ROUTES,
+                        count = stringResource(R.string.total_routes_count),
                         label = stringResource(R.string.total_routes),
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     StatCard(
                         icon = Icons.Default.Star,
-                        count = TOTAL_TECHNICIANS,
+                        count = stringResource(R.string.technicians_count),
                         label = stringResource(R.string.technicians),
                         modifier = Modifier.weight(1f)
                     )
@@ -538,7 +534,7 @@ private fun HandlePermissions(
 }
 
 @Composable
-fun StatCard(modifier: Modifier = Modifier, icon: ImageVector, count: Int, label: String) {
+fun StatCard(modifier: Modifier = Modifier, icon: ImageVector, count: String, label: String) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -554,7 +550,7 @@ fun StatCard(modifier: Modifier = Modifier, icon: ImageVector, count: Int, label
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "$count+",
+                text = count,
                 fontSize = 20.sp,
                 color = Blue,
                 fontWeight = FontWeight.SemiBold

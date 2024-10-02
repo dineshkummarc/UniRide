@@ -243,4 +243,14 @@
     <string name="tips_for_smooth_ride_title">Tips for a Smooth Ride</string>
     <string name="tips_for_smooth_ride_summary">• Stay Updated: Regularly check for app updates to ensure you have the latest features and bug fixes.\n• Stay Connected: Keep your device charged and maintain a stable internet connection.\n• Stay Safe: Follow all traffic laws and drive responsibly.</string>
     <string name="part_of_uniride">Thank you for being a part of UniRide. Safe travels!</string>
+    <string name="home_header_summary">Ready to %1$s?</string>
+    <string name="drive">drive</string>
+    <string name="explore">explore</string>
+    <string name="account_status_colon">Account Status:</string>
+    <string name="created_on_colon">Created On:</string>
+    <string name="driving_license_colon">Driving License:</string>
+    <string name="total_vehicles_count">50+</string>
+    <string name="drivers_helpers_count">100+</string>
+    <string name="total_routes_count">15+</string>
+    <string name="technicians_count">5+</string>
 </resources>

@@ -208,7 +208,11 @@ private fun ReportedIssueDetailsContent(
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
                 )
                 Text(
-                    text = if (issue.resolved) "Resolved" else "Unresolved",
+                    text = if (issue.resolved) {
+                        stringResource(R.string.resolved)
+                    } else {
+                        stringResource(R.string.unresolved)
+                    },
                     color = pillTextColor,
                     fontSize = 15.sp
                 )

@@ -140,7 +140,10 @@ fun HomeHeader(
                 )
             )
             Text(
-                text = "Ready to ${if (driverScreen) "drive" else "explore"}?",
+                text = stringResource(
+                    R.string.home_header_summary,
+                    if (driverScreen) stringResource(R.string.drive) else stringResource(R.string.explore)
+                ),
                 fontSize = 20.sp,
                 letterSpacing = 0.4.sp,
                 fontWeight = FontWeight.Medium,

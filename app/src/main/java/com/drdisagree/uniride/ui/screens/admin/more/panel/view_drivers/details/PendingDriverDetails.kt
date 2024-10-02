@@ -336,7 +336,7 @@ private fun PendingDriverDetailsContent(
                     }
                 )
                 Text(
-                    text = "Account Status:",
+                    text = stringResource(R.string.account_status_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -351,7 +351,7 @@ private fun PendingDriverDetailsContent(
                     fontSize = 15.sp
                 )
                 Text(
-                    text = "Created On:",
+                    text = stringResource(R.string.created_on_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -362,7 +362,7 @@ private fun PendingDriverDetailsContent(
                     fontSize = 15.sp
                 )
                 Text(
-                    text = "Name:",
+                    text = stringResource(R.string.name_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -374,9 +374,9 @@ private fun PendingDriverDetailsContent(
                 )
                 Text(
                     text = if (driver.email == null) {
-                        stringResource(R.string.phone)
+                        stringResource(R.string.phone_colon)
                     } else {
-                        stringResource(R.string.email)
+                        stringResource(R.string.email_colon)
                     },
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
@@ -523,7 +523,7 @@ private fun PendingDriverDetailsContent(
                     }
                 }
                 Text(
-                    text = "Driving License:",
+                    text = stringResource(R.string.driving_license_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)

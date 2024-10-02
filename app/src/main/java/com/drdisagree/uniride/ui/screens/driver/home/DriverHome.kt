@@ -339,23 +339,27 @@ private fun ShareLocationFields(
     val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
     val placeList by listsViewModel.placeModels.collectAsState()
 
-    val defaultBusName = Bus(
-        name = stringResource(R.string.select_bus)
-    )
-    val defaultBusCategory = BusCategory(
-        name = stringResource(R.string.bus_category)
-    )
-    val defaultFrom = Place(
-        name = stringResource(R.string.start_from)
-    )
-    val defaultTo = Place(
-        name = stringResource(R.string.destination)
-    )
+    val defaultBusName by remember { mutableStateOf(Bus(name = context.getString(R.string.select_bus))) }
+    val defaultBusCategory by remember { mutableStateOf(BusCategory(name = context.getString(R.string.bus_category))) }
+    val defaultFrom by remember { mutableStateOf(Place(name = context.getString(R.string.start_from))) }
+    val defaultTo by remember { mutableStateOf(Place(name = context.getString(R.string.destination))) }
 
     var selectedBus by rememberSaveable { mutableStateOf(defaultBusName) }
     var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
     var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
+
+    LaunchedEffect(
+        defaultBusName,
+        defaultBusCategory,
+        defaultFrom,
+        defaultTo
+    ) {
+        selectedBus = defaultBusName
+        busCategory = defaultBusCategory
+        locationFrom = defaultFrom
+        locationTo = defaultTo
+    }
 
     var isNoInternetDialogShown by rememberSaveable { mutableStateOf(false) }
 
