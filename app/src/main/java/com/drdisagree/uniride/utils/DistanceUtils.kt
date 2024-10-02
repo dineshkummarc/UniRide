@@ -6,6 +6,7 @@ import kotlin.math.sqrt
 
 object DistanceUtils {
 
+    /* This function calculates the distance between two coordinates in kilometers */
     fun distance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val r = 6371.0 // Radius of the Earth in kilometers
         val p = Math.PI / 180.0 // Conversion factor from degrees to radians
