@@ -93,11 +93,15 @@ private fun MapView(
     var isMapLoaded by remember { mutableStateOf(false) }
     var marker: LatLng? by rememberSaveable { mutableStateOf(null) }
     val location by locationViewModel.locationFlow.collectAsState()
-    location?.let {
-        if (marker == null || marker != LatLng(it.latitude, it.longitude)) {
-            marker = LatLng(it.latitude, it.longitude)
+
+    LaunchedEffect(location) {
+        location?.let {
+            if (marker == null || marker != LatLng(it.latitude, it.longitude)) {
+                marker = LatLng(it.latitude, it.longitude)
+            }
         }
     }
+
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(23.8161532, 90.2747436), 15f)
     }
