@@ -22,6 +22,7 @@ object Constant {
     const val ANNOUNCEMENT_COLLECTION = "announcement_list"
     const val DRIVE_HISTORY_COLLECTION = "drive_history_list"
     const val ISSUE_COLLECTION = "issue_list"
+    const val DRIVER_REVIEW_COLLECTION = "driver_review_list"
 
     // Allowed Student Email Suffix
     val STUDENT_MAIL_SUFFIX = listOf(
@@ -46,8 +47,10 @@ object Constant {
     const val NID_CARD_BACK = "nid_card_back"
 
     // Driver privacy policy
-    const val DRIVER_PRIVACY_POLICY_URL = "https://drive.google.com/file/d/1mQ3pznvkVc0iNYTNCim4fcajVv-sshPt/view"
-    const val ROAD_TRANSPORT_ACT_URL = "https://drive.google.com/file/d/1q5VO9USOz7-gOb_z7yrg01uNHzgUDoDE/view"
+    const val DRIVER_PRIVACY_POLICY_URL =
+        "https://drive.google.com/file/d/1mQ3pznvkVc0iNYTNCim4fcajVv-sshPt/view"
+    const val ROAD_TRANSPORT_ACT_URL =
+        "https://drive.google.com/file/d/1q5VO9USOz7-gOb_z7yrg01uNHzgUDoDE/view"
 
     // Resources
     const val TOTAL_VEHICLES = 50

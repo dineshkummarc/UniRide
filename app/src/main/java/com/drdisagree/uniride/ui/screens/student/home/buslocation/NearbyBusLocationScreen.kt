@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.RateReview
@@ -32,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -55,6 +57,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,7 +75,11 @@ import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.LoadingDialog
+import com.drdisagree.uniride.ui.components.views.StarRatingBar
+import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.screens.student.account.StudentSignInViewModel
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -132,6 +140,7 @@ private fun MapViewContent(
     navigator: DestinationsNavigator,
     busId: String,
     nearbyBusLocationViewModel: NearbyBusLocationViewModel = hiltViewModel(),
+    reviewSubmissionViewModel: ReviewSubmissionViewModel = hiltViewModel(),
     locationViewModel: LocationSharingViewModel = hiltViewModel()
 ) {
     LaunchedEffect(busId) {
@@ -196,101 +205,145 @@ private fun MapViewContent(
             }
     }
 
+    var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
     val openInfoDialog = remember { mutableStateOf(false) }
+    val openReviewDialog = remember { mutableStateOf(false) }
+
+    LaunchedEffect(reviewSubmissionViewModel.state) {
+        reviewSubmissionViewModel.state.collect { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    showLoadingDialog = true
+                }
+
+                is Resource.Success -> {
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        "Thank you for your review!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                is Resource.Error -> {
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        result.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {}
+            }
+        }
+    }
 
     Box(
         modifier = modifier
     ) {
-        Box() {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                uiSettings = uiSettings,
-                properties = mapProperties,
-                onMapLoaded = {
-                    isMapLoaded = true
-                }
-            ) {
-                if (marker != null) {
-                    Marker(
-                        state = MarkerState(position = marker),
-                        title = runningBus?.bus?.name ?: "Unknown name",
-                        snippet = runningBus?.category?.name ?: "Unknown category",
-                        draggable = false,
-                        icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus_colored)
-                    )
-                }
-                if (myMarker != null) {
-                    Marker(
-                        state = MarkerState(position = myMarker!!),
-                        title = "Me",
-                        snippet = "My position",
-                        draggable = false,
-                        icon = toBitmapDescriptorWithColor(
-                            context,
-                            R.drawable.ic_pin_map_person,
-                            Color(0xFF1E90FF)
-                        )
-                    )
-                }
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            uiSettings = uiSettings,
+            properties = mapProperties,
+            onMapLoaded = {
+                isMapLoaded = true
             }
-
-            IconButton(
-                modifier = Modifier
-                    .padding(MaterialTheme.spacing.medium1)
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(Black.copy(alpha = 0.5f))
-                    .align(Alignment.TopEnd),
-                onClick = {
-                    openInfoDialog.value = true
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = "Driver Info",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(36.dp)
+        ) {
+            if (marker != null) {
+                Marker(
+                    state = MarkerState(position = marker),
+                    title = runningBus?.bus?.name ?: "Unknown name",
+                    snippet = runningBus?.category?.name ?: "Unknown category",
+                    draggable = false,
+                    icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus_colored)
                 )
             }
-
-            if (runningBus?.status == BusStatus.STOPPED) {
-                ButtonPrimary(
-                    modifier = Modifier
-                        .padding(
-                            start = MaterialTheme.spacing.medium1,
-                            end = MaterialTheme.spacing.medium1,
-                            top = MaterialTheme.spacing.medium1,
-                            bottom = MaterialTheme.spacing.large2
-                        )
-                        .align(Alignment.BottomCenter),
-                    text = "Bus has reached its destination"
-                ) {
-                    navigator.navigateUp()
-                }
+            if (myMarker != null) {
+                Marker(
+                    state = MarkerState(position = myMarker!!),
+                    title = "Me",
+                    snippet = "My position",
+                    draggable = false,
+                    icon = toBitmapDescriptorWithColor(
+                        context,
+                        R.drawable.ic_pin_map_person,
+                        Color(0xFF1E90FF)
+                    )
+                )
             }
-
-            val placeholder by remember { mutableIntStateOf(R.drawable.img_profile_pic_default) }
-            val imageUrl = runningBus?.driver?.profileImage
-
-            val imageRequest = ImageRequest.Builder(context)
-                .data(imageUrl)
-                .dispatcher(Dispatchers.IO)
-                .memoryCacheKey(imageUrl + "_low")
-                .diskCacheKey(imageUrl + "_low")
-                .placeholder(placeholder)
-                .error(placeholder)
-                .fallback(placeholder)
-                .diskCachePolicy(CachePolicy.ENABLED)
-                .memoryCachePolicy(CachePolicy.ENABLED)
-                .crossfade(true)
-                .crossfade(250)
-                .size(256)
-                .build()
-
-            BusDetailsDialog(openInfoDialog, imageRequest, runningBus)
         }
+
+        IconButton(
+            modifier = Modifier
+                .padding(MaterialTheme.spacing.medium1)
+                .clip(MaterialTheme.shapes.medium)
+                .background(Black.copy(alpha = 0.5f))
+                .align(Alignment.TopEnd),
+            onClick = {
+                openInfoDialog.value = true
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Info,
+                contentDescription = "Driver Info",
+                tint = Color.White,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(36.dp)
+            )
+        }
+
+        if (runningBus?.status == BusStatus.STOPPED) {
+            ButtonPrimary(
+                modifier = Modifier
+                    .padding(
+                        start = MaterialTheme.spacing.medium1,
+                        end = MaterialTheme.spacing.medium1,
+                        top = MaterialTheme.spacing.medium1,
+                        bottom = MaterialTheme.spacing.large2
+                    )
+                    .align(Alignment.BottomCenter),
+                text = "Bus has reached its destination"
+            ) {
+                navigator.navigateUp()
+            }
+        }
+
+        val placeholder by remember { mutableIntStateOf(R.drawable.img_profile_pic_default) }
+        val imageUrl = runningBus?.driver?.profileImage
+
+        val imageRequest = ImageRequest.Builder(context)
+            .data(imageUrl)
+            .dispatcher(Dispatchers.IO)
+            .memoryCacheKey(imageUrl + "_low")
+            .diskCacheKey(imageUrl + "_low")
+            .placeholder(placeholder)
+            .error(placeholder)
+            .fallback(placeholder)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .crossfade(true)
+            .crossfade(250)
+            .size(256)
+            .build()
+
+        BusDetailsDialog(
+            openInfoDialog = openInfoDialog,
+            openReviewDialog = openReviewDialog,
+            imageRequest = imageRequest,
+            runningBus = runningBus,
+            reviewSubmissionViewModel = reviewSubmissionViewModel
+        )
+
+        ReviewDialog(
+            openReviewDialog = openReviewDialog,
+            runningBus = runningBus,
+            reviewSubmissionViewModel = reviewSubmissionViewModel
+        )
     }
 
     if (!isMapLoaded) {
@@ -323,17 +376,111 @@ private fun MapViewContent(
             }
         }
     }
+
+    if (showLoadingDialog) {
+        LoadingDialog()
+    }
+}
+
+@Composable
+fun ReviewDialog(
+    openReviewDialog: MutableState<Boolean>,
+    runningBus: RunningBus?,
+    reviewSubmissionViewModel: ReviewSubmissionViewModel,
+    studentSignInViewModel: StudentSignInViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+    var rating by remember { mutableIntStateOf(1) }
+    var review by remember { mutableStateOf("") }
+
+    if (openReviewDialog.value) {
+        AlertDialog(
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(MaterialTheme.spacing.medium3),
+            onDismissRequest = {
+                openReviewDialog.value = false
+            },
+            title = { Text(text = "Rate Driver") },
+            text = {
+                Column {
+                    StarRatingBar(
+                        rating = rating,
+                        onRatingChanged = {
+                            rating = it
+                        },
+                        modifier = Modifier
+                            .padding(bottom = MaterialTheme.spacing.small2)
+                    )
+                    StyledTextField(
+                        placeholder = "Add a comment",
+                        onValueChange = { review = it },
+                        inputText = review,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = false,
+                        minLines = 5
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    if (review.isBlank()) {
+                        Toast.makeText(
+                            context,
+                            "Please add a review",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@Button
+                    } else if (review.length < 20) {
+                        Toast.makeText(
+                            context,
+                            "Review is too short",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@Button
+                    }
+
+                    openReviewDialog.value = false
+
+                    reviewSubmissionViewModel.submitReview(
+                        student = studentSignInViewModel.getSignedInStudent(),
+                        driver = runningBus?.driver ?: return@Button,
+                        reviewMessage = review,
+                        rating = rating
+                    )
+                }) {
+                    Text("Submit")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    openReviewDialog.value = false
+                }) {
+                    Text("Cancel")
+                }
+            },
+            properties = DialogProperties()
+        )
+    }
 }
 
 @Composable
 private fun BusDetailsDialog(
     openInfoDialog: MutableState<Boolean>,
+    openReviewDialog: MutableState<Boolean>,
     imageRequest: ImageRequest,
-    runningBus: RunningBus?
+    runningBus: RunningBus?,
+    reviewSubmissionViewModel: ReviewSubmissionViewModel
 ) {
     val context = LocalContext.current
     val (_, categoryTextColor) = remember(runningBus?.category?.name) {
         getSchedulePillColors(runningBus?.category?.name ?: "Unknown")
+    }
+    val summaryState by reviewSubmissionViewModel.summary.collectAsState()
+
+    LaunchedEffect(runningBus?.driver?.id) {
+        reviewSubmissionViewModel.fetchSummary(runningBus?.driver?.id)
     }
 
     if (openInfoDialog.value) {
@@ -537,14 +684,20 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Driver Review: ")
+                                append("Review (AI Summarized): ")
                             }
                             append(
-                                "No reviews yet"
+                                when (summaryState) {
+                                    is Resource.Loading -> "Loading..."
+                                    is Resource.Success -> (summaryState as Resource.Success<String>).data
+                                    is Resource.Error -> (summaryState as Resource.Error).message
+                                    else -> "No reviews yet"
+                                }
                             )
                         },
                         fontSize = 15.sp,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp),
+                        textAlign = TextAlign.Justify
                     )
                 }
             },
@@ -563,6 +716,7 @@ private fun BusDetailsDialog(
                         .border(width = 1.dp, color = LightGray, shape = CircleShape)
                         .clickable {
                             openInfoDialog.value = false
+                            openReviewDialog.value = true
                         }
                         .padding(
                             horizontal = 20.dp,
