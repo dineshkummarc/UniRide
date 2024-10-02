@@ -14,6 +14,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,13 +47,14 @@ import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.services.LocationService
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
+import com.drdisagree.uniride.ui.components.views.ButtonSecondary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.DisableBackHandler
 import com.drdisagree.uniride.ui.components.views.KeepScreenOn
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
-import com.drdisagree.uniride.ui.components.views.StyledAlertDialog
 import com.drdisagree.uniride.ui.components.views.NoInternetDialog
 import com.drdisagree.uniride.ui.components.views.RequestGpsEnable
+import com.drdisagree.uniride.ui.components.views.StyledAlertDialog
 import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
@@ -324,33 +326,61 @@ private fun MapView(
         val status = runningBus?.status ?: BusStatus.STANDBY
         var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
 
-        ButtonPrimary(
+        Column(
             modifier = Modifier
-                .padding(
-                    start = MaterialTheme.spacing.medium1,
-                    end = MaterialTheme.spacing.medium1,
-                    top = MaterialTheme.spacing.medium1,
-                    bottom = MaterialTheme.spacing.extraLarge1
-                )
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter),
-            text = when (status) {
-                BusStatus.STANDBY -> "Update Status to Driving"
-                BusStatus.RUNNING -> "Stop Sharing Location"
-                BusStatus.STOPPED -> "Start Sharing Location"
-            }
+                .align(Alignment.BottomCenter)
         ) {
-            when (status) {
-                BusStatus.STANDBY -> {
-                    busLocationViewModel.updateBusStatus(BusStatus.RUNNING)
+            ButtonSecondary(
+                modifier = Modifier
+                    .padding(
+                        start = MaterialTheme.spacing.medium1,
+                        end = MaterialTheme.spacing.medium1,
+                        top = MaterialTheme.spacing.medium1,
+                    )
+                    .fillMaxWidth(),
+                text = when (runningBus?.busFull ?: false) {
+                    true -> "Occupancy: All Seats Occupied"
+                    false -> "Occupancy: Few Seats Available"
                 }
+            ) {
+                when (runningBus?.busFull ?: false) {
+                    true -> {
+                        busLocationViewModel.updateBusStatus(busOccupied = false)
+                    }
 
-                BusStatus.RUNNING -> {
-                    openDialog = true
+                    false -> {
+                        busLocationViewModel.updateBusStatus(busOccupied = true)
+                    }
                 }
+            }
+            ButtonPrimary(
+                modifier = Modifier
+                    .padding(
+                        start = MaterialTheme.spacing.medium1,
+                        end = MaterialTheme.spacing.medium1,
+                        top = MaterialTheme.spacing.medium1,
+                        bottom = MaterialTheme.spacing.extraLarge1
+                    )
+                    .fillMaxWidth(),
+                text = when (status) {
+                    BusStatus.STANDBY -> "Update Status to Driving"
+                    BusStatus.RUNNING -> "Stop Sharing Location"
+                    BusStatus.STOPPED -> "Start Sharing Location"
+                }
+            ) {
+                when (status) {
+                    BusStatus.STANDBY -> {
+                        busLocationViewModel.updateBusStatus(newStatus = BusStatus.RUNNING)
+                    }
 
-                BusStatus.STOPPED -> {
-                    busLocationViewModel.updateBusStatus(BusStatus.STANDBY)
+                    BusStatus.RUNNING -> {
+                        openDialog = true
+                    }
+
+                    BusStatus.STOPPED -> {
+                        busLocationViewModel.updateBusStatus(newStatus = BusStatus.STANDBY)
+                    }
                 }
             }
         }
@@ -388,6 +418,34 @@ private fun MapView(
 
         LaunchedEffect(busLocationViewModel.updateBusStatus) {
             busLocationViewModel.updateBusStatus.collect { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        showLoadingDialog = true
+                    }
+
+                    is Resource.Success -> {
+                        showLoadingDialog = false
+                    }
+
+                    is Resource.Error -> {
+                        showLoadingDialog = false
+
+                        Toast.makeText(
+                            context,
+                            result.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    else -> {
+                        showLoadingDialog = false
+                    }
+                }
+            }
+        }
+
+        LaunchedEffect(busLocationViewModel.updateSeatOccupancy) {
+            busLocationViewModel.updateSeatOccupancy.collect { result ->
                 when (result) {
                     is Resource.Loading -> {
                         showLoadingDialog = true

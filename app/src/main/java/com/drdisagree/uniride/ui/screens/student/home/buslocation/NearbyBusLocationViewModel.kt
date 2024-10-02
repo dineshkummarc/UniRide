@@ -33,11 +33,11 @@ class NearbyBusLocationViewModel @Inject constructor(
 
         listenerRegistration = firestore.collection(RUNNING_BUS_COLLECTION)
             .whereEqualTo("uuid", uuid)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
                     viewModelScope.launch {
                         _state.emit(
-                            Resource.Error(e.message.toString())
+                            Resource.Error(error.message.toString())
                         )
                     }
                     return@addSnapshotListener

@@ -40,6 +40,9 @@ class BusLocationViewModel @Inject constructor(
     private val _updateBusStatus = MutableSharedFlow<Resource<Unit>>()
     val updateBusStatus = _updateBusStatus.asSharedFlow()
 
+    private val _updateSeatOccupancy = MutableSharedFlow<Resource<Unit>>()
+    val updateSeatOccupancy = _updateSeatOccupancy.asSharedFlow()
+
     private val locationUpdateQueue = Channel<LatLng>(Channel.UNLIMITED)
     private var isProcessingUpdates = false
 
@@ -96,7 +99,10 @@ class BusLocationViewModel @Inject constructor(
         }
     }
 
-    fun updateBusStatus(newStatus: BusStatus) {
+    fun updateBusStatus(
+        newStatus: BusStatus? = null,
+        busOccupied: Boolean? = null
+    ) {
         viewModelScope.launch {
             _updateBusStatus.emit(
                 Resource.Loading()
@@ -126,7 +132,13 @@ class BusLocationViewModel @Inject constructor(
             }
 
             val bus = busDocument!!.documents.first()
-            val updatedBus = bus.toObject(RunningBus::class.java)?.copy(status = newStatus)
+            val updatedBus = if (newStatus != null) {
+                bus.toObject(RunningBus::class.java)?.copy(status = newStatus)
+            } else if (busOccupied != null) {
+                bus.toObject(RunningBus::class.java)?.copy(busFull = busOccupied)
+            } else {
+                bus.toObject(RunningBus::class.java)
+            }
 
             if (updatedBus != null) {
                 firestore.runTransaction { transaction ->
@@ -140,7 +152,8 @@ class BusLocationViewModel @Inject constructor(
                         driver = updatedBus.driver,
                         departedFrom = updatedBus.departedFrom,
                         departedTo = updatedBus.departedTo,
-                        departedAt = System.currentTimeMillis()
+                        departedAt = updatedBus.departedAt,
+                        busFull = updatedBus.busFull
                     )
 
                     transaction.set(busRef, updatedBus)
@@ -228,7 +241,7 @@ class BusLocationViewModel @Inject constructor(
                             departedFrom = updatedBus.departedFrom,
                             departedTo = updatedBus.departedTo,
                             reachedAt = System.currentTimeMillis(),
-                            isBusFull = updatedBus.isBusFull
+                            busFull = updatedBus.busFull
                         ) ?: return@runTransaction
 
                         transaction.set(driveHistoryRef, updatedDriveHistory)

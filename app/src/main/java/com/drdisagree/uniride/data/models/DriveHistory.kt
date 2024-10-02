@@ -16,7 +16,7 @@ data class DriveHistory(
     val departedTo: Place? = null,
     val departedAt: Long? = null,
     val reachedAt: Long? = null,
-    val isBusFull: Boolean = false
+    val busFull: Boolean = false
 ) : Parcelable {
     constructor() : this(
         bus = Bus()

@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.student.home.buslocation
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -659,6 +660,7 @@ private fun BusDetailsDialog(
                         fontSize = 15.sp,
                         modifier = Modifier.padding(top = 4.dp)
                     )
+                    Log.d("TAG", "isBusFull: ${runningBus?.busFull}")
                     Text(
                         text = buildAnnotatedString {
                             withStyle(
@@ -670,7 +672,11 @@ private fun BusDetailsDialog(
                                 append("Seat Occupancy: ")
                             }
                             append(
-                                "Seat Left"
+                                if (runningBus?.busFull == true) {
+                                    "All seats occupied"
+                                } else {
+                                    "Few seats available"
+                                }
                             )
                         },
                         fontSize = 15.sp,

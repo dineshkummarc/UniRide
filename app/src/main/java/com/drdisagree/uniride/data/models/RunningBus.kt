@@ -19,7 +19,7 @@ data class RunningBus(
     val departedAt: Long? = null,
     val reachedAt: Long? = null,
     val currentlyAt: LatLngSerializable? = null,
-    val isBusFull: Boolean = false
+    val busFull: Boolean = false
 ) : Parcelable {
     constructor() : this(
         bus = Bus()
