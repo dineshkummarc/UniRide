@@ -23,6 +23,7 @@ object Constant {
     const val DRIVE_HISTORY_COLLECTION = "drive_history_list"
     const val ISSUE_COLLECTION = "issue_list"
     const val DRIVER_REVIEW_COLLECTION = "driver_review_list"
+    const val CHAT_COLLECTION = "chat_list"
 
     // Allowed Student Email Suffix
     val STUDENT_MAIL_SUFFIX = listOf(

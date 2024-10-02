@@ -57,6 +57,7 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.AdminPanelDestination
+import com.drdisagree.uniride.ui.screens.destinations.ChatBoxDestination
 import com.drdisagree.uniride.ui.screens.destinations.DriverListScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.EmergencyDestination
 import com.drdisagree.uniride.ui.screens.destinations.MyLocationDestination
@@ -272,6 +273,13 @@ private fun QuickActionsSection(
             backgroundColor = Color(0xFFDBE8E6),
             backgroundWaveColor = Color(0xFFCCD9D8),
             iconBackgroundColor = Color(0xFFBAD9D6),
+            onClick = {
+                navigator.navigate(
+                    ChatBoxDestination(
+                        student = student
+                    )
+                )
+            }
         )
 
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium1))
