@@ -275,7 +275,7 @@ private fun PendingDriversContent(
 }
 
 @Composable
-fun DriverListItem(
+private fun DriverListItem(
     modifier: Modifier = Modifier,
     navigator: DestinationsNavigator,
     index: Int,

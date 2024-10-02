@@ -57,6 +57,7 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.AdminPanelDestination
+import com.drdisagree.uniride.ui.screens.destinations.DriverListScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.EmergencyDestination
 import com.drdisagree.uniride.ui.screens.destinations.MyLocationDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
@@ -308,7 +309,9 @@ private fun QuickActionsSection(
             backgroundColor = Color(0xFFE2E6EE),
             backgroundWaveColor = Color(0xFFD0D5E0),
             iconBackgroundColor = Color(0xFFC3CBDE),
-            onClick = { }
+            onClick = {
+                navigator.navigate(DriverListScreenDestination)
+            }
         )
 
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium1))
@@ -359,7 +362,7 @@ private fun QuickActionsSection(
                 modifier = Modifier
                     .padding(end = MaterialTheme.spacing.medium1)
                     .weight(1f)
-                    .alpha(0f), // TODO: Reveal in future when new item needed
+                    .alpha(0f),
                 backgroundColor = Color(0xFFFFDDC1),
                 backgroundWaveColor = Color(0xFFF6D5BC),
                 iconBackgroundColor = Color(0xFFFFCEA8),
