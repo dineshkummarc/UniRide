@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -75,6 +76,7 @@ import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.StyledAlertDialog
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.theme.Dark
+import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.ColorUtils.getDriverPillColors
@@ -150,6 +152,7 @@ private fun PendingDriverDetailsContent(
 
         true -> {
             val placeholder by remember { mutableIntStateOf(R.drawable.img_profile_pic_default) }
+            val profileImageUrl by remember { mutableStateOf(driver.profileImage) }
 
             val nidFrontUrl by remember { mutableStateOf(driver.documents[0]) }
             val nidBackUrl by remember { mutableStateOf(driver.documents[1]) }
@@ -265,6 +268,21 @@ private fun PendingDriverDetailsContent(
                 )
                 .build()
 
+            val profileImageRequest = ImageRequest.Builder(context)
+                .data(profileImageUrl)
+                .dispatcher(Dispatchers.IO)
+                .memoryCacheKey(profileImageUrl + "_low")
+                .diskCacheKey(profileImageUrl + "_low")
+                .placeholder(placeholder)
+                .error(placeholder)
+                .fallback(placeholder)
+                .diskCachePolicy(CachePolicy.ENABLED)
+                .memoryCachePolicy(CachePolicy.ENABLED)
+                .crossfade(true)
+                .crossfade(250)
+                .size(256)
+                .build()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -272,6 +290,25 @@ private fun PendingDriverDetailsContent(
                     .verticalScroll(rememberScrollState())
                     .padding(MaterialTheme.spacing.medium1)
             ) {
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = MaterialTheme.spacing.medium3)
+                        .size(160.dp)
+                        .clip(RoundedCornerShape(100))
+                        .background(Gray)
+                        .padding(MaterialTheme.spacing.small1)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    AsyncImage(
+                        model = profileImageRequest,
+                        placeholder = painterResource(id = R.drawable.img_loading),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(100)),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
                 Text(
                     text = "Account ID:",
                     fontWeight = FontWeight.SemiBold,
