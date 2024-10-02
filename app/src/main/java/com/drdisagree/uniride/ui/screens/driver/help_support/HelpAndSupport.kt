@@ -103,7 +103,7 @@ private fun InfoContent(paddingValues: PaddingValues) {
             text = "App Crashes or Freezes:",
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
+            modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
         )
         Text(
             text = "• Restart the app and try again.\n" +
@@ -144,7 +144,7 @@ private fun InfoContent(paddingValues: PaddingValues) {
             text = "How do I update my route information?",
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
+            modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
         )
         Text(
             text = "• Go to the home screen and select the route you need to update. Make changes and save.",
