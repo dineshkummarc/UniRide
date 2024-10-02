@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.drdisagree.uniride.utils.DistanceUtils.distance
 import com.drdisagree.uniride.utils.repositories.GeocodingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -22,7 +23,9 @@ class GeocodingViewModel @Inject constructor(
     val errorMessage: MutableLiveData<String> = _errorMessage
 
     private val lastCheckedTime = ConcurrentHashMap<String, Long>()
+    private val lastKnownLocation = ConcurrentHashMap<String, Pair<Double, Double>>()
     private val checkIntervalMillis = 2 * 60 * 1000L // 2 minutes
+    private val distanceThreshold = 1.0 // distance in kilometers
 
     fun fetchLocationName(uuid: String, lat: Double?, lng: Double?) {
         val currentTime = System.currentTimeMillis()
@@ -33,7 +36,12 @@ class GeocodingViewModel @Inject constructor(
             return
         }
 
-        if (currentTime - lastChecked < checkIntervalMillis) return
+        val lastLocation = lastKnownLocation[uuid]
+        val shouldFetch = lastLocation == null ||
+                distance(lat, lng, lastLocation.first, lastLocation.second) >= distanceThreshold ||
+                currentTime - lastChecked >= checkIntervalMillis
+
+        if (!shouldFetch) return
 
         viewModelScope.launch {
             try {
@@ -47,9 +55,11 @@ class GeocodingViewModel @Inject constructor(
 
                 updateLocationName(uuid, name)
                 lastCheckedTime[uuid] = currentTime
+                lastKnownLocation[uuid] = Pair(lat, lng)
             } catch (e: Exception) {
                 errorMessage.postValue(e.message)
                 lastCheckedTime.remove(uuid)
+                lastKnownLocation.remove(uuid)
             }
         }
     }
