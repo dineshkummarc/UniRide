@@ -66,6 +66,7 @@ import com.drdisagree.uniride.ui.screens.student.main.getRootNavigator
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.switchLanguage
 import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -216,6 +217,8 @@ private fun QuickActionsSection(
     student: Student,
     accountStatusViewModel: AccountStatusViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     Row(
         modifier = Modifier.padding(
             top = MaterialTheme.spacing.medium1,
@@ -288,6 +291,40 @@ private fun QuickActionsSection(
                         student = student
                     )
                 )
+            }
+        )
+    }
+
+    Row(
+        modifier = Modifier.padding(bottom = MaterialTheme.spacing.medium1)
+    ) {
+        QuickActionsItem(
+            icon = R.drawable.ic_drivers,
+            title = R.string.drivers_title,
+            subtitle = R.string.drivers_summary,
+            modifier = Modifier
+                .padding(start = MaterialTheme.spacing.medium1)
+                .weight(1f),
+            backgroundColor = Color(0xFFE2E6EE),
+            backgroundWaveColor = Color(0xFFD0D5E0),
+            iconBackgroundColor = Color(0xFFC3CBDE),
+            onClick = { }
+        )
+
+        Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium1))
+
+        QuickActionsItem(
+            icon = R.drawable.ic_language,
+            title = R.string.switch_language_title,
+            subtitle = R.string.switch_language_summary,
+            modifier = Modifier
+                .padding(end = MaterialTheme.spacing.medium1)
+                .weight(1f),
+            backgroundColor = Color(0xFFFFE6DE),
+            backgroundWaveColor = Color(0xFFFFD5C4),
+            iconBackgroundColor = Color(0xFFFFC5B7),
+            onClick = {
+                switchLanguage(context)
             }
         )
     }

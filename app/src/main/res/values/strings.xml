@@ -12,6 +12,10 @@
     <string name="chat_box_summary">Chat with other commuters</string>
     <string name="report_title">Report Issue</string>
     <string name="report_summary">Report an issue or incident</string>
+    <string name="drivers_title">Driver List</string>
+    <string name="drivers_summary">View driver list and reviews</string>
+    <string name="switch_language_title">Switch Language</string>
+    <string name="switch_language_summary">Change language of the app</string>
     <string name="admin_panel_title">Admin Panel</string>
     <string name="admin_panel_summary">Monitor and control everything</string>
     <string name="post_notice">Post announcement</string>
