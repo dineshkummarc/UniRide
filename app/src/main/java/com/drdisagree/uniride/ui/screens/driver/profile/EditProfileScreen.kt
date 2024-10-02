@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -78,7 +79,7 @@ fun EditProfileScreen(
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = "Edit Profile",
+                    title = stringResource(R.string.edit_profile),
                     onBackClick = {
                         navigator.navigateUp()
                     }
@@ -233,7 +234,7 @@ private fun EditProfileFields(
                     AsyncImage(
                         model = imageRequest,
                         placeholder = painterResource(id = R.drawable.img_loading),
-                        contentDescription = "Profile Picture",
+                        contentDescription = stringResource(R.string.profile_picture),
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(100)),
@@ -256,7 +257,7 @@ private fun EditProfileFields(
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = "Change Profile Picture",
+                    contentDescription = stringResource(R.string.change_profile_picture),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(
@@ -269,7 +270,7 @@ private fun EditProfileFields(
     }
 
     StyledTextField(
-        placeholder = "Full Name",
+        placeholder = stringResource(R.string.full_name),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.medium1,
             end = MaterialTheme.spacing.medium1,
@@ -281,7 +282,7 @@ private fun EditProfileFields(
     )
 
     StyledTextField(
-        placeholder = "Phone Number",
+        placeholder = stringResource(R.string.phone_number),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.medium1,
             end = MaterialTheme.spacing.medium1,
@@ -293,7 +294,7 @@ private fun EditProfileFields(
     )
 
     StyledTextField(
-        placeholder = "Email Address",
+        placeholder = stringResource(R.string.email_address),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.medium1,
             end = MaterialTheme.spacing.medium1,
@@ -313,7 +314,7 @@ private fun EditProfileFields(
                 bottom = MaterialTheme.spacing.medium1
             )
             .fillMaxWidth(),
-        text = "Update Profile"
+        text = stringResource(R.string.update_profile)
     ) {
         if (name.isEmpty()) {
             Toast.makeText(

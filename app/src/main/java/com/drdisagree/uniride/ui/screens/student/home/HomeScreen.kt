@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -138,7 +139,7 @@ private fun HomeContent(
         }
     } ?: buses
 
-    val defaultLocationName = "Retrieving..."
+    val defaultLocationName = stringResource(R.string.retrieving)
     val locationNames by geocodingViewModel.locationNames.observeAsState(emptyMap())
     val showLoadingDialog by rememberUpdatedState(nearbyBusesViewModel.state is Resource.Loading<*>)
 
@@ -153,7 +154,7 @@ private fun HomeContent(
 
         item {
             Text(
-                text = "Announcement",
+                text = stringResource(R.string.announcement),
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
@@ -186,7 +187,7 @@ private fun HomeContent(
                     when (notices) {
                         is Resource.Loading -> {
                             Text(
-                                text = "Loading...",
+                                text = stringResource(R.string.loading),
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 textAlign = TextAlign.Justify
@@ -233,7 +234,7 @@ private fun HomeContent(
 
         item {
             Text(
-                text = "Our Resources",
+                text = stringResource(R.string.our_resources),
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
@@ -258,14 +259,14 @@ private fun HomeContent(
                     StatCard(
                         icon = Icons.Default.DirectionsBus,
                         count = TOTAL_VEHICLES,
-                        label = "Total Vehicles",
+                        label = stringResource(R.string.total_vehicles),
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     StatCard(
                         icon = Icons.Default.Person,
                         count = TOTAL_DRIVERS_AND_HELPERS,
-                        label = "Drivers & Helpers",
+                        label = stringResource(R.string.drivers_helpers),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -276,14 +277,14 @@ private fun HomeContent(
                     StatCard(
                         icon = Icons.Default.Route,
                         count = TOTAL_ROUTES,
-                        label = "Total Routes",
+                        label = stringResource(R.string.total_routes),
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     StatCard(
                         icon = Icons.Default.Star,
                         count = TOTAL_TECHNICIANS,
-                        label = "Technicians",
+                        label = stringResource(R.string.technicians),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -292,7 +293,7 @@ private fun HomeContent(
 
         item {
             Text(
-                text = "Nearby Buses",
+                text = stringResource(R.string.nearby_buses),
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
@@ -360,7 +361,7 @@ private fun HomeContent(
                     )
                 } else if (sortedBuses.isEmpty()) {
                     Text(
-                        text = "No bus found nearby!",
+                        text = stringResource(R.string.no_bus_found_nearby),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraLarge2)
                     )
@@ -405,7 +406,7 @@ private fun NearbyBusListItem(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_bus),
-                contentDescription = "Map with marker image",
+                contentDescription = stringResource(R.string.map_with_marker_image),
                 modifier = Modifier
                     .padding(end = 16.dp, top = 2.dp)
                     .size(28.dp)
@@ -436,7 +437,7 @@ private fun NearbyBusListItem(
                                 color = Color.Black
                             )
                         ) {
-                            append("Now: ")
+                            append(stringResource(R.string.now_colon))
                         }
                         append(
                             currentLocationName
@@ -452,7 +453,7 @@ private fun NearbyBusListItem(
                 verticalArrangement = Arrangement.Top
             ) {
                 Text(
-                    text = "Departed",
+                    text = stringResource(R.string.departed),
                     color = Color.Black,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold

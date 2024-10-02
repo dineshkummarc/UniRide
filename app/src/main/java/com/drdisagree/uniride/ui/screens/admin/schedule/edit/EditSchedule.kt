@@ -87,7 +87,7 @@ fun EditSchedule(
                         Row {
                             Icon(
                                 imageVector = Icons.Filled.DeleteForever,
-                                contentDescription = "Delete",
+                                contentDescription = stringResource(R.string.delete),
                                 tint = Color.Black.copy(alpha = 0.8f)
                             )
                         }
@@ -169,7 +169,7 @@ private fun EditScheduleContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }
@@ -322,7 +322,7 @@ private fun EditScheduleFields(
                 bottom = MaterialTheme.spacing.medium1
             )
             .fillMaxWidth(),
-        text = "Submit"
+        text = stringResource(R.string.submit)
     ) {
         if (locationFrom == locationTo) {
             Toast.makeText(
@@ -447,10 +447,10 @@ private fun EditScheduleFields(
 
     if (openDialog) {
         StyledAlertDialog(
-            title = "Are you sure?",
-            message = "This action cannot be undone. Delete this schedule?",
-            confirmButtonText = "Delete",
-            dismissButtonText = "Cancel",
+            title = stringResource(R.string.are_you_sure),
+            message = stringResource(R.string.delete_schedule_confirmation),
+            confirmButtonText = stringResource(R.string.delete),
+            dismissButtonText = stringResource(R.string.cancel),
             onConfirmButtonClick = {
                 onCloseDialog()
                 editScheduleViewModel.deleteSchedule(schedule.uuid)

@@ -78,7 +78,7 @@ fun EditRoute(
                         Row {
                             Icon(
                                 imageVector = Icons.Filled.DeleteForever,
-                                contentDescription = "Delete",
+                                contentDescription = stringResource(R.string.delete),
                                 tint = Color.Black.copy(alpha = 0.8f)
                             )
                         }
@@ -160,7 +160,7 @@ private fun EditRouteContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }
@@ -227,7 +227,7 @@ private fun EditRouteFields(
     )
 
     StyledTextField(
-        placeholder = "Route Details (Locations separated by <>)",
+        placeholder = stringResource(R.string.route_details_entry),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2,
@@ -240,7 +240,7 @@ private fun EditRouteFields(
     )
 
     StyledTextField(
-        placeholder = "Start Time (To DSC) (Separated by $$)",
+        placeholder = stringResource(R.string.start_time_to_dsc_entry),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2,
@@ -253,7 +253,7 @@ private fun EditRouteFields(
     )
 
     StyledTextField(
-        placeholder = "Departure Time (From DSC) (Separated by $$)",
+        placeholder = stringResource(R.string.departure_time_from_dsc_entry),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2,
@@ -266,7 +266,7 @@ private fun EditRouteFields(
     )
 
     StyledTextField(
-        placeholder = "Route Map (Google Maps URL)",
+        placeholder = stringResource(R.string.route_map_google_maps_url),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2,
@@ -286,7 +286,7 @@ private fun EditRouteFields(
                 bottom = MaterialTheme.spacing.medium1
             )
             .fillMaxWidth(),
-        text = "Submit"
+        text = stringResource(R.string.submit)
     ) {
         if (
             routeNo.isEmpty() ||
@@ -410,10 +410,10 @@ private fun EditRouteFields(
 
     if (openDialog) {
         StyledAlertDialog(
-            title = "Are you sure?",
-            message = "This action cannot be undone. Delete this route?",
-            confirmButtonText = "Delete",
-            dismissButtonText = "Cancel",
+            title = stringResource(R.string.are_you_sure),
+            message = stringResource(R.string.delete_route_confirmation),
+            confirmButtonText = stringResource(R.string.delete),
+            dismissButtonText = stringResource(R.string.cancel),
             onConfirmButtonClick = {
                 onCloseDialog()
                 editRouteViewModel.deleteRoute(route.uuid)

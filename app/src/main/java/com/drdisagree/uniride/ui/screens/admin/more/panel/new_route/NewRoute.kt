@@ -120,7 +120,7 @@ private fun NewRouteContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }
@@ -136,7 +136,7 @@ private fun NewRouteFields(
     val routeCategoryList by listsViewModel.routeCategoryModels.collectAsState()
 
     val defaultRouteCategory = RouteCategory(
-        name = "Category"
+        name = stringResource(R.string.category)
     )
 
     var routeNo by rememberSaveable { mutableStateOf("") }
@@ -148,7 +148,7 @@ private fun NewRouteFields(
     var routeMap by rememberSaveable { mutableStateOf("") }
 
     StyledTextField(
-        placeholder = "Route No",
+        placeholder = stringResource(R.string.route_no),
         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small2),
         onValueChange = { routeNo = it },
         inputText = routeNo,
@@ -187,7 +187,7 @@ private fun NewRouteFields(
     )
 
     StyledTextField(
-        placeholder = "Route Details (Locations separated by <>)",
+        placeholder = stringResource(R.string.route_details_locations_entry),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2,
@@ -200,7 +200,7 @@ private fun NewRouteFields(
     )
 
     StyledTextField(
-        placeholder = "Start Time (To DSC) (Separated by $$)",
+        placeholder = stringResource(R.string.start_time_to_dsc_entry),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2,
@@ -213,7 +213,7 @@ private fun NewRouteFields(
     )
 
     StyledTextField(
-        placeholder = "Departure Time (From DSC) (Separated by $$)",
+        placeholder = stringResource(R.string.departure_time_from_dsc_entry),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2,
@@ -226,7 +226,7 @@ private fun NewRouteFields(
     )
 
     StyledTextField(
-        placeholder = "Route Map (Google Maps URL)",
+        placeholder = stringResource(R.string.route_map_google_maps_url),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2,
@@ -246,7 +246,7 @@ private fun NewRouteFields(
                 bottom = MaterialTheme.spacing.medium1
             )
             .fillMaxWidth(),
-        text = "Submit"
+        text = stringResource(R.string.submit)
     ) {
         if (
             routeNo.isEmpty() ||

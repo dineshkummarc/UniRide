@@ -31,12 +31,14 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.nativeKeyCode
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.theme.spacing
 import kotlinx.coroutines.delay
 
@@ -137,7 +139,7 @@ fun OtpInputDialog(
         },
         confirmButton = {
             Button(onClick = { onSubmit(otp) }) {
-                Text("Submit")
+                Text(stringResource(R.string.submit))
             }
         },
         dismissButton = {
@@ -151,7 +153,7 @@ fun OtpInputDialog(
                 }
             } else {
                 TextButton(onClick = onDismissRequest) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         },

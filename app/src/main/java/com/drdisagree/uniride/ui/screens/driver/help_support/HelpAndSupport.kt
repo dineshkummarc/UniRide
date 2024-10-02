@@ -57,133 +57,127 @@ private fun InfoContent(paddingValues: PaddingValues) {
             .padding(MaterialTheme.spacing.medium1)
     ) {
         Text(
-            text = "Welcome to UniRide Support!",
+            text = stringResource(R.string.uniride_support_title),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "We're here to help you get the most out of your UniRide experience. Below you'll find useful information and resources.",
+            text = stringResource(R.string.uniride_support_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "Navigating the App",
+            text = stringResource(R.string.navigating_the_app),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "Home:",
+            text = stringResource(R.string.navigating_app_home_title),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
         )
         Text(
-            text = "• View your upcoming schedules and current assignments.\n" +
-                    "• Get real-time updates on your rides.",
+            text = stringResource(R.string.navigating_app_home_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "Profile:",
+            text = stringResource(R.string.navigating_app_profile_title),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "• Update your personal information.\n" +
-                    "• View your driving history and performance.",
+            text = stringResource(R.string.navigating_app_profile_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "Common Issues",
+            text = stringResource(R.string.common_issues_title),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "App Crashes or Freezes:",
+            text = stringResource(R.string.app_crashes_or_freezes_title),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
         )
         Text(
-            text = "• Restart the app and try again.\n" +
-                    "• Ensure you have the latest version installed.\n" +
-                    "• Clear the app cache from your device settings.",
+            text = stringResource(R.string.app_crashes_or_freezes_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "GPS Issues:",
+            text = stringResource(R.string.gps_issues_title),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "• Ensure your device's location services are enabled.\n" +
-                    "• Restart your device if the problem persists.",
+            text = stringResource(R.string.gps_issues_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "Contact Support",
+            text = stringResource(R.string.contact_support_title),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "If you need further assistance, don't hesitate to reach out:\n" +
-                    "• Email: mhofficial2020@gmail.com\n" +
-                    "• Phone: +8801880890777",
+            text = stringResource(R.string.contact_support_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "FAQs",
+            text = stringResource(R.string.faqs_title),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "How do I update my route information?",
+            text = stringResource(R.string.update_tracking_information_title),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small2)
         )
         Text(
-            text = "• Go to the home screen and select the route you need to update. Make changes and save.",
+            text = stringResource(R.string.update_tracking_information_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "What should I do if I encounter an emergency?",
+            text = stringResource(R.string.encounter_emergency_title),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "• Contact the emergency hotline at ${EMERGENCY_PHONE_NUMBERS.first().first}.",
+            text = stringResource(
+                R.string.encounter_emergency_summary,
+                EMERGENCY_PHONE_NUMBERS.first().first
+            ),
             fontSize = 14.sp
         )
         Text(
-            text = "How do I report an issue with a ride?",
+            text = stringResource(R.string.report_issue_about_uniride_title),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "• Contact us at mhofficial2020@gmail with screenshots and details.",
+            text = stringResource(R.string.report_issue_about_uniride_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "Tips for a Smooth Ride",
+            text = stringResource(R.string.tips_for_smooth_ride_title),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )
         Text(
-            text = "• Stay Updated: Regularly check for app updates to ensure you have the latest features and bug fixes.\n" +
-                    "• Stay Connected: Keep your device charged and maintain a stable internet connection.\n" +
-                    "• Stay Safe: Follow all traffic laws and drive responsibly.",
+            text = stringResource(R.string.tips_for_smooth_ride_summary),
             fontSize = 14.sp
         )
         Text(
-            text = "Thank you for being a part of UniRide. Safe travels!",
+            text = stringResource(R.string.part_of_uniride),
             fontSize = 14.sp,
             modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
         )

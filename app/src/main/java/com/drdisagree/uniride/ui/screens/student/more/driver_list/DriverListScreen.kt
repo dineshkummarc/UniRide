@@ -1,5 +1,6 @@
 package com.drdisagree.uniride.ui.screens.student.more.driver_list
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -138,7 +139,7 @@ private fun DriverListContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "No drivers found",
+                            text = stringResource(R.string.no_drivers_found),
                         )
                     }
                 }
@@ -227,7 +228,7 @@ private fun DriverListItem(
                 AsyncImage(
                     model = imageRequest,
                     placeholder = painterResource(id = R.drawable.img_loading),
-                    contentDescription = "Profile Picture",
+                    contentDescription = stringResource(R.string.profile_picture),
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(100)),
@@ -249,7 +250,7 @@ private fun DriverListItem(
                 Text(
                     text = if (driverReviews.about.contactPhone.isNullOrEmpty()) {
                         if (driverReviews.about.contactEmail.isNullOrEmpty()) {
-                            "Contact details not available"
+                            stringResource(R.string.contact_details_not_available)
                         } else {
                             driverReviews.about.contactEmail
                         }
@@ -266,7 +267,7 @@ private fun DriverListItem(
                                 fontWeight = FontWeight.SemiBold
                             )
                         ) {
-                            append("Rating: ")
+                            append(stringResource(R.string.rating_colon))
                         }
                         append(getAverageRating(driverReviews.reviews))
                     },
@@ -278,6 +279,7 @@ private fun DriverListItem(
     }
 }
 
+@SuppressLint("DefaultLocale")
 private fun getAverageRating(reviews: List<Review>): String {
     if (reviews.isEmpty()) {
         return "N/A"

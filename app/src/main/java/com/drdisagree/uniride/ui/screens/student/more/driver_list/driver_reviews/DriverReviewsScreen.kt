@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.models.DriverReviews
 import com.drdisagree.uniride.data.models.Review
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
@@ -106,7 +108,7 @@ private fun DriverReviewsContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "No reviews found about you!",
+                    text = stringResource(R.string.no_reviews_found_about_this_driver),
                 )
             }
         }
@@ -182,7 +184,8 @@ private fun ReviewListItem(
                                 fontWeight = FontWeight.SemiBold
                             )
                         ) {
-                            append("Submitted on: ")
+                            append(stringResource(R.string.submitted_on_colon))
+                            append(" ")
                         }
                         append(review.timeStamp.millisToTime("dd/MM/yyyy - ${if (is24HourFormat) "HH:mm" else "hh:mm a"}"))
                     },

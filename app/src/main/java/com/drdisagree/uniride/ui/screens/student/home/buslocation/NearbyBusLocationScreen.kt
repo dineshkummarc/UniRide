@@ -1,6 +1,5 @@
 package com.drdisagree.uniride.ui.screens.student.home.buslocation
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -55,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -116,7 +116,7 @@ fun NearbyBusLocationScreen(
         Scaffold(
             topBar = {
                 TopAppBarWithBackButton(
-                    title = "Current Location",
+                    title = stringResource(R.string.current_location),
                     onBackClick = {
                         navigator.navigateUp()
                     }
@@ -257,8 +257,9 @@ private fun MapViewContent(
             if (marker != null) {
                 Marker(
                     state = MarkerState(position = marker),
-                    title = runningBus?.bus?.name ?: "Unknown name",
-                    snippet = runningBus?.category?.name ?: "Unknown category",
+                    title = runningBus?.bus?.name ?: stringResource(R.string.unknown_name),
+                    snippet = runningBus?.category?.name
+                        ?: stringResource(R.string.unknown_category),
                     draggable = false,
                     icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus_colored)
                 )
@@ -266,8 +267,8 @@ private fun MapViewContent(
             if (myMarker != null) {
                 Marker(
                     state = MarkerState(position = myMarker!!),
-                    title = "Me",
-                    snippet = "My position",
+                    title = stringResource(R.string.me),
+                    snippet = stringResource(R.string.my_position),
                     draggable = false,
                     icon = toBitmapDescriptorWithColor(
                         context,
@@ -290,7 +291,7 @@ private fun MapViewContent(
         ) {
             Icon(
                 imageVector = Icons.Filled.Info,
-                contentDescription = "Driver Info",
+                contentDescription = stringResource(R.string.driver_info),
                 tint = Color.White,
                 modifier = Modifier
                     .padding(8.dp)
@@ -308,7 +309,7 @@ private fun MapViewContent(
                         bottom = MaterialTheme.spacing.large2
                     )
                     .align(Alignment.BottomCenter),
-                text = "Bus has reached its destination"
+                text = stringResource(R.string.bus_has_reached_its_destination)
             ) {
                 navigator.navigateUp()
             }
@@ -401,7 +402,7 @@ fun ReviewDialog(
             onDismissRequest = {
                 openReviewDialog.value = false
             },
-            title = { Text(text = "Rate Driver") },
+            title = { Text(text = stringResource(R.string.rate_driver)) },
             text = {
                 Column {
                     StarRatingBar(
@@ -413,7 +414,7 @@ fun ReviewDialog(
                             .padding(bottom = MaterialTheme.spacing.small2)
                     )
                     StyledTextField(
-                        placeholder = "Add a comment",
+                        placeholder = stringResource(R.string.add_a_comment),
                         onValueChange = { review = it },
                         inputText = review,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -451,14 +452,14 @@ fun ReviewDialog(
                         rating = rating
                     )
                 }) {
-                    Text("Submit")
+                    Text(stringResource(R.string.submit))
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
                     openReviewDialog.value = false
                 }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
             properties = DialogProperties()
@@ -476,7 +477,7 @@ private fun BusDetailsDialog(
 ) {
     val context = LocalContext.current
     val (_, categoryTextColor) = remember(runningBus?.category?.name) {
-        getSchedulePillColors(runningBus?.category?.name ?: "Unknown")
+        getSchedulePillColors(runningBus?.category?.name ?: context.getString(R.string.unknown))
     }
     val summaryState by reviewSubmissionViewModel.summary.collectAsState()
 
@@ -491,7 +492,7 @@ private fun BusDetailsDialog(
             onDismissRequest = {
                 openInfoDialog.value = false
             },
-            title = { Text(text = "Bus Details") },
+            title = { Text(text = stringResource(R.string.bus_details)) },
             text = {
                 Column {
                     Row(
@@ -509,7 +510,7 @@ private fun BusDetailsDialog(
                             AsyncImage(
                                 model = imageRequest,
                                 placeholder = painterResource(id = R.drawable.img_loading),
-                                contentDescription = "Profile Picture",
+                                contentDescription = stringResource(R.string.profile_picture),
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .clip(RoundedCornerShape(100)),
@@ -527,7 +528,7 @@ private fun BusDetailsDialog(
                                             fontWeight = FontWeight.SemiBold
                                         )
                                     ) {
-                                        append("Driver Info:")
+                                        append(stringResource(R.string.driver_info_colon))
                                     }
                                     append("\n")
                                     withStyle(
@@ -535,7 +536,10 @@ private fun BusDetailsDialog(
                                             fontWeight = FontWeight.Medium
                                         )
                                     ) {
-                                        append(runningBus?.driver?.name ?: "Unknown driver")
+                                        append(
+                                            runningBus?.driver?.name
+                                                ?: stringResource(R.string.unknown_driver)
+                                        )
                                     }
                                 },
                                 fontSize = 15.sp,
@@ -544,13 +548,13 @@ private fun BusDetailsDialog(
                             Text(
                                 text = if (runningBus?.driver?.contactPhone.isNullOrEmpty()) {
                                     if (runningBus?.driver?.contactEmail.isNullOrEmpty()) {
-                                        "No contact info"
+                                        stringResource(R.string.no_contact_info)
                                     } else {
                                         runningBus?.driver?.contactEmail
                                     }
                                 } else {
                                     runningBus?.driver?.contactPhone
-                                } ?: "No contact info",
+                                } ?: stringResource(R.string.no_contact_info),
                                 fontSize = 14.sp
                             )
                         }
@@ -567,9 +571,9 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Bus Name: ")
+                                append(stringResource(R.string.bus_name_colon))
                             }
-                            append(runningBus?.bus?.name ?: "Unknown")
+                            append(runningBus?.bus?.name ?: stringResource(R.string.unknown))
                         },
                         fontSize = 15.sp
                     )
@@ -581,14 +585,16 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Category: ")
+                                append(stringResource(R.string.category_colon))
                             }
                             withStyle(
                                 SpanStyle(
                                     color = categoryTextColor
                                 )
                             ) {
-                                append(runningBus?.category?.name ?: "Unknown")
+                                append(
+                                    runningBus?.category?.name ?: stringResource(R.string.unknown)
+                                )
                             }
                         },
                         fontSize = 15.sp,
@@ -602,13 +608,13 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Status: ")
+                                append(stringResource(R.string.status_colon))
                             }
                             append(
                                 when (runningBus?.status) {
-                                    BusStatus.RUNNING -> "Driving to destination"
-                                    BusStatus.STOPPED -> "Reached destination"
-                                    else -> "Waiting for students"
+                                    BusStatus.RUNNING -> stringResource(R.string.driving_to_destination)
+                                    BusStatus.STOPPED -> stringResource(R.string.reached_destination)
+                                    else -> stringResource(R.string.waiting_for_students)
                                 }
                             )
                         },
@@ -623,9 +629,11 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Departed From: ")
+                                append(stringResource(R.string.departed_from_colon))
                             }
-                            append(runningBus?.departedFrom?.name ?: "Unknown")
+                            append(
+                                runningBus?.departedFrom?.name ?: stringResource(R.string.unknown)
+                            )
                         },
                         fontSize = 15.sp,
                         modifier = Modifier.padding(top = 4.dp)
@@ -638,9 +646,9 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Destination: ")
+                                append(stringResource(R.string.destination_colon))
                             }
-                            append(runningBus?.departedTo?.name ?: "Unknown")
+                            append(runningBus?.departedTo?.name ?: stringResource(R.string.unknown))
                         },
                         fontSize = 15.sp,
                         modifier = Modifier.padding(top = 4.dp)
@@ -653,14 +661,13 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Departed At: ")
+                                append(stringResource(R.string.departed_at_colon))
                             }
                             append(getFormattedTime(context, runningBus?.departedAt))
                         },
                         fontSize = 15.sp,
                         modifier = Modifier.padding(top = 4.dp)
                     )
-                    Log.d("TAG", "isBusFull: ${runningBus?.busFull}")
                     Text(
                         text = buildAnnotatedString {
                             withStyle(
@@ -669,13 +676,13 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Seat Occupancy: ")
+                                append(stringResource(R.string.seat_occupancy_colon))
                             }
                             append(
                                 if (runningBus?.busFull == true) {
-                                    "All seats occupied"
+                                    stringResource(R.string.all_seats_occupied)
                                 } else {
-                                    "Few seats available"
+                                    stringResource(R.string.few_seats_available)
                                 }
                             )
                         },
@@ -690,14 +697,14 @@ private fun BusDetailsDialog(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             ) {
-                                append("Review (AI Summarized): ")
+                                append(stringResource(R.string.review_ai_summarized_colon))
                             }
                             append(
                                 when (summaryState) {
-                                    is Resource.Loading -> "Loading..."
+                                    is Resource.Loading -> stringResource(R.string.loading)
                                     is Resource.Success -> (summaryState as Resource.Success<String>).data
                                     is Resource.Error -> (summaryState as Resource.Error).message
-                                    else -> "No reviews yet"
+                                    else -> stringResource(R.string.no_reviews_yet)
                                 }
                             )
                         },
@@ -711,7 +718,7 @@ private fun BusDetailsDialog(
                 Button(onClick = {
                     openInfoDialog.value = false
                 }) {
-                    Text("Close")
+                    Text(stringResource(R.string.close))
                 }
             },
             dismissButton = {
@@ -731,12 +738,12 @@ private fun BusDetailsDialog(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.RateReview,
-                        contentDescription = "Leave a review",
+                        contentDescription = stringResource(R.string.leave_a_review),
                         tint = Black
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Leave a review",
+                        text = stringResource(R.string.leave_a_review),
                         color = Black
                     )
                 }

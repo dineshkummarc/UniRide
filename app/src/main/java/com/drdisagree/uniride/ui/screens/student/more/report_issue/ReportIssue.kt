@@ -100,11 +100,11 @@ private fun ReportIssueFields(
     val context = LocalContext.current
     var issueDescription by rememberSaveable { mutableStateOf("") }
     val issueTypes = listOf(
-        "Bus Schedule",
-        "Route Details",
-        "Live Location Tracking",
-        "Driver Information",
-        "Other"
+        stringResource(R.string.bus_schedule),
+        stringResource(R.string.route_details),
+        stringResource(R.string.live_location_tracking),
+        stringResource(R.string.driver_information),
+        stringResource(R.string.other)
     )
     var selectedIssueTypeIndex by remember { mutableStateOf<Int?>(null) }
     fun onOptionSelected(index: Int) {
@@ -114,7 +114,7 @@ private fun ReportIssueFields(
     var contactInformation by rememberSaveable { mutableStateOf(student.email ?: "") }
 
     Text(
-        text = "1. Which of the following best describes the type of issue you are encountering?",
+        text = stringResource(R.string.report_issue_ques_one),
         fontWeight = FontWeight.Medium,
         lineHeight = 20.sp
     )
@@ -130,7 +130,7 @@ private fun ReportIssueFields(
     )
 
     Text(
-        text = "2. Please describe the issue below as descriptively as possible, so we can route you to the proper channel in our team.",
+        text = stringResource(R.string.report_issue_ques_two),
         fontWeight = FontWeight.Medium,
         lineHeight = 20.sp,
         modifier = Modifier.padding(
@@ -138,7 +138,7 @@ private fun ReportIssueFields(
         )
     )
     StyledTextField(
-        placeholder = "Describe the issue here...",
+        placeholder = stringResource(R.string.describe_the_issue_here),
         modifier = Modifier.padding(
             top = MaterialTheme.spacing.small2
         ),
@@ -150,7 +150,7 @@ private fun ReportIssueFields(
     )
 
     Text(
-        text = "3. Provide your contact information.",
+        text = stringResource(R.string.report_issue_ques_three),
         fontWeight = FontWeight.Medium,
         lineHeight = 20.sp,
         modifier = Modifier.padding(
@@ -158,7 +158,7 @@ private fun ReportIssueFields(
         )
     )
     StyledTextField(
-        placeholder = "Email or Phone number",
+        placeholder = stringResource(R.string.email_or_phone_number),
         modifier = Modifier.padding(
             top = MaterialTheme.spacing.small2
         ),
@@ -174,7 +174,7 @@ private fun ReportIssueFields(
                 vertical = MaterialTheme.spacing.medium1,
             )
             .fillMaxWidth(),
-        text = "Submit"
+        text = stringResource(R.string.submit)
     ) {
         if (
             selectedIssueTypeIndex == null ||

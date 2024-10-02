@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
+import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.AccountStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
@@ -200,14 +202,14 @@ private fun AccountWarnings(
                 .padding(MaterialTheme.spacing.medium2)
         ) {
             val unapprovedProfileWarn = if (driverAccount?.accountStatus == AccountStatus.PENDING) {
-                "আপনার অ্যাকাউন্টের তথ্য এবং Documents এখনও যাচাইকরণের অধীনে রয়েছে৷ পরে আবার চেক করুন।"
+                stringResource(R.string.driver_documents_under_verification)
             } else {
-                "আপনার Documents বাতিল করা হয়েছে. অনুগ্রহ করে DIU Transport Office এ যোগাযোগ করুন।"
+                stringResource(R.string.driver_documents_rejected)
             }
 
             Column {
                 Text(
-                    text = "অ্যাকাউন্ট স্ট্যাটাস",
+                    text = stringResource(R.string.account_status),
                     fontSize = 16.sp,
                     color = Color(0xFFBA5050),
                     fontWeight = FontWeight.SemiBold,
@@ -249,8 +251,8 @@ private fun AccountWarnings(
                 .padding(MaterialTheme.spacing.medium2)
         ) {
             val incompleteProfileWarn =
-                "আপনার অ্যাকাউন্টে কিছু তথ্য অনুপস্থিত বা অসম্পূর্ণ বলে মনে হচ্ছে। অ্যাকাউন্ট সাসপেনশন বা জরিমানা এড়াতে অনুগ্রহ করে আপনার তথ্য আপডেট করুন।\n"
-            val editProfile = "» প্রোফাইল সম্পাদনা করুন «"
+                stringResource(R.string.driver_profile_information_missing)
+            val editProfile = stringResource(R.string.edit_your_profile_with_arrow)
 
             val annotatedString = buildAnnotatedString {
                 withStyle(SpanStyle(color = Color(0xFF74423D), fontSize = 15.sp)) {
@@ -274,7 +276,7 @@ private fun AccountWarnings(
 
             Column {
                 Text(
-                    text = "আপনার প্রোফাইল অসম্পূর্ণ",
+                    text = stringResource(R.string.your_profile_is_incomplete),
                     fontSize = 16.sp,
                     color = Color(0xFFBA5050),
                     fontWeight = FontWeight.SemiBold,
@@ -338,16 +340,16 @@ private fun ShareLocationFields(
     val placeList by listsViewModel.placeModels.collectAsState()
 
     val defaultBusName = Bus(
-        name = "Select Bus"
+        name = stringResource(R.string.select_bus)
     )
     val defaultBusCategory = BusCategory(
-        name = "Bus Category"
+        name = stringResource(R.string.bus_category)
     )
     val defaultFrom = Place(
-        name = "Start From"
+        name = stringResource(R.string.start_from)
     )
     val defaultTo = Place(
-        name = "Destination"
+        name = stringResource(R.string.destination)
     )
 
     var selectedBus by rememberSaveable { mutableStateOf(defaultBusName) }
@@ -373,7 +375,7 @@ private fun ShareLocationFields(
     }
 
     Text(
-        text = "Let's start driving",
+        text = stringResource(R.string.lets_start_driving),
         fontSize = 20.sp,
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -462,7 +464,7 @@ private fun ShareLocationFields(
     Spacer(modifier = Modifier.height(MaterialTheme.spacing.small2))
 
     ButtonPrimary(
-        text = "Start Sharing Location",
+        text = stringResource(R.string.start_sharing_location),
         modifier = Modifier
             .padding(
                 start = MaterialTheme.spacing.medium1,

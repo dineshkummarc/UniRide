@@ -105,7 +105,7 @@ private fun EmergencyContent(
                 .padding(MaterialTheme.spacing.medium1)
         ) {
             Text(
-                text = "To ensure emergency support, a well trained team of DIU Transport Pool is always ready on campus. So when you need any kind of support, we are here for our every Students and Employees with all sorts of facilities.",
+                text = stringResource(R.string.emergency_description),
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Justify,
                 modifier = Modifier.fillMaxWidth()
@@ -121,7 +121,7 @@ private fun EmergencyContent(
         }
 
         Text(
-            text = "For any emergency, please call any of the following numbers:",
+            text = stringResource(R.string.for_emergency_call),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,

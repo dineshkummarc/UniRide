@@ -302,7 +302,7 @@ private fun PendingDriverDetailsContent(
                     AsyncImage(
                         model = profileImageRequest,
                         placeholder = painterResource(id = R.drawable.img_loading),
-                        contentDescription = "Profile Picture",
+                        contentDescription = stringResource(R.string.profile_picture),
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(100)),
@@ -310,7 +310,7 @@ private fun PendingDriverDetailsContent(
                     )
                 }
                 Text(
-                    text = "Account ID:",
+                    text = stringResource(R.string.account_id_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp
                 )
@@ -343,9 +343,9 @@ private fun PendingDriverDetailsContent(
                 )
                 Text(
                     text = when (driver.accountStatus) {
-                        AccountStatus.PENDING -> "Pending"
-                        AccountStatus.APPROVED -> "Approved"
-                        AccountStatus.REJECTED -> "Rejected"
+                        AccountStatus.APPROVED -> stringResource(R.string.approved)
+                        AccountStatus.PENDING -> stringResource(R.string.pending)
+                        AccountStatus.REJECTED -> stringResource(R.string.rejected)
                     },
                     color = pillTextColor,
                     fontSize = 15.sp
@@ -373,18 +373,22 @@ private fun PendingDriverDetailsContent(
                     fontSize = 15.sp
                 )
                 Text(
-                    text = if (driver.email == null) "Phone:" else "Email:",
+                    text = if (driver.email == null) {
+                        stringResource(R.string.phone)
+                    } else {
+                        stringResource(R.string.email)
+                    },
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
                 )
                 Text(
-                    text = driver.email ?: driver.phone ?: "Unknown",
+                    text = driver.email ?: driver.phone ?: stringResource(R.string.unknown),
                     color = Dark,
                     fontSize = 15.sp
                 )
                 Text(
-                    text = "Contact Information:",
+                    text = stringResource(R.string.contact_information_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -397,9 +401,9 @@ private fun PendingDriverDetailsContent(
                                 color = Color.Black
                             )
                         ) {
-                            append("Phone: ")
+                            append(stringResource(R.string.phone_colon))
                         }
-                        append(if (driver.contactPhone.isNullOrEmpty()) "Not Provided" else driver.contactPhone)
+                        append(if (driver.contactPhone.isNullOrEmpty()) stringResource(R.string.not_provided) else driver.contactPhone)
                         append("\n")
                         withStyle(
                             SpanStyle(
@@ -407,15 +411,15 @@ private fun PendingDriverDetailsContent(
                                 color = Color.Black
                             )
                         ) {
-                            append("Email: ")
+                            append(stringResource(R.string.email_colon))
                         }
-                        append(if (driver.contactEmail.isNullOrEmpty()) "Not Provided" else driver.contactEmail)
+                        append(if (driver.contactEmail.isNullOrEmpty()) stringResource(R.string.not_provided) else driver.contactEmail)
                     },
                     color = Dark,
                     fontSize = 15.sp
                 )
                 Text(
-                    text = "NID Card:",
+                    text = stringResource(R.string.nid_card_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -446,7 +450,7 @@ private fun PendingDriverDetailsContent(
                             AsyncImage(
                                 model = nidFrontImageRequest,
                                 placeholder = painterResource(id = R.drawable.img_loading),
-                                contentDescription = "NID Card Front",
+                                contentDescription = stringResource(R.string.nid_card_front),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                             )
@@ -463,7 +467,7 @@ private fun PendingDriverDetailsContent(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.Download,
-                                        contentDescription = "Download NID Card Front",
+                                        contentDescription = stringResource(R.string.download_nid_card_front),
                                         tint = Color.White,
                                         modifier = Modifier.size(24.dp)
                                     )
@@ -492,7 +496,7 @@ private fun PendingDriverDetailsContent(
                             AsyncImage(
                                 model = nidBackImageRequest,
                                 placeholder = painterResource(id = R.drawable.img_loading),
-                                contentDescription = "NID Card Back",
+                                contentDescription = stringResource(R.string.nid_card_back),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                             )
@@ -509,7 +513,7 @@ private fun PendingDriverDetailsContent(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.Download,
-                                        contentDescription = "Download NID Card Back",
+                                        contentDescription = stringResource(R.string.download_nid_card_back),
                                         tint = Color.White,
                                         modifier = Modifier.size(20.dp)
                                     )
@@ -550,7 +554,7 @@ private fun PendingDriverDetailsContent(
                             AsyncImage(
                                 model = drivingLicenseFrontImageRequest,
                                 placeholder = painterResource(id = R.drawable.img_loading),
-                                contentDescription = "Driving License Front",
+                                contentDescription = stringResource(R.string.driving_license_front),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                             )
@@ -567,7 +571,7 @@ private fun PendingDriverDetailsContent(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.Download,
-                                        contentDescription = "Download Driving License Front",
+                                        contentDescription = stringResource(R.string.download_driving_license_front),
                                         tint = Color.White,
                                         modifier = Modifier.size(20.dp)
                                     )
@@ -596,7 +600,7 @@ private fun PendingDriverDetailsContent(
                             AsyncImage(
                                 model = drivingLicenseBackImageRequest,
                                 placeholder = painterResource(id = R.drawable.img_loading),
-                                contentDescription = "Driving License Back",
+                                contentDescription = stringResource(R.string.driving_license_back),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                             )
@@ -613,7 +617,7 @@ private fun PendingDriverDetailsContent(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Rounded.Download,
-                                        contentDescription = "Download Driving License Back",
+                                        contentDescription = stringResource(R.string.download_driving_license_back),
                                         tint = Color.White,
                                         modifier = Modifier.size(20.dp)
                                     )
@@ -637,7 +641,7 @@ private fun PendingDriverDetailsContent(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
-                                text = "Reject",
+                                text = stringResource(R.string.reject),
                                 onClick = {
                                     rejectAccountDialog = true
                                 }
@@ -648,7 +652,7 @@ private fun PendingDriverDetailsContent(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxWidth(),
-                            text = "Approve",
+                            text = stringResource(R.string.approve),
                             onClick = {
                                 approveAccountDialog = true
                             }
@@ -659,7 +663,7 @@ private fun PendingDriverDetailsContent(
                         modifier = Modifier
                             .padding(top = MaterialTheme.spacing.large2)
                             .fillMaxWidth(),
-                        text = "Reject",
+                        text = stringResource(R.string.reject),
                         onClick = {
                             rejectAccountDialog = true
                         }
@@ -710,10 +714,10 @@ private fun PendingDriverDetailsContent(
 
                 if (approveAccountDialog) {
                     StyledAlertDialog(
-                        title = "Approve Account",
-                        message = "Are you sure you want to approve this account?",
-                        confirmButtonText = "Approve",
-                        dismissButtonText = "Cancel",
+                        title = stringResource(R.string.approve_account),
+                        message = stringResource(R.string.approve_account_confirmation),
+                        confirmButtonText = stringResource(R.string.approve),
+                        dismissButtonText = stringResource(R.string.cancel),
                         onConfirmButtonClick = {
                             approveAccountDialog = false
 
@@ -732,10 +736,10 @@ private fun PendingDriverDetailsContent(
                     )
                 } else if (rejectAccountDialog) {
                     StyledAlertDialog(
-                        title = "Reject Account",
-                        message = "Are you sure you want to reject this account?",
-                        confirmButtonText = "Reject",
-                        dismissButtonText = "Cancel",
+                        title = stringResource(R.string.reject_account),
+                        message = stringResource(R.string.reject_account_confirmation),
+                        confirmButtonText = stringResource(R.string.reject),
+                        dismissButtonText = stringResource(R.string.cancel),
                         onConfirmButtonClick = {
                             rejectAccountDialog = false
 
@@ -765,7 +769,7 @@ private fun PendingDriverDetailsContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }

@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -82,7 +83,7 @@ fun RouteDetailsScreen(
                 when (isAdminState) {
                     true -> {
                         TopAppBarWithBackButtonAndEndIcon(
-                            title = "Route Details",
+                            title = stringResource(R.string.route_details),
                             onBackClick = {
                                 navigator.navigateUp()
                             },
@@ -90,7 +91,7 @@ fun RouteDetailsScreen(
                                 Row {
                                     Icon(
                                         imageVector = Icons.Filled.Edit,
-                                        contentDescription = "Logout",
+                                        contentDescription = stringResource(R.string.logout),
                                         tint = Color.Black.copy(alpha = 0.8f)
                                     )
                                 }
@@ -103,7 +104,7 @@ fun RouteDetailsScreen(
 
                     else -> {
                         TopAppBarWithBackButton(
-                            title = "Route Details",
+                            title = stringResource(R.string.route_details),
                             onBackClick = {
                                 navigator.navigateUp()
                             }
@@ -207,7 +208,7 @@ private fun WebViewContent(route: Route) {
                 tint = Dark
             )
             Text(
-                text = "Use two fingers to move around the map.",
+                text = stringResource(R.string.use_two_fingers_to_move_around_the_map),
                 color = Dark,
                 fontSize = 14.sp,
                 modifier = Modifier
@@ -252,7 +253,7 @@ private fun DetailsSectionContainer(route: Route) {
         DetailsSectionContent(
             icon = R.drawable.ic_clock,
             iconDescription = "Clock",
-            title = "Start Time (To DSC):",
+            title = stringResource(R.string.start_time_to_dsc_colon),
             description = route.startTime,
             divider = "$$"
         )
@@ -265,7 +266,7 @@ private fun DetailsSectionContainer(route: Route) {
         DetailsSectionContent(
             icon = R.drawable.ic_clock,
             iconDescription = "Clock",
-            title = "Departure Time (From DSC):",
+            title = stringResource(R.string.departure_time_from_dsc_colon),
             description = route.departureTime,
             divider = "$$"
         )
@@ -278,7 +279,7 @@ private fun DetailsSectionContainer(route: Route) {
         DetailsSectionContent(
             icon = R.drawable.ic_routing,
             iconDescription = "Route",
-            title = "Route Details:",
+            title = stringResource(R.string.route_details),
             description = route.routeDetails,
             divider = "<>"
         )

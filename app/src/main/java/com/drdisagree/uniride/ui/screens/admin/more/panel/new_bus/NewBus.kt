@@ -118,7 +118,7 @@ private fun NewBusContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }
@@ -133,7 +133,7 @@ private fun NewBusFields(
     var busName by remember { mutableStateOf("") }
 
     StyledTextField(
-        placeholder = "Bus name",
+        placeholder = stringResource(R.string.bus_name),
         modifier = Modifier.padding(
             start = MaterialTheme.spacing.small2,
             end = MaterialTheme.spacing.small2
@@ -153,7 +153,7 @@ private fun NewBusFields(
                 bottom = MaterialTheme.spacing.medium1
             )
             .fillMaxWidth(),
-        text = "Submit"
+        text = stringResource(R.string.submit)
     ) {
         if (busName.isEmpty()) {
             Toast.makeText(

@@ -133,7 +133,7 @@ private fun NewScheduleContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }
@@ -150,18 +150,18 @@ private fun NewScheduleFields(
     val placeList by listsViewModel.placeModels.collectAsState()
 
     val defaultBusName = Bus(
-        name = "Bus Name"
+        name = stringResource(R.string.bus_name)
     )
     val defaultBusCategory = BusCategory(
-        name = "Category"
+        name = stringResource(R.string.category)
     )
     val defaultFrom = Place(
-        name = "From"
+        name = stringResource(R.string.from)
     )
     val defaultTo = Place(
-        name = "To"
+        name = stringResource(R.string.to)
     )
-    val defaultTime = "Time"
+    val defaultTime = stringResource(R.string.time)
 
     val context = LocalContext.current
     var selectedBus by remember { mutableStateOf(defaultBusName) }
@@ -289,7 +289,7 @@ private fun NewScheduleFields(
                 bottom = MaterialTheme.spacing.medium1
             )
             .fillMaxWidth(),
-        text = "Submit"
+        text = stringResource(R.string.submit)
     ) {
         if (selectedBus.name == defaultBusName.name ||
             busCategory.name == defaultBusCategory.name ||

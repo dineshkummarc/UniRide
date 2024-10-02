@@ -85,7 +85,7 @@ fun ReportedIssues(
                         Row {
                             Icon(
                                 imageVector = if (!openSearch) Icons.Rounded.Search else Icons.Rounded.SearchOff,
-                                contentDescription = "Search",
+                                contentDescription = stringResource(R.string.search),
                                 tint = Color.Black.copy(alpha = 0.8f)
                             )
                         }
@@ -169,7 +169,7 @@ private fun ReportedIssuesContent(
             ) {
                 if (isShowingSearch) {
                     StyledTextField(
-                        placeholder = "Search issue...",
+                        placeholder = stringResource(R.string.search_issue),
                         modifier = Modifier
                             .padding(MaterialTheme.spacing.medium1),
                         onValueChange = {
@@ -233,7 +233,7 @@ private fun ReportedIssuesContent(
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 Text(
-                                    text = "No reported issue found!"
+                                    text = stringResource(R.string.no_reported_issue_found)
                                 )
                             }
                         }
@@ -263,7 +263,7 @@ private fun ReportedIssuesContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }
@@ -318,7 +318,7 @@ fun IssueListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("ID: ")
+                        append(stringResource(R.string.id_colon))
                     }
                     append(issue.uuid)
                 },
@@ -334,7 +334,7 @@ fun IssueListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Issue Type: ")
+                        append(stringResource(R.string.issue_type_colon))
                     }
                     append(issue.type)
                 },
@@ -349,7 +349,7 @@ fun IssueListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Submitted On: ")
+                        append(stringResource(R.string.submitted_on_colon))
                     }
                     append(issue.timeStamp.millisToTime("dd/MM/yyyy"))
                 },
@@ -364,7 +364,7 @@ fun IssueListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Status: ")
+                        append(stringResource(R.string.status_colon))
                     }
                     withStyle(
                         SpanStyle(
@@ -372,7 +372,13 @@ fun IssueListItem(
                             color = pillTextColor
                         )
                     ) {
-                        append(if (issue.resolved) "Resolved" else "Unresolved")
+                        append(
+                            if (issue.resolved) {
+                                stringResource(R.string.resolved)
+                            } else {
+                                stringResource(R.string.unresolved)
+                            }
+                        )
                     }
                 },
                 color = Dark,

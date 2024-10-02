@@ -275,8 +275,8 @@ private fun MapView(
         if (marker != null) {
             Marker(
                 state = MarkerState(position = marker!!),
-                title = "Me",
-                snippet = "My position",
+                title = stringResource(R.string.me),
+                snippet = stringResource(R.string.my_position),
                 draggable = false,
                 icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_person)
             )

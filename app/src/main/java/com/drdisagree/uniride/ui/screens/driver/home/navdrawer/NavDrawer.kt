@@ -107,7 +107,7 @@ fun NavigationDrawer(
             MenuItemModel(
                 id = "edit_profile",
                 title = stringResource(R.string.edit_profile),
-                contentDescription = "Go to edit profile screen",
+                contentDescription = stringResource(R.string.go_to_edit_profile_screen),
                 icon = Icons.Outlined.Person,
                 onClick = {
                     coroutineScope.launch {
@@ -119,7 +119,7 @@ fun NavigationDrawer(
             MenuItemModel(
                 id = "reviews_about_me",
                 title = stringResource(R.string.reviews_about_me),
-                contentDescription = "Check reviews about me",
+                contentDescription = stringResource(R.string.check_reviews_about_me),
                 icon = Icons.Outlined.Reviews,
                 onClick = {
                     coroutineScope.launch {
@@ -131,7 +131,7 @@ fun NavigationDrawer(
             MenuItemModel(
                 id = "switch_language",
                 title = stringResource(R.string.switch_language),
-                contentDescription = "Change language of the app",
+                contentDescription = stringResource(R.string.change_language_of_the_app),
                 icon = Icons.Outlined.Language,
                 onClick = {
                     coroutineScope.launch {
@@ -143,7 +143,7 @@ fun NavigationDrawer(
             MenuItemModel(
                 id = "help_and_support",
                 title = stringResource(R.string.help_support),
-                contentDescription = "Get help and support",
+                contentDescription = stringResource(R.string.get_help_and_support),
                 icon = Icons.Outlined.Info,
                 onClick = {
                     coroutineScope.launch {
@@ -159,7 +159,7 @@ fun NavigationDrawer(
             MenuItemModel(
                 id = "privacy_policy",
                 title = stringResource(R.string.privacy_policy),
-                contentDescription = "Privacy policy for drivers",
+                contentDescription = stringResource(R.string.privacy_policy_for_drivers),
                 icon = Icons.Outlined.Policy,
                 onClick = {
                     coroutineScope.launch {
@@ -171,7 +171,7 @@ fun NavigationDrawer(
             MenuItemModel(
                 id = "road_transport_act",
                 title = stringResource(R.string.road_transport_act),
-                contentDescription = "Road Transport Act, 2018",
+                contentDescription = stringResource(R.string.road_transport_act_2018),
                 icon = Icons.Outlined.EmojiTransportation,
                 onClick = {
                     coroutineScope.launch {
@@ -183,7 +183,7 @@ fun NavigationDrawer(
             MenuItemModel(
                 id = "sign_out",
                 title = stringResource(R.string.sign_out),
-                contentDescription = "Sign out from the app",
+                contentDescription = stringResource(R.string.sign_out_from_the_app),
                 icon = Icons.AutoMirrored.Outlined.Logout,
                 onClick = {
                     coroutineScope.launch {
@@ -213,7 +213,7 @@ private fun DrawerHeader(
     getDriverViewModel: GetDriverViewModel
 ) {
     val context = LocalContext.current
-    var name by rememberSaveable { mutableStateOf("Unknown") }
+    var name by rememberSaveable { mutableStateOf(context.getString(R.string.unknown)) }
     var phone by rememberSaveable { mutableStateOf<String?>(null) }
     var email by rememberSaveable { mutableStateOf<String?>(null) }
     var imageUrl by rememberSaveable { mutableStateOf<String?>(null) }
@@ -222,7 +222,7 @@ private fun DrawerHeader(
         getDriverViewModel.getDriver.collect { result ->
             when (result) {
                 is Resource.Success -> {
-                    name = result.data?.name ?: "Unknown"
+                    name = result.data?.name ?: context.getString(R.string.unknown)
                     phone = result.data?.phone
                     email = result.data?.email
                     imageUrl = result.data?.profileImage
@@ -282,7 +282,7 @@ private fun DrawerHeader(
             AsyncImage(
                 model = imageRequest,
                 placeholder = painterResource(id = R.drawable.img_loading),
-                contentDescription = "Profile Picture",
+                contentDescription = stringResource(R.string.profile_picture),
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(100)),

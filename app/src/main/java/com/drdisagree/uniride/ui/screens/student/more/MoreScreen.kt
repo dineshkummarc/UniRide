@@ -100,7 +100,7 @@ fun MoreScreen(
                         Row {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_logout),
-                                contentDescription = "Logout",
+                                contentDescription = stringResource(R.string.logout),
                                 tint = Color.Black.copy(alpha = 0.8f)
                             )
                         }
@@ -190,7 +190,7 @@ private fun ProfileSection(
         ) {
             AsyncImage(
                 model = imageRequest,
-                contentDescription = "Profile Picture",
+                contentDescription = stringResource(R.string.profile_picture),
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(100)),
@@ -199,7 +199,7 @@ private fun ProfileSection(
         }
 
         Text(
-            text = student.userName ?: "Unknown",
+            text = student.userName ?: stringResource(R.string.unknown),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = MaterialTheme.spacing.small2)

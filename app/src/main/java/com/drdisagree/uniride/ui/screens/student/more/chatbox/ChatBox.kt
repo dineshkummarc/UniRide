@@ -154,7 +154,7 @@ private fun ChatBoxContent(
                             Spacer(modifier = Modifier.weight(1f))
                         }
                         Text(
-                            text = "No messages",
+                            text = stringResource(R.string.no_messages),
                             color = DarkGray.copy(alpha = 0.5f)
                         )
                     }
@@ -185,7 +185,7 @@ private fun ChatBoxContent(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = errorMessage ?: "An error occurred"
+                        text = errorMessage ?: stringResource(R.string.an_error_occurred)
                     )
                 }
             }
@@ -220,7 +220,7 @@ private fun ChatBoxContent(
                 textStyle = LocalTextStyle.current.copy(color = Black),
                 placeholder = {
                     Text(
-                        "Type a message...",
+                        text = stringResource(R.string.type_a_message),
                         color = DarkGray.copy(alpha = 0.5f)
                     )
                 },

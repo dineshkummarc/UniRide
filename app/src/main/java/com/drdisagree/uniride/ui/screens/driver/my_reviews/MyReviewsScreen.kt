@@ -127,7 +127,7 @@ private fun MyReviewsScreenContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "No reviews found about you!",
+                            text = stringResource(R.string.no_reviews_found_about_you),
                         )
                     }
                 }
@@ -223,7 +223,8 @@ private fun ReviewListItem(
                                 fontWeight = FontWeight.SemiBold
                             )
                         ) {
-                            append("Submitted on: ")
+                            append(stringResource(R.string.submitted_on_colon))
+                            append(" ")
                         }
                         append(review.timeStamp.millisToTime("dd/MM/yyyy - ${if (is24HourFormat) "HH:mm" else "hh:mm a"}"))
                     },

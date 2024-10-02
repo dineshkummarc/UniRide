@@ -117,7 +117,7 @@ private fun NewNoticeContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }
@@ -132,7 +132,7 @@ private fun NewRouteFields(
     var announcement by rememberSaveable { mutableStateOf("") }
 
     StyledTextField(
-        placeholder = "Write your announcement here...",
+        placeholder = stringResource(R.string.write_your_announcement_here),
         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small2),
         onValueChange = { announcement = it },
         inputText = announcement,

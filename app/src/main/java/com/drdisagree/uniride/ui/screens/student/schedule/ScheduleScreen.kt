@@ -86,7 +86,7 @@ fun ScheduleScreen(
                         Row {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_search),
-                                contentDescription = "Search",
+                                contentDescription = stringResource(R.string.search),
                                 tint = Color.Black.copy(alpha = 0.8f)
                             )
                         }
@@ -168,7 +168,7 @@ private fun ScheduleContent(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Schedule is empty!"
+                        text = stringResource(R.string.schedule_is_empty)
                     )
                 }
             }
@@ -263,7 +263,7 @@ fun ScheduleListItem(
                                 color = Color.Black
                             )
                         ) {
-                            append("From: ")
+                            append(stringResource(R.string.from_colon))
                         }
                         append(schedule.from.name)
                     },
@@ -278,7 +278,7 @@ fun ScheduleListItem(
                                 color = Color.Black
                             )
                         ) {
-                            append("To: ")
+                            append(stringResource(R.string.to_colon))
                         }
                         append(schedule.to.name)
                     },

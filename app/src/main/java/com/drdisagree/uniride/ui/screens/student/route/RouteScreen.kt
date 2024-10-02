@@ -240,7 +240,7 @@ private fun RouteContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "No routes available for the selected categories!"
+                            text = stringResource(R.string.no_routes_available_for_the_selected_categories)
                         )
                     }
                 }
@@ -307,7 +307,7 @@ private fun RoutesListItem(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_map_with_marker),
-                    contentDescription = "Map with marker image",
+                    contentDescription = stringResource(R.string.map_with_marker_image),
                     modifier = Modifier
                         .padding(end = 16.dp)
                         .size(28.dp)
@@ -325,7 +325,7 @@ private fun RoutesListItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Route ${route.routeNo}",
+                        text = stringResource(R.string.route_number, route.routeNo),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -356,7 +356,7 @@ private fun RoutesListItem(
 
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_right),
-                contentDescription = "View details",
+                contentDescription = stringResource(R.string.view_details),
                 tint = Color.Black,
                 modifier = Modifier
                     .clip(CircleShape)

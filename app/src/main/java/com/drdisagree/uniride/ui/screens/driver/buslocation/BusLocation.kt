@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.BusStatus
@@ -89,7 +90,7 @@ fun BusLocation(
             Scaffold(
                 topBar = {
                     TopAppBarNoButton(
-                        title = "Sharing Location"
+                        title = stringResource(R.string.sharing_location)
                     )
                 },
                 content = { paddingValues ->
@@ -313,8 +314,8 @@ private fun MapView(
             if (marker != null) {
                 Marker(
                     state = MarkerState(position = marker!!),
-                    title = "Me",
-                    snippet = "My position",
+                    title = stringResource(R.string.me),
+                    snippet = stringResource(R.string.my_position),
                     draggable = false,
                     icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
                 )
@@ -340,8 +341,8 @@ private fun MapView(
                     )
                     .fillMaxWidth(),
                 text = when (runningBus?.busFull ?: false) {
-                    true -> "Occupancy: All Seats Occupied"
-                    false -> "Occupancy: Few Seats Available"
+                    true -> stringResource(R.string.occupancy_all_seats_occupied)
+                    false -> stringResource(R.string.occupancy_few_seats_available)
                 }
             ) {
                 when (runningBus?.busFull ?: false) {
@@ -364,9 +365,9 @@ private fun MapView(
                     )
                     .fillMaxWidth(),
                 text = when (status) {
-                    BusStatus.STANDBY -> "Update Status to Driving"
-                    BusStatus.RUNNING -> "Stop Sharing Location"
-                    BusStatus.STOPPED -> "Start Sharing Location"
+                    BusStatus.STANDBY -> stringResource(R.string.update_status_to_driving)
+                    BusStatus.RUNNING -> stringResource(R.string.stop_sharing_location)
+                    BusStatus.STOPPED -> stringResource(R.string.start_sharing_location)
                 }
             ) {
                 when (status) {
@@ -387,10 +388,10 @@ private fun MapView(
 
         if (openDialog) {
             StyledAlertDialog(
-                title = "Are you sure?",
-                message = "This action cannot be undone. Stop sharing location?",
-                confirmButtonText = "Stop",
-                dismissButtonText = "Cancel",
+                title = stringResource(R.string.are_you_sure),
+                message = stringResource(R.string.stop_sharing_location_confirmation),
+                confirmButtonText = stringResource(R.string.stop),
+                dismissButtonText = stringResource(R.string.cancel),
                 onConfirmButtonClick = {
                     openDialog = false
                     busLocationViewModel.stopBus { success ->
@@ -568,8 +569,8 @@ fun CheckGpsAndInternetPeriodically() {
 
     if (requestGps) {
         StyledAlertDialog(
-            title = "GPS Not Enabled",
-            message = "Please enable GPS to share your location.",
+            title = stringResource(R.string.gps_not_enabled),
+            message = stringResource(R.string.enable_gps_to_share_location),
         )
 
         RequestGpsEnable(

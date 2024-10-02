@@ -84,7 +84,7 @@ fun ReportedIssueDetails(
                         Row {
                             Icon(
                                 imageVector = Icons.Filled.DeleteForever,
-                                contentDescription = "Delete",
+                                contentDescription = stringResource(R.string.delete),
                                 tint = Color.Black.copy(alpha = 0.8f)
                             )
                         }
@@ -154,7 +154,7 @@ private fun ReportedIssueDetailsContent(
                     .padding(MaterialTheme.spacing.medium1)
             ) {
                 Text(
-                    text = "Issue ID:",
+                    text = stringResource(R.string.issue_id_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp
                 )
@@ -180,7 +180,7 @@ private fun ReportedIssueDetailsContent(
                     }
                 )
                 Text(
-                    text = "Issue Type:",
+                    text = stringResource(R.string.issue_type_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -191,7 +191,7 @@ private fun ReportedIssueDetailsContent(
                     fontSize = 15.sp
                 )
                 Text(
-                    text = "Submitted On:",
+                    text = stringResource(R.string.submitted_on_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -202,7 +202,7 @@ private fun ReportedIssueDetailsContent(
                     fontSize = 15.sp
                 )
                 Text(
-                    text = "Status:",
+                    text = stringResource(R.string.status_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -213,7 +213,7 @@ private fun ReportedIssueDetailsContent(
                     fontSize = 15.sp
                 )
                 Text(
-                    text = "Description:",
+                    text = stringResource(R.string.description_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -225,7 +225,7 @@ private fun ReportedIssueDetailsContent(
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Contact Info:",
+                    text = stringResource(R.string.contact_info_colon),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp,
                     modifier = Modifier.padding(top = MaterialTheme.spacing.medium1)
@@ -257,7 +257,7 @@ private fun ReportedIssueDetailsContent(
                         modifier = Modifier
                             .padding(top = MaterialTheme.spacing.large2)
                             .fillMaxWidth(),
-                        text = "Mark as Resolved",
+                        text = stringResource(R.string.mark_as_resolved),
                         onClick = {
                             reportedIssueDetailsViewModel.editIssue(
                                 issue.copy(
@@ -271,7 +271,7 @@ private fun ReportedIssueDetailsContent(
                         modifier = Modifier
                             .padding(top = MaterialTheme.spacing.large2)
                             .fillMaxWidth(),
-                        text = "Mark as Unresolved",
+                        text = stringResource(R.string.mark_as_unresolved),
                         onClick = {
                             reportedIssueDetailsViewModel.editIssue(
                                 issue.copy(
@@ -365,10 +365,10 @@ private fun ReportedIssueDetailsContent(
 
                 if (openDialog) {
                     StyledAlertDialog(
-                        title = "Are you sure?",
-                        message = "This action cannot be undone. Delete this issue?",
-                        confirmButtonText = "Delete",
-                        dismissButtonText = "Cancel",
+                        title = stringResource(R.string.are_you_sure),
+                        message = stringResource(R.string.delete_issue_confirmation),
+                        confirmButtonText = stringResource(R.string.delete),
+                        dismissButtonText = stringResource(R.string.cancel),
                         onConfirmButtonClick = {
                             onCloseDialog()
                             reportedIssueDetailsViewModel.deleteIssue(issue.uuid)
@@ -393,7 +393,7 @@ private fun ReportedIssueDetailsContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }

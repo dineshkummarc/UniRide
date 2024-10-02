@@ -86,7 +86,7 @@ fun PendingDrivers(
                         Row {
                             Icon(
                                 imageVector = if (!openSearch) Icons.Rounded.Search else Icons.Rounded.SearchOff,
-                                contentDescription = "Search",
+                                contentDescription = stringResource(R.string.search),
                                 tint = Color.Black.copy(alpha = 0.8f)
                             )
                         }
@@ -173,7 +173,7 @@ private fun PendingDriversContent(
             ) {
                 if (isShowingSearch) {
                     StyledTextField(
-                        placeholder = "Search driver...",
+                        placeholder = stringResource(R.string.search_driver),
                         modifier = Modifier
                             .padding(MaterialTheme.spacing.medium1),
                         onValueChange = {
@@ -237,7 +237,8 @@ private fun PendingDriversContent(
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 Text(
-                                    text = "No pending drivers found!"
+                                    text = stringResource(R.string.no_pending_drivers_found)
+
                                 )
                             }
                         }
@@ -267,7 +268,7 @@ private fun PendingDriversContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "You are not an admin"
+                    text = stringResource(R.string.you_are_not_an_admin)
                 )
             }
         }
@@ -303,7 +304,11 @@ private fun DriverListItem(
             )
         }
 
-        val emailOrPhoneTitle = if (driver.email == null) "Phone" else "Email"
+        val emailOrPhoneTitle = if (driver.email == null) {
+            stringResource(R.string.phone)
+        } else {
+            stringResource(R.string.email)
+        }
         val emailOrPhone = driver.email ?: driver.phone
 
         Column(
@@ -325,7 +330,7 @@ private fun DriverListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("ID: ")
+                        append(stringResource(R.string.id_colon))
                     }
                     append(driver.id)
                 },
@@ -341,7 +346,7 @@ private fun DriverListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Name: ")
+                        append(stringResource(R.string.name_colon))
                     }
                     append(driver.name)
                 },
@@ -371,7 +376,7 @@ private fun DriverListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Time: ")
+                        append(stringResource(R.string.time_colon))
                     }
                     append(driver.timeStamp.millisToTime("dd/MM/yyyy"))
                 },
@@ -386,7 +391,7 @@ private fun DriverListItem(
                             color = Color.Black
                         )
                     ) {
-                        append("Status: ")
+                        append(stringResource(R.string.status_colon))
                     }
                     withStyle(
                         SpanStyle(
@@ -396,9 +401,9 @@ private fun DriverListItem(
                     ) {
                         append(
                             when (driver.accountStatus) {
-                                AccountStatus.APPROVED -> "Approved"
-                                AccountStatus.PENDING -> "Pending"
-                                AccountStatus.REJECTED -> "Rejected"
+                                AccountStatus.APPROVED -> stringResource(R.string.approved)
+                                AccountStatus.PENDING -> stringResource(R.string.pending)
+                                AccountStatus.REJECTED -> stringResource(R.string.rejected)
                             }
                         )
                     }

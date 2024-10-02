@@ -64,9 +64,9 @@ import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
-import com.drdisagree.uniride.ui.components.views.StyledAlertDialog
 import com.drdisagree.uniride.ui.components.views.OtpInputDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
+import com.drdisagree.uniride.ui.components.views.StyledAlertDialog
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.ToggleState
 import com.drdisagree.uniride.ui.screens.NavGraphs
@@ -707,7 +707,7 @@ private fun ForgotPasswordSection(
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = MaterialTheme.spacing.small2),
-                        text = "Cancel",
+                        text = stringResource(R.string.cancel),
                         onClick = {
                             scope.launch {
                                 sheetState.hide()

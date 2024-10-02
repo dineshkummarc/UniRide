@@ -105,13 +105,13 @@ private fun ScheduleSearchFieldsAndResult(
     val is24HourFormat = DateFormat.is24HourFormat(context)
 
     val defaultBusCategory = BusCategory(
-        name = "Category"
+        name = stringResource(R.string.category)
     )
     val defaultFrom = Place(
-        name = "From"
+        name = stringResource(R.string.from)
     )
     val defaultTo = Place(
-        name = "To"
+        name = stringResource(R.string.to)
     )
 
     var scheduleList by rememberSaveable { mutableStateOf(emptyList<Schedule>()) }
@@ -285,7 +285,7 @@ private fun ScheduleSearchFieldsAndResult(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "No schedules found!"
+                        text = stringResource(R.string.no_schedules_found)
                     )
                 }
             }
