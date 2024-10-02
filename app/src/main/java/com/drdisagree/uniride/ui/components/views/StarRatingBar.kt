@@ -23,11 +23,13 @@ fun StarRatingBar(
     modifier: Modifier = Modifier,
     maxStars: Int = 5,
     rating: Int,
-    onRatingChanged: (Int) -> Unit
+    starSize: Float = 12f,
+    starSpacing: Float = 0.5f,
+    onRatingChanged: ((Int) -> Unit)? = null
 ) {
     val density = LocalDensity.current.density
-    val starSize = (12f * density).dp
-    val starSpacing = (0.5f * density).dp
+    val starSizes = (starSize * density).dp
+    val starSpacings = (starSpacing * density).dp
 
     Row(
         modifier = modifier.selectableGroup(),
@@ -44,17 +46,24 @@ fun StarRatingBar(
                 tint = iconTintColor,
                 modifier = Modifier
                     .clip(CircleShape)
-                    .selectable(
-                        selected = isSelected,
-                        onClick = {
-                            onRatingChanged(i)
+                    .then(
+                        if (onRatingChanged != null) {
+                            Modifier
+                                .selectable(
+                                    selected = isSelected,
+                                    onClick = {
+                                        onRatingChanged(i)
+                                    }
+                                )
+                        } else {
+                            Modifier
                         }
                     )
-                    .size(starSize)
+                    .size(starSizes)
             )
 
             if (i < maxStars) {
-                Spacer(modifier = Modifier.width(starSpacing))
+                Spacer(modifier = Modifier.width(starSpacings))
             }
         }
     }

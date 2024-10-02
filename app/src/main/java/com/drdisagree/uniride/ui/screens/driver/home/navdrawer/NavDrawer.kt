@@ -60,6 +60,7 @@ import com.drdisagree.uniride.data.utils.Prefs
 import com.drdisagree.uniride.ui.screens.NavGraphs
 import com.drdisagree.uniride.ui.screens.destinations.EditProfileScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.HelpAndSupportScreenDestination
+import com.drdisagree.uniride.ui.screens.destinations.MyReviewsScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.OnBoardingScreenDestination
 import com.drdisagree.uniride.ui.screens.driver.login.DriverLoginViewModel
 import com.drdisagree.uniride.ui.theme.Dark
@@ -123,6 +124,7 @@ fun NavigationDrawer(
                 onClick = {
                     coroutineScope.launch {
                         drawerState.close()
+                        navigator.navigate(MyReviewsScreenDestination)
                     }
                 }
             ),
