@@ -413,7 +413,7 @@ private fun NearbyBusListItem(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
+                    .fillMaxWidth(0.74f)
                     .fillMaxHeight()
                     .padding(end = MaterialTheme.spacing.medium1),
                 verticalArrangement = Arrangement.Top,
@@ -436,7 +436,7 @@ private fun NearbyBusListItem(
                                 color = Color.Black
                             )
                         ) {
-                            append("Location: ")
+                            append("Now: ")
                         }
                         append(
                             currentLocationName
@@ -452,7 +452,7 @@ private fun NearbyBusListItem(
                 verticalArrangement = Arrangement.Top
             ) {
                 Text(
-                    text = "Departed at",
+                    text = "Departed",
                     color = Color.Black,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
