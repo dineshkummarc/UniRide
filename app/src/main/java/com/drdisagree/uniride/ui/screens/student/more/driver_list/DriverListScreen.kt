@@ -63,6 +63,8 @@ import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
+import java.text.NumberFormat
+import java.util.Locale
 
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
@@ -180,8 +182,8 @@ private fun DriverListItem(
     val imageRequest = ImageRequest.Builder(context)
         .data(imageUrl)
         .dispatcher(Dispatchers.IO)
-        .memoryCacheKey(imageUrl + "_low")
-        .diskCacheKey(imageUrl + "_low")
+        .memoryCacheKey(imageUrl + "_lowest")
+        .diskCacheKey(imageUrl + "_lowest")
         .placeholder(placeholder)
         .error(placeholder)
         .fallback(placeholder)
@@ -189,7 +191,7 @@ private fun DriverListItem(
         .memoryCachePolicy(CachePolicy.ENABLED)
         .crossfade(true)
         .crossfade(250)
-        .size(256)
+        .size(128)
         .build()
 
     Column(
@@ -285,13 +287,20 @@ private fun getAverageRating(reviews: List<Review>): String {
         return "N/A"
     }
 
+    val locale = Locale.getDefault()
+    val numberFormat = NumberFormat.getNumberInstance(locale)
+    val localeZero = numberFormat.format(0)
+    val localeMaxRating = numberFormat.format(5)
+
     val totalRating = reviews.sumOf { it.rating }
     val averageRating = totalRating.toDouble() / reviews.size
-    val formattedRating = String.format("%.2f", averageRating)
+    var formattedRating = String.format("%.2f", averageRating).replace(",", "")
 
-    return when {
-        formattedRating.endsWith(".00") -> "${averageRating.toInt()}/5"
-        formattedRating.endsWith("0") -> formattedRating.dropLast(1) + "/5"
-        else -> "$formattedRating/5"
-    }.replace(",", "")
+    if (formattedRating.endsWith(".$localeZero$localeZero")) {
+        formattedRating = formattedRating.dropLast(3)
+    } else if (formattedRating.endsWith(localeZero)) {
+        formattedRating = formattedRating.dropLast(1)
+    }
+
+    return "$formattedRating/$localeMaxRating"
 }
