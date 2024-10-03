@@ -79,6 +79,7 @@ import com.drdisagree.uniride.ui.screens.destinations.NearbyBusLocationScreenDes
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Blue
 import com.drdisagree.uniride.ui.theme.Dark
+import com.drdisagree.uniride.ui.theme.DarkGray
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.DistanceUtils.distance
@@ -155,6 +156,7 @@ private fun HomeContent(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
                     start = MaterialTheme.spacing.medium1,
+                    end = MaterialTheme.spacing.medium1,
                     top = MaterialTheme.spacing.small2
                 )
             )
@@ -164,7 +166,11 @@ private fun HomeContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(MaterialTheme.spacing.medium1)
+                    .padding(
+                        start = MaterialTheme.spacing.medium1,
+                        end = MaterialTheme.spacing.medium1,
+                        top = MaterialTheme.spacing.medium1
+                    )
                     .clip(MaterialTheme.shapes.large)
                     .background(Blue)
             ) {
@@ -235,7 +241,8 @@ private fun HomeContent(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
                     start = MaterialTheme.spacing.medium1,
-                    bottom = MaterialTheme.spacing.medium1
+                    end = MaterialTheme.spacing.medium1,
+                    top = MaterialTheme.spacing.medium2
                 )
             )
         }
@@ -245,7 +252,9 @@ private fun HomeContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        horizontal = MaterialTheme.spacing.medium1
+                        start = MaterialTheme.spacing.medium1,
+                        end = MaterialTheme.spacing.medium1,
+                        top = MaterialTheme.spacing.medium1
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -293,7 +302,7 @@ private fun HomeContent(
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(
-                    top = MaterialTheme.spacing.medium1,
+                    top = MaterialTheme.spacing.medium2,
                     start = MaterialTheme.spacing.medium1,
                     bottom = MaterialTheme.spacing.medium1
                 )
@@ -340,27 +349,39 @@ private fun HomeContent(
             )
         }
 
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = MaterialTheme.spacing.large3),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                if (showLoadingDialog) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .background(Color.White)
-                            .wrapContentSize()
-                            .padding(bottom = MaterialTheme.spacing.extraLarge2)
-                    )
-                } else if (sortedBuses.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.no_bus_found_nearby),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = MaterialTheme.spacing.extraLarge2)
-                    )
+        if (showLoadingDialog || sortedBuses.isEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = MaterialTheme.spacing.large3,
+                            bottom = MaterialTheme.spacing.extraLarge2
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (showLoadingDialog) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .background(Color.White)
+                                .wrapContentSize()
+                        )
+                    } else if (sortedBuses.isEmpty()) {
+                        Image(
+                            painter = painterResource(id = R.drawable.img_bus_sideview),
+                            contentDescription = null,
+                            modifier = Modifier.width(160.dp),
+                            contentScale = ContentScale.FillWidth,
+                            colorFilter = ColorFilter.tint(color = DarkGray.copy(alpha = 0.5f))
+                        )
+                        Text(
+                            text = stringResource(R.string.no_bus_found_nearby),
+                            color = DarkGray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = MaterialTheme.spacing.extraSmall2)
+                        )
+                    }
                 }
             }
         }
