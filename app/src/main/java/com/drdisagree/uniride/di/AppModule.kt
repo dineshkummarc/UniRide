@@ -4,11 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModelProvider
-import androidx.room.Room
-import com.drdisagree.uniride.data.database.ScheduleDatabase
-import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
-import com.drdisagree.uniride.domain.repository.ScheduleRepository
-import com.drdisagree.uniride.domain.repository.ScheduleRepositoryImpl
 import com.drdisagree.uniride.services.GeocodingService
 import com.drdisagree.uniride.utils.repositories.GeocodingRepository
 import com.google.android.gms.auth.api.identity.Identity
@@ -46,22 +41,6 @@ class AppModule {
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
-    }
-
-    @Singleton
-    @Provides
-    fun provideScheduleDatabase(app: Application): ScheduleDatabase {
-        return Room.databaseBuilder(
-            app,
-            ScheduleDatabase::class.java,
-            SCHEDULE_COLLECTION
-        ).build()
-    }
-
-    @Singleton
-    @Provides
-    fun provideScheduleRepository(db: ScheduleDatabase): ScheduleRepository {
-        return ScheduleRepositoryImpl(db.dao)
     }
 
     @Singleton

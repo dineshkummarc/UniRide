@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Schedule
 import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
-import com.drdisagree.uniride.domain.repository.ScheduleRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +14,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
-    private val repository: ScheduleRepository,
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 

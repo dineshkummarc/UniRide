@@ -31,7 +31,11 @@ android {
         properties.load(project.rootProject.file("local.properties").inputStream())
 
         buildConfigField("String", "MAPS_API_KEY", "\"${properties.getProperty("MAPS_API_KEY")}\"")
-        buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY")}\"")
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"${properties.getProperty("GEMINI_API_KEY")}\""
+        )
     }
 
     buildTypes {
@@ -83,6 +87,9 @@ dependencies {
 
     // Material components
     implementation(libs.material)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
 
     // Compose
     implementation(libs.androidx.constraintlayout.compose)
@@ -90,15 +97,16 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.runtime.livedata)
-    implementation(libs.androidx.compose.material)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+
+    // Compose destinations
+    implementation(libs.animations.core)
+    ksp(libs.composeDestinations.ksp)
 
     // Dagger hilt
     kapt(libs.hilt.compiler)
@@ -111,16 +119,8 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
-
-    // Coroutines for firebase
     implementation(libs.kotlinx.coroutines.play.services)
-
-    // Firestore
     implementation(libs.firebase.firestore)
-
-    // Compose destinations
-    implementation(libs.animations.core)
-    ksp(libs.composeDestinations.ksp)
 
     // Google maps
     implementation(libs.maps.compose)
@@ -133,10 +133,7 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-
-    // Room
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.logging.interceptor)
 
     // Location
     implementation(libs.play.services.maps)
@@ -150,11 +147,6 @@ dependencies {
 
     // Text Flow
     implementation(libs.textflow)
-
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.logging.interceptor)
 
     // Gemini API
     implementation(libs.generativeai)
