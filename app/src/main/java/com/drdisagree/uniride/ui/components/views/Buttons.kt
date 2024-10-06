@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drdisagree.uniride.ui.theme.Gray
@@ -92,3 +93,21 @@ private fun ButtonBase(
 private fun Modifier.getButtonModifier() = this.then(
     Modifier.height(MaterialTheme.spacing.fieldHeight)
 )
+
+@Preview(showBackground = true)
+@Composable
+fun ButtonPrimaryPreview() {
+    ButtonPrimary(
+        text = "Button",
+        onClick = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ButtonSecondaryPreview() {
+    ButtonSecondary(
+        text = "Button",
+        onClick = {}
+    )
+}

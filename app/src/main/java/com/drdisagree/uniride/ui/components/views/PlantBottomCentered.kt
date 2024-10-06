@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.theme.Gray
@@ -34,4 +35,10 @@ fun PlantBottomCentered(
             colorFilter = ColorFilter.tint(Gray)
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlantBottomCenteredPreview() {
+    PlantBottomCentered()
 }

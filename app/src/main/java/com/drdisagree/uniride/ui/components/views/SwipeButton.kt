@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ExperimentalWearMaterialApi
@@ -205,4 +206,14 @@ private fun SwipeIndicator(
             modifier = Modifier.size(36.dp),
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SwipeButtonPreview() {
+    SwipeButton(
+        text = "Swipe",
+        isCompleteState = remember { mutableStateOf(false) },
+        onSwipe = {}
+    )
 }

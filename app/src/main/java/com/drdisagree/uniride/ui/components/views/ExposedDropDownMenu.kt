@@ -29,6 +29,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.spacing
@@ -160,4 +161,14 @@ fun ellipsisVisualTransformation(maxLength: Int = 30) = VisualTransformation { t
             }
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StyledDropDownMenuPreview() {
+    StyledDropDownMenu(
+        selectedText = "Option 1",
+        itemList = arrayOf("Option 1", "Option 2", "Option 3"),
+        fillMaxWidth = true
+    )
 }

@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import com.drdisagree.uniride.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -32,4 +34,13 @@ fun NoInternetDialog(context: Context, onDismiss: () -> Unit) {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoInternetDialogPreview() {
+    NoInternetDialog(
+        context = LocalContext.current,
+        onDismiss = {}
+    )
 }

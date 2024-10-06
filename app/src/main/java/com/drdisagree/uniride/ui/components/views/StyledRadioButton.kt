@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drdisagree.uniride.ui.theme.NoRippleTheme
@@ -58,4 +59,14 @@ fun StyledRadioButton(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StyledRadioButtonPreview() {
+    StyledRadioButton(
+        options = listOf("Option 1", "Option 2", "Option 3"),
+        selectedIndex = 1,
+        onOptionSelected = {}
+    )
 }

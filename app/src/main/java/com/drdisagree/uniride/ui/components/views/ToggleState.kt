@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Gray
@@ -92,4 +93,14 @@ fun ToggleState(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ToggleStatePreview() {
+    ToggleState(
+        states = listOf("Option 1", "Option 2", "Option 3"),
+        selectedOption = "Option 1",
+        onSelectionChange = {}
+    )
 }

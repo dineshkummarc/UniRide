@@ -161,6 +161,10 @@ fun OtpInputDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    OtpInputDialog(onDismissRequest = {}, onSubmit = {}, resendOtp = {})
+fun OtpInputDialogPreview() {
+    OtpInputDialog(
+        onDismissRequest = {},
+        onSubmit = {},
+        resendOtp = {}
+    )
 }
