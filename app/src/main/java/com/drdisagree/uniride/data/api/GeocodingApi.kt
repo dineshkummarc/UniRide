@@ -1,6 +1,5 @@
 package com.drdisagree.uniride.data.api
 
-import com.drdisagree.uniride.data.models.GeocodingResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

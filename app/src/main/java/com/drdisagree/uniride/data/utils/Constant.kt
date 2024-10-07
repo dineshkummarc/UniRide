@@ -52,4 +52,9 @@ object Constant {
         "https://drive.google.com/file/d/1mQ3pznvkVc0iNYTNCim4fcajVv-sshPt/view"
     const val ROAD_TRANSPORT_ACT_URL =
         "https://drive.google.com/file/d/1q5VO9USOz7-gOb_z7yrg01uNHzgUDoDE/view"
+
+    // Gemini Prompts
+    const val REVIEW_SUMMARY_PROMPT = "Summarize the following reviews given by students for the " +
+            "driver. Try to keep the review as short as possible, preferably " +
+            "in 2-3 sentences. Here are the reviews:\n\n"
 }

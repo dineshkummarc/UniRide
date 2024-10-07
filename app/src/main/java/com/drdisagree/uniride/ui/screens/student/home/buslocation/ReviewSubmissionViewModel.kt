@@ -8,7 +8,8 @@ import com.drdisagree.uniride.data.models.DriverReviews
 import com.drdisagree.uniride.data.models.Review
 import com.drdisagree.uniride.data.models.Student
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_REVIEW_COLLECTION
-import com.drdisagree.uniride.data.models.generativeModel
+import com.drdisagree.uniride.data.utils.Constant.REVIEW_SUMMARY_PROMPT
+import com.drdisagree.uniride.di.GenerativeModelProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -75,13 +76,11 @@ class ReviewSubmissionViewModel @Inject constructor(
                         sortByDescending { it.timeStamp }
                     }
 
-                    val prompt = "Summarize the following reviews given by students for the " +
-                            "driver. Try to keep the review as short as possible, preferably " +
-                            "in 2-3 sentences. Here are the reviews:\n\n" +
+                    val prompt = REVIEW_SUMMARY_PROMPT +
                             updatedReviews.take(50).joinToString("\n\n") { it.message }
 
                     val response = runBlocking(Dispatchers.IO) {
-                        generativeModel.generateContent(prompt)
+                        GenerativeModelProvider.generativeModel.generateContent(prompt)
                     }
 
                     val updatedDriverReviews = driverReviews.copy(
