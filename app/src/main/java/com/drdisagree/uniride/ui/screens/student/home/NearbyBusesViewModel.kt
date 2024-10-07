@@ -12,6 +12,7 @@ import com.drdisagree.uniride.data.enums.BusStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION
+import com.drdisagree.uniride.utils.DistanceUtils.distance
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
 
 @HiltViewModel
 class NearbyBusesViewModel @Inject constructor(
@@ -39,6 +41,7 @@ class NearbyBusesViewModel @Inject constructor(
     private val _distances = MutableLiveData<Map<String, Double>>()
     val distances: LiveData<Map<String, Double>> = _distances
 
+    private val lastKnownDistances = mutableMapOf<String, Double>()
     private var listenerRegistration: ListenerRegistration? = null
 
     init {
@@ -94,21 +97,34 @@ class NearbyBusesViewModel @Inject constructor(
         location?.let { loc ->
             viewModelScope.launch {
                 val distanceMap = mutableMapOf<String, Double>()
+
                 buses.forEach { bus ->
                     bus.currentlyAt?.let { busLatLng ->
-                        fetchDistance(
-                            LatLng(loc.latitude, loc.longitude),
-                            LatLng(busLatLng.latitude, busLatLng.longitude)
-                        ).onSuccess { distanceInMeters ->
-                            distanceMap[bus.uuid] = distanceInMeters / 1000.0 // Store in km
-                        }.onFailure { exception ->
-                            Log.e(
-                                "NearbyBusesViewModel",
-                                "Error fetching distance: ${exception.message}"
-                            )
+                        val distanceInKm = distance(
+                            loc.latitude, loc.longitude,
+                            busLatLng.latitude, busLatLng.longitude
+                        )
+                        val lastKnownDistance = lastKnownDistances[bus.uuid] ?: Double.MAX_VALUE
+
+                        if (abs(distanceInKm * 1000 - lastKnownDistance) >= 100) {
+                            fetchDistance(
+                                LatLng(loc.latitude, loc.longitude),
+                                LatLng(busLatLng.latitude, busLatLng.longitude)
+                            ).onSuccess { distanceInMeters ->
+                                distanceMap[bus.uuid] = distanceInMeters / 1000.0
+                                lastKnownDistances[bus.uuid] = distanceInKm * 1000
+                            }.onFailure { exception ->
+                                Log.e(
+                                    "NearbyBusesViewModel",
+                                    "Error fetching distance: ${exception.message}"
+                                )
+                            }
+                        } else {
+                            _distances.value?.get(bus.uuid)?.let { distanceMap[bus.uuid] = it }
                         }
                     }
                 }
+
                 _distances.value = distanceMap
             }
         }
