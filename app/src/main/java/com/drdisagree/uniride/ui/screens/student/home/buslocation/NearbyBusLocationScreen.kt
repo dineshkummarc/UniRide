@@ -293,7 +293,7 @@ private fun MapViewContent(
                 Polyline(
                     points = routePoints,
                     color = Color.Blue,
-                    width = 5f
+                    width = 10f
                 )
             }
         }
