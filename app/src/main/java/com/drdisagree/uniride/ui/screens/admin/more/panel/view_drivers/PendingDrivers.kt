@@ -49,7 +49,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
-import com.drdisagree.uniride.data.events.AccountStatus
+import com.drdisagree.uniride.data.enums.AccountStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
@@ -62,7 +62,7 @@ import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.ColorUtils.getDriverPillColors
 import com.drdisagree.uniride.utils.TimeUtils.millisToTime
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 

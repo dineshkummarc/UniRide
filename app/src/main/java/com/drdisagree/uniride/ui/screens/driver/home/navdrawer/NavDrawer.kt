@@ -69,7 +69,7 @@ import com.drdisagree.uniride.ui.theme.Gray15
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.openUrl
 import com.drdisagree.uniride.utils.switchLanguage
-import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
+import com.drdisagree.uniride.viewmodels.GetDriverViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator

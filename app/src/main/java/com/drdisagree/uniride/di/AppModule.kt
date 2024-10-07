@@ -4,8 +4,9 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModelProvider
-import com.drdisagree.uniride.services.GeocodingService
-import com.drdisagree.uniride.utils.repositories.GeocodingRepository
+import com.drdisagree.uniride.data.api.DirectionsApi
+import com.drdisagree.uniride.data.api.GeocodingApi
+import com.drdisagree.uniride.data.repositories.GeocodingRepository
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.ktx.auth
@@ -57,17 +58,26 @@ class AppModule {
     }
 
     @Provides
-    fun provideGeocodingService(): GeocodingService {
+    fun provideGeocodingService(): GeocodingApi {
         return Retrofit.Builder()
             .baseUrl("https://maps.googleapis.com/maps/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(GeocodingService::class.java)
+            .create(GeocodingApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideGeocodingRepository(geocodingService: GeocodingService): GeocodingRepository {
+    fun provideGeocodingRepository(geocodingService: GeocodingApi): GeocodingRepository {
         return GeocodingRepository(geocodingService)
+    }
+
+    @Provides
+    fun provideDirectionsApi(): DirectionsApi {
+        return Retrofit.Builder()
+            .baseUrl("https://maps.googleapis.com/maps/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(DirectionsApi::class.java)
     }
 }

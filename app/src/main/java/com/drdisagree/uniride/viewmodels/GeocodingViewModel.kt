@@ -1,11 +1,11 @@
-package com.drdisagree.uniride.utils.viewmodels
+package com.drdisagree.uniride.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.utils.DistanceUtils.distance
-import com.drdisagree.uniride.utils.repositories.GeocodingRepository
+import com.drdisagree.uniride.data.repositories.GeocodingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap

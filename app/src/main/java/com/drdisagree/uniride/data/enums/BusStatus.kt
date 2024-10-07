@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.data.events
+package com.drdisagree.uniride.data.enums
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

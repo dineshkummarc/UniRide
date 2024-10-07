@@ -2,7 +2,7 @@ package com.drdisagree.uniride.data.models
 
 import android.os.Parcelable
 import androidx.compose.runtime.Stable
-import com.drdisagree.uniride.data.events.BusStatus
+import com.drdisagree.uniride.data.enums.BusStatus
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 

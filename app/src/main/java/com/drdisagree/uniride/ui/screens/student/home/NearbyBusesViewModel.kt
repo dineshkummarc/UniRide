@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.drdisagree.uniride.data.events.BusStatus
+import com.drdisagree.uniride.data.enums.BusStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION

@@ -253,4 +253,5 @@
     <string name="drivers_helpers_count">100+</string>
     <string name="total_routes_count">15+</string>
     <string name="technicians_count">5+</string>
+    <string name="show_route">Show Route</string>
 </resources>

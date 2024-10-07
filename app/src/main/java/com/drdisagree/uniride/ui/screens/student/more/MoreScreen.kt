@@ -69,7 +69,7 @@ import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.switchLanguage
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.viewmodels.AccountStatusViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging

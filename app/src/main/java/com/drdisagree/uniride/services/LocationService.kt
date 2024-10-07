@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.ui.activities.MainActivity
-import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
+import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,7 +17,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class LocationService() : Service() {
+class LocationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationViewModel: LocationSharingViewModel

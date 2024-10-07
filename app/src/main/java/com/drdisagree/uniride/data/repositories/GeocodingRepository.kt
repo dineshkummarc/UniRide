@@ -1,11 +1,11 @@
-package com.drdisagree.uniride.utils.repositories
+package com.drdisagree.uniride.data.repositories
 
 import com.drdisagree.uniride.BuildConfig
-import com.drdisagree.uniride.services.GeocodingService
+import com.drdisagree.uniride.data.api.GeocodingApi
 import javax.inject.Inject
 
 class GeocodingRepository @Inject constructor(
-    private val geocodingService: GeocodingService
+    private val geocodingService: GeocodingApi
 ) {
 
     suspend fun getLocationName(lat: Double, lng: Double): String? {

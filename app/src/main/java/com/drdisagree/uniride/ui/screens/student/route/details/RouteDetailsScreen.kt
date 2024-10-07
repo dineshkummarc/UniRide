@@ -63,7 +63,7 @@ import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.SemiBlack
 import com.drdisagree.uniride.ui.theme.spacing
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 

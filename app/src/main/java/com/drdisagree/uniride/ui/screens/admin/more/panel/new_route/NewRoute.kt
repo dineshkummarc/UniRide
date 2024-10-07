@@ -43,8 +43,8 @@ import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.StyledTextField
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.theme.spacing
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
-import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
+import com.drdisagree.uniride.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.viewmodels.ListsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 

@@ -8,7 +8,7 @@ import com.drdisagree.uniride.data.models.DriverReviews
 import com.drdisagree.uniride.data.models.Review
 import com.drdisagree.uniride.data.models.Student
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_REVIEW_COLLECTION
-import com.drdisagree.uniride.utils.generativeModel
+import com.drdisagree.uniride.data.models.generativeModel
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

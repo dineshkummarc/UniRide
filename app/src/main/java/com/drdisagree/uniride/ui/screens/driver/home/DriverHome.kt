@@ -51,7 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import com.drdisagree.uniride.R
-import com.drdisagree.uniride.data.events.AccountStatus
+import com.drdisagree.uniride.data.enums.AccountStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Bus
 import com.drdisagree.uniride.data.models.BusCategory
@@ -79,9 +79,9 @@ import com.drdisagree.uniride.ui.screens.driver.home.navdrawer.NavigationDrawer
 import com.drdisagree.uniride.ui.theme.DarkBlue
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.SystemUtils.isInternetAvailable
-import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
-import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
-import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
+import com.drdisagree.uniride.viewmodels.GetDriverViewModel
+import com.drdisagree.uniride.viewmodels.GpsStateManager
+import com.drdisagree.uniride.viewmodels.ListsViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.ramcosta.composedestinations.annotation.Destination

@@ -84,9 +84,9 @@ import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.DistanceUtils.distance
 import com.drdisagree.uniride.utils.Formatter.getFormattedTime
-import com.drdisagree.uniride.utils.viewmodels.GeocodingViewModel
-import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
-import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
+import com.drdisagree.uniride.viewmodels.GeocodingViewModel
+import com.drdisagree.uniride.viewmodels.GpsStateManager
+import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.ramcosta.composedestinations.annotation.Destination

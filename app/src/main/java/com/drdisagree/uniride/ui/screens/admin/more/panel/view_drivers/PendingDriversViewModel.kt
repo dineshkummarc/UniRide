@@ -2,7 +2,7 @@ package com.drdisagree.uniride.ui.screens.admin.more.panel.view_drivers
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.drdisagree.uniride.data.events.AccountStatus
+import com.drdisagree.uniride.data.enums.AccountStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.data.utils.Constant.DRIVER_COLLECTION

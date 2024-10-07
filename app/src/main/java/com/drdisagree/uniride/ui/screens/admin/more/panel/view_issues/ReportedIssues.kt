@@ -61,7 +61,7 @@ import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.ColorUtils.getIssuePillColors
 import com.drdisagree.uniride.utils.TimeUtils.millisToTime
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.viewmodels.AccountStatusViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 

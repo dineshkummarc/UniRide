@@ -57,8 +57,8 @@ import com.drdisagree.uniride.ui.components.views.TimePickerDialog
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButtonAndEndIcon
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.spacing
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
-import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
+import com.drdisagree.uniride.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.viewmodels.ListsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.text.SimpleDateFormat

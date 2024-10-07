@@ -2,7 +2,7 @@ package com.drdisagree.uniride.data.models
 
 import android.os.Parcelable
 import androidx.compose.runtime.Stable
-import com.drdisagree.uniride.data.events.AccountStatus
+import com.drdisagree.uniride.data.enums.AccountStatus
 import kotlinx.parcelize.Parcelize
 
 @Stable

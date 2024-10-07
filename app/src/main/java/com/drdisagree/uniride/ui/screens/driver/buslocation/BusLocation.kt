@@ -43,7 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
-import com.drdisagree.uniride.data.events.BusStatus
+import com.drdisagree.uniride.data.enums.BusStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.services.LocationService
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
@@ -62,7 +62,7 @@ import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.SystemUtils.isInternetAvailable
 import com.drdisagree.uniride.utils.toBitmapDescriptor
-import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
+import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng

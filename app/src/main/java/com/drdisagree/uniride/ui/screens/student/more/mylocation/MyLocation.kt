@@ -44,7 +44,7 @@ import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.utils.toBitmapDescriptor
-import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
+import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng

@@ -1,10 +1,10 @@
-package com.drdisagree.uniride.services
+package com.drdisagree.uniride.data.api
 
 import com.drdisagree.uniride.data.models.GeocodingResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface GeocodingService {
+interface GeocodingApi {
     @GET("geocode/json")
     suspend fun getLocationName(
         @Query("latlng") latlng: String,

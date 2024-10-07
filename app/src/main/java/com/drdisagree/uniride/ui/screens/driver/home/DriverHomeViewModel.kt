@@ -2,13 +2,13 @@ package com.drdisagree.uniride.ui.screens.driver.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.drdisagree.uniride.data.events.BusStatus
+import com.drdisagree.uniride.data.enums.BusStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION
-import com.drdisagree.uniride.utils.viewmodels.GetDriverViewModel
-import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
+import com.drdisagree.uniride.viewmodels.GetDriverViewModel
+import com.drdisagree.uniride.viewmodels.ListsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.drdisagree.uniride.utils.viewmodels
+package com.drdisagree.uniride.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.drdisagree.uniride.data.utils.Constant.ADMIN_COLLECTION

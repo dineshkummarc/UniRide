@@ -1,7 +1,7 @@
 package com.drdisagree.uniride.utils
 
 import androidx.compose.ui.graphics.Color
-import com.drdisagree.uniride.data.events.AccountStatus
+import com.drdisagree.uniride.data.enums.AccountStatus
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Dark
 import java.util.Locale

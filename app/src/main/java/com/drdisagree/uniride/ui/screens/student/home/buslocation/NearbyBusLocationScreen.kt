@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -49,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -69,7 +71,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.drdisagree.uniride.R
-import com.drdisagree.uniride.data.events.BusStatus
+import com.drdisagree.uniride.data.enums.BusStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.ui.components.navigation.HomeNavGraph
@@ -88,8 +90,7 @@ import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.ColorUtils.getSchedulePillColors
 import com.drdisagree.uniride.utils.Formatter.getFormattedTime
 import com.drdisagree.uniride.utils.toBitmapDescriptor
-import com.drdisagree.uniride.utils.toBitmapDescriptorWithColor
-import com.drdisagree.uniride.utils.viewmodels.LocationSharingViewModel
+import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -100,6 +101,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -149,11 +151,12 @@ private fun MapViewContent(
     }
 
     val runningBus by nearbyBusLocationViewModel.runningBus.observeAsState()
+    val routePoints by nearbyBusLocationViewModel.routePoints.observeAsState(emptyList())
 
     val context = LocalContext.current
     var isMapLoaded by remember { mutableStateOf(false) }
     val marker = runningBus?.currentlyAt?.let { LatLng(it.latitude, it.longitude) }
-    var zoomLevel by rememberSaveable { mutableFloatStateOf(5f) }
+    var zoomLevel by rememberSaveable { mutableFloatStateOf(15f) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(23.8161532, 90.2747436), zoomLevel)
     }
@@ -185,15 +188,27 @@ private fun MapViewContent(
     }
 
     LaunchedEffect(key1 = marker, key2 = myMarker) {
-        if (marker != null || myMarker != null) {
+        if (marker != null && myMarker != null) {
             val builder = LatLngBounds.Builder()
-            marker?.let { builder.include(it) }
-            myMarker?.let { builder.include(it) }
+            builder.include(marker)
+            builder.include(myMarker!!)
 
             cameraPositionState.animate(
                 CameraUpdateFactory.newLatLngBounds(builder.build(), 200),
                 1_000
             )
+        } else {
+            marker?.let {
+                val cameraPosition = CameraPosition.Builder()
+                    .target(LatLng(it.latitude, it.longitude))
+                    .zoom(zoomLevel)
+                    .build()
+
+                cameraPositionState.animate(
+                    CameraUpdateFactory.newCameraPosition(cameraPosition),
+                    1_000
+                )
+            }
         }
     }
 
@@ -206,6 +221,7 @@ private fun MapViewContent(
             }
     }
 
+    var showMapRoute by remember { mutableStateOf(false) }
     var showLoadingDialog by rememberSaveable { mutableStateOf(false) }
     val openInfoDialog = remember { mutableStateOf(false) }
     val openReviewDialog = remember { mutableStateOf(false) }
@@ -270,11 +286,14 @@ private fun MapViewContent(
                     title = stringResource(R.string.me),
                     snippet = stringResource(R.string.my_position),
                     draggable = false,
-                    icon = toBitmapDescriptorWithColor(
-                        context,
-                        R.drawable.ic_pin_map_person,
-                        Color(0xFF1E90FF)
-                    )
+                    icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_person)
+                )
+            }
+            if (routePoints.isNotEmpty() && showMapRoute) {
+                Polyline(
+                    points = routePoints,
+                    color = Color.Blue,
+                    width = 5f
                 )
             }
         }
@@ -299,19 +318,48 @@ private fun MapViewContent(
             )
         }
 
-        if (runningBus?.status == BusStatus.STOPPED) {
-            ButtonPrimary(
-                modifier = Modifier
-                    .padding(
-                        start = MaterialTheme.spacing.medium1,
-                        end = MaterialTheme.spacing.medium1,
-                        top = MaterialTheme.spacing.medium1,
-                        bottom = MaterialTheme.spacing.large2
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        ) {
+            if (marker != null && myMarker != null) {
+                IconButton(
+                    modifier = Modifier
+                        .padding(MaterialTheme.spacing.medium1)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(Color.Transparent)
+                        .align(Alignment.End)
+                        .size(56.dp),
+                    onClick = {
+                        showMapRoute = !showMapRoute
+                    }
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .alpha(0.8f),
+                        painter = painterResource(id = R.drawable.img_show_route),
+                        contentDescription = stringResource(R.string.show_route),
+                        contentScale = ContentScale.FillBounds
                     )
-                    .align(Alignment.BottomCenter),
-                text = stringResource(R.string.bus_has_reached_its_destination)
-            ) {
-                navigator.navigateUp()
+                }
+            }
+
+            if (runningBus?.status == BusStatus.STOPPED) {
+                ButtonPrimary(
+                    modifier = Modifier
+                        .padding(
+                            start = MaterialTheme.spacing.medium1,
+                            end = MaterialTheme.spacing.medium1,
+                            top = MaterialTheme.spacing.medium1,
+                            bottom = MaterialTheme.spacing.large2
+                        )
+                        .align(Alignment.CenterHorizontally),
+                    text = stringResource(R.string.bus_has_reached_its_destination)
+                ) {
+                    navigator.navigateUp()
+                }
             }
         }
 
@@ -359,6 +407,15 @@ private fun MapViewContent(
                 modifier = Modifier
                     .background(Color.White)
                     .wrapContentSize()
+            )
+        }
+    }
+
+    LaunchedEffect(isMapLoaded, showMapRoute, myMarker, marker) {
+        if (isMapLoaded && showMapRoute && myMarker != null && marker != null) {
+            nearbyBusLocationViewModel.fetchRoute(
+                origin = myMarker!!,
+                destination = marker
             )
         }
     }

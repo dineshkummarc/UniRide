@@ -43,8 +43,8 @@ import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleListItem
 import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleViewModel
 import com.drdisagree.uniride.ui.screens.student.schedule.sortSchedulesByTime
 import com.drdisagree.uniride.ui.theme.spacing
-import com.drdisagree.uniride.utils.viewmodels.AccountStatusViewModel
-import com.drdisagree.uniride.utils.viewmodels.ListsViewModel
+import com.drdisagree.uniride.viewmodels.AccountStatusViewModel
+import com.drdisagree.uniride.viewmodels.ListsViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 

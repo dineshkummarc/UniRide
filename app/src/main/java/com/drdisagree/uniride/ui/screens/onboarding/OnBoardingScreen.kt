@@ -54,7 +54,7 @@ import com.drdisagree.uniride.ui.screens.destinations.InfoScreenDestination
 import com.drdisagree.uniride.ui.screens.destinations.LoginScreenDestination
 import com.drdisagree.uniride.ui.screens.student.account.StudentSignInViewModel
 import com.drdisagree.uniride.ui.theme.spacing
-import com.drdisagree.uniride.utils.viewmodels.GpsStateManager
+import com.drdisagree.uniride.viewmodels.GpsStateManager
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
