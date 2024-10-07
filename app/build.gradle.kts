@@ -16,6 +16,9 @@ android {
     namespace = "com.drdisagree.uniride"
     compileSdk = 34
 
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+
     defaultConfig {
         applicationId = "com.drdisagree.uniride"
         minSdk = 26
@@ -27,10 +30,11 @@ android {
             useSupportLibrary = true
         }
 
-        val properties = Properties()
-        properties.load(project.rootProject.file("local.properties").inputStream())
-
-        buildConfigField("String", "MAPS_API_KEY", "\"${properties.getProperty("MAPS_API_KEY")}\"")
+        buildConfigField(
+            "String",
+            "MAPS_API_KEY",
+            "\"${properties.getProperty("MAPS_API_KEY")}\""
+        )
         buildConfigField(
             "String",
             "GEMINI_API_KEY",
@@ -38,14 +42,27 @@ android {
         )
     }
 
+    signingConfigs {
+        create("common") {
+            storeFile = file(properties.getProperty("KEYSTORE_FILE"))
+            storePassword = properties.getProperty("KEYSTORE_PASSWORD")
+            keyAlias = properties.getProperty("KEY_ALIAS")
+            keyPassword = properties.getProperty("KEY_ALIAS_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("common")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("common")
         }
     }
     compileOptions {
