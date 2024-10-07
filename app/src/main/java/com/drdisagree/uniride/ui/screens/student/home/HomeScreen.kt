@@ -136,9 +136,14 @@ private fun HomeContent(
         }
     } ?: buses
 
+    val distances by nearbyBusesViewModel.distances.observeAsState(emptyMap())
     val defaultLocationName = stringResource(R.string.retrieving)
     val locationNames by geocodingViewModel.locationNames.observeAsState(emptyMap())
     val showLoadingDialog by rememberUpdatedState(nearbyBusesViewModel.state is Resource.Loading<*>)
+
+    LaunchedEffect(location, buses) {
+        nearbyBusesViewModel.fetchAndStoreDistances(location, buses)
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -333,15 +338,10 @@ private fun HomeContent(
                         )
                     )
                 },
-                currentLocationName = if (location != null && bus.currentlyAt != null && locationName != defaultLocationName) {
+                currentLocationName = if (distances[bus.uuid] != null && locationName != defaultLocationName) {
                     String.format(
                         Locale.getDefault(),
-                        "%s (%.1fkm)", locationName, distance(
-                            location!!.latitude,
-                            location!!.longitude,
-                            bus.currentlyAt.latitude,
-                            bus.currentlyAt.longitude
-                        )
+                        "%s (%.1fkm)", locationName, distances[bus.uuid]
                     )
                 } else {
                     locationName
