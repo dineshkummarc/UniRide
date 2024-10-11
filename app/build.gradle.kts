@@ -29,17 +29,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        buildConfigField(
-            "String",
-            "MAPS_API_KEY",
-            "\"${properties.getProperty("MAPS_API_KEY")}\""
-        )
-        buildConfigField(
-            "String",
-            "GEMINI_API_KEY",
-            "\"${properties.getProperty("GEMINI_API_KEY")}\""
-        )
     }
 
     signingConfigs {
@@ -93,6 +82,11 @@ android {
             getByName(name) {
                 kotlin.srcDir("build/generated/ksp/$name/kotlin")
             }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path("CMakeLists.txt")
         }
     }
 }

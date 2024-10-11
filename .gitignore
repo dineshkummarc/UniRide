@@ -16,5 +16,6 @@ local.properties
 /app/release/*
 /app/debug/*
 /app/google-services.json
+/app/src/main/cpp/native-lib.cpp
 /backend/node_modules
 .idea

@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.drdisagree.uniride.BuildConfig
 import com.drdisagree.uniride.data.api.DirectionsApi
+import com.drdisagree.uniride.data.api.Keys
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION
@@ -80,7 +80,7 @@ class NearbyBusLocationViewModel @Inject constructor(
                 val response = directionsApi.getDirections(
                     origin = "${origin.latitude},${origin.longitude}",
                     destination = "${destination.latitude},${destination.longitude}",
-                    apiKey = BuildConfig.MAPS_API_KEY
+                    apiKey = Keys.mapsApiKey()
                 )
                 if (response.routes.isNotEmpty()) {
                     val polylinePoints = response.routes[0].overview_polyline.points
