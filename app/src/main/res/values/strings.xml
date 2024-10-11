@@ -102,11 +102,11 @@
     <string name="approve_account_confirmation">Are you sure you want to approve this account?</string>
     <string name="reject_account">Reject Account</string>
     <string name="reject_account_confirmation">Are you sure you want to reject this account?</string>
-    <string name="issue_id_colon">Issue ID:</string>
-    <string name="issue_type_colon">Issue Type:</string>
-    <string name="submitted_on_colon">Submitted On:</string>
-    <string name="description_colon">Description:</string>
-    <string name="contact_info_colon">Contact Info:</string>
+    <string name="issue_id_colon">"Issue ID: "</string>
+    <string name="issue_type_colon">"Issue Type: "</string>
+    <string name="submitted_on_colon">"Submitted On: "</string>
+    <string name="description_colon">"Description: "</string>
+    <string name="contact_info_colon">"Contact Info: "</string>
     <string name="mark_as_resolved">Mark as Resolved</string>
     <string name="mark_as_unresolved">Mark as Unresolved</string>
     <string name="delete_issue_confirmation">This action cannot be undone. Delete this issue?</string>
