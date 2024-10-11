@@ -73,16 +73,15 @@ fun Context.findActivity(): Activity? = when (this) {
 
 fun switchLanguage(context: Context) {
     context.findActivity()?.runOnUiThread {
-        val currentLocale =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val localeManager =
-                    context.getSystemService(LocaleManager::class.java)
-                localeManager?.applicationLocales?.get(0)?.language
-            } else {
-                Locale.getDefault().language
-            }
+        val currentLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val localeManager =
+                context.getSystemService(LocaleManager::class.java)
+            localeManager?.applicationLocales?.get(0)?.language
+        } else {
+            Locale.getDefault().language
+        }
 
-        val newLocale = if (currentLocale == "en") {
+        val newLocale = if (currentLocale == null || currentLocale == "en") {
             "bn"
         } else {
             "en"
