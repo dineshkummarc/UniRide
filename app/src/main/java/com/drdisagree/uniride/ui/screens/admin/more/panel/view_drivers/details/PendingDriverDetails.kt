@@ -151,7 +151,8 @@ private fun PendingDriverDetailsContent(
         }
 
         true -> {
-            val placeholder by remember { mutableIntStateOf(R.drawable.img_profile_pic_default) }
+            val placeholderProfile by remember { mutableIntStateOf(R.drawable.img_profile_pic_default) }
+            val placeholderDocument by remember { mutableIntStateOf(R.drawable.img_image_loading_failed) }
             val profileImageUrl by remember { mutableStateOf(driver.profileImage) }
 
             val nidFrontUrl by remember { mutableStateOf(driver.documents[0]) }
@@ -169,9 +170,9 @@ private fun PendingDriverDetailsContent(
                 .dispatcher(Dispatchers.IO)
                 .memoryCacheKey(nidFrontUrl + "_low")
                 .diskCacheKey(nidFrontUrl + "_low")
-                .placeholder(placeholder)
-                .error(placeholder)
-                .fallback(placeholder)
+                .placeholder(placeholderDocument)
+                .error(placeholderDocument)
+                .fallback(placeholderDocument)
                 .diskCachePolicy(CachePolicy.ENABLED)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .crossfade(true)
@@ -195,9 +196,9 @@ private fun PendingDriverDetailsContent(
                 .dispatcher(Dispatchers.IO)
                 .memoryCacheKey(nidBackUrl + "_low")
                 .diskCacheKey(nidBackUrl + "_low")
-                .placeholder(placeholder)
-                .error(placeholder)
-                .fallback(placeholder)
+                .placeholder(placeholderDocument)
+                .error(placeholderDocument)
+                .fallback(placeholderDocument)
                 .diskCachePolicy(CachePolicy.ENABLED)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .crossfade(true)
@@ -221,9 +222,9 @@ private fun PendingDriverDetailsContent(
                 .dispatcher(Dispatchers.IO)
                 .memoryCacheKey(drivingLicenseFrontUrl + "_low")
                 .diskCacheKey(drivingLicenseFrontUrl + "_low")
-                .placeholder(placeholder)
-                .error(placeholder)
-                .fallback(placeholder)
+                .placeholder(placeholderDocument)
+                .error(placeholderDocument)
+                .fallback(placeholderDocument)
                 .diskCachePolicy(CachePolicy.ENABLED)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .crossfade(true)
@@ -247,9 +248,9 @@ private fun PendingDriverDetailsContent(
                 .dispatcher(Dispatchers.IO)
                 .memoryCacheKey(drivingLicenseBackUrl + "_low")
                 .diskCacheKey(drivingLicenseBackUrl + "_low")
-                .placeholder(placeholder)
-                .error(placeholder)
-                .fallback(placeholder)
+                .placeholder(placeholderDocument)
+                .error(placeholderDocument)
+                .fallback(placeholderDocument)
                 .diskCachePolicy(CachePolicy.ENABLED)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .crossfade(true)
@@ -273,9 +274,9 @@ private fun PendingDriverDetailsContent(
                 .dispatcher(Dispatchers.IO)
                 .memoryCacheKey(profileImageUrl + "_low")
                 .diskCacheKey(profileImageUrl + "_low")
-                .placeholder(placeholder)
-                .error(placeholder)
-                .fallback(placeholder)
+                .placeholder(placeholderProfile)
+                .error(placeholderProfile)
+                .fallback(placeholderProfile)
                 .diskCachePolicy(CachePolicy.ENABLED)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .crossfade(true)
