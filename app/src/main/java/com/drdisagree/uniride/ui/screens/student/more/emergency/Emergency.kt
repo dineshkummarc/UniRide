@@ -128,7 +128,7 @@ private fun EmergencyContent(
             modifier = Modifier.padding(top = MaterialTheme.spacing.large1)
         )
 
-        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium3))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium1))
 
         EMERGENCY_PHONE_NUMBERS.forEach { (number, name) ->
             val isCompleteState = remember { mutableStateOf(false) }

@@ -146,8 +146,9 @@ fun SwipeButton(
             text = text,
             color = White,
             fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.End,
             modifier = Modifier
+                .padding(end = 16.dp)
                 .fillMaxWidth()
                 .alpha(alpha)
                 .offset {

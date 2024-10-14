@@ -36,8 +36,9 @@ object Constant {
 
     // Emergency Phone Numbers
     val EMERGENCY_PHONE_NUMBERS = listOf(
-        "+8809617901212" to "DIU Help Line",
+        "+8809617901212" to "DIU Helpline",
         "+8801847140037" to "Transport Office",
+        "999" to "National Helpline",
     )
 
     // Driver Documents
