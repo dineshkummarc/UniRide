@@ -56,6 +56,9 @@ class BusLocationViewModel @Inject constructor(
     private val _runningBus = MutableStateFlow<RunningBus?>(null)
     val runningBus: StateFlow<RunningBus?> = _runningBus.asStateFlow()
 
+    private val _destination = MutableLiveData<Resource<Place?>>()
+    val destination: LiveData<Resource<Place?>> = _destination
+
     private val _routePoints = MutableLiveData<List<LatLng>>()
     val routePoints: LiveData<List<LatLng>> = _routePoints
 
@@ -63,6 +66,7 @@ class BusLocationViewModel @Inject constructor(
         userId = firebaseAuth.currentUser?.uid
 
         fetchRunningBus()
+        getDepartedTo()
 
         viewModelScope.launch {
             for (location in locationUpdateQueue) {
@@ -355,17 +359,15 @@ class BusLocationViewModel @Inject constructor(
         }
     }
 
-    fun getDepartedTo(): LiveData<Resource<Place?>> {
-        val result = MutableLiveData<Resource<Place?>>()
-
+    private fun getDepartedTo() {
         viewModelScope.launch {
-            result.postValue(Resource.Loading())
+            _destination.postValue(Resource.Loading())
 
             if (userId == null) {
                 userId = firebaseAuth.currentUser?.uid
 
                 if (userId == null) {
-                    result.postValue(Resource.Error("User not authenticated"))
+                    _destination.postValue(Resource.Error("User not authenticated"))
                     return@launch
                 }
             }
@@ -377,22 +379,29 @@ class BusLocationViewModel @Inject constructor(
                     .await()
 
                 if (busDocuments.isEmpty) {
-                    result.postValue(Resource.Error("Bus not found for the current driver id $userId"))
+                    Log.e(
+                        "NearbyBusLocationViewModel",
+                        "getDepartedTo: Bus not found for the current driver id $userId"
+                    )
+                    _destination.postValue(Resource.Error("Bus not found for the current driver id $userId"))
                     return@launch
                 }
 
                 val bus = busDocuments.documents.first().toObject(RunningBus::class.java)
                 if (bus != null) {
-                    result.postValue(Resource.Success(bus.departedTo))
+                    _destination.postValue(Resource.Success(bus.departedTo))
                 } else {
-                    result.postValue(Resource.Error("Failed to convert bus document to RunningBus"))
+                    Log.e(
+                        "NearbyBusLocationViewModel",
+                        "getDepartedTo: Failed to convert bus document to RunningBus"
+                    )
+                    _destination.postValue(Resource.Error("Failed to convert bus document to RunningBus"))
                 }
             } catch (e: Exception) {
-                result.postValue(Resource.Error(e.message.toString()))
+                Log.e("NearbyBusLocationViewModel", "getDepartedTo: ${e.message}", e)
+                _destination.postValue(Resource.Error(e.message.toString()))
             }
         }
-
-        return result
     }
 
     fun fetchRoute(

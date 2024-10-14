@@ -8,7 +8,6 @@ import android.hardware.Sensor.TYPE_MAGNETIC_FIELD
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -47,7 +46,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.enums.BusStatus
 import com.drdisagree.uniride.data.events.Resource
-import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.services.LocationService
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
@@ -90,7 +88,10 @@ fun BusLocation(
     navigator: DestinationsNavigator
 ) {
     DisableBackHandler(isDisabled = true) {
-        Container(shadow = false) {
+        Container(
+            modifier = Modifier.background(Color(0xFFF2F2F2)),
+            shadow = false
+        ) {
             Scaffold(
                 topBar = {
                     TopAppBarNoButton(
@@ -131,10 +132,7 @@ private fun MapView(
     var marker: LatLng? by rememberSaveable { mutableStateOf(null) }
     val myLocation by locationViewModel.locationFlow.collectAsState()
     val routePoints by busLocationViewModel.routePoints.observeAsState(emptyList())
-    val departedToResource by busLocationViewModel
-        .getDepartedTo()
-        .observeAsState(Resource.Loading())
-    var destinationLatLng by remember { mutableStateOf<LatLng?>(null) }
+    val destinationPlace by busLocationViewModel.destination.observeAsState(null)
     myLocation?.let {
         if (marker == null || marker != LatLng(it.latitude, it.longitude)) {
             marker = LatLng(it.latitude, it.longitude)
@@ -305,21 +303,6 @@ private fun MapView(
             }
     }
 
-    destinationLatLng = when (departedToResource) {
-        is Resource.Success -> {
-            ((departedToResource as Resource.Success<*>).data as Place?)?.latlng?.toLatLng()
-        }
-
-        is Resource.Error -> {
-            Log.e("BusLocation", "Error: ${departedToResource.message}")
-            null
-        }
-
-        else -> {
-            null
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -448,11 +431,13 @@ private fun MapView(
             )
         }
 
-        LaunchedEffect(isMapLoaded, marker, destinationLatLng) {
+        LaunchedEffect(isMapLoaded, marker, destinationPlace) {
+            val destinationLatLng = destinationPlace?.data?.latlng?.toLatLng()
+
             if (isMapLoaded && marker != null && destinationLatLng != null) {
                 busLocationViewModel.fetchRoute(
                     origin = marker!!,
-                    destination = destinationLatLng!!
+                    destination = destinationLatLng
                 )
             }
         }
