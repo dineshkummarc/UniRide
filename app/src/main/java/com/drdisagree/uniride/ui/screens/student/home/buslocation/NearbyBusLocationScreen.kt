@@ -151,11 +151,17 @@ private fun MapViewContent(
     }
 
     val runningBus by nearbyBusLocationViewModel.runningBus.observeAsState()
-    val routePoints by nearbyBusLocationViewModel.routePoints.observeAsState(emptyList())
+    val routePointsFromMeToBus by nearbyBusLocationViewModel
+        .routePointsFromMeToBus
+        .observeAsState(emptyList())
+    val routePointsFromBusToDestination by nearbyBusLocationViewModel
+        .routePointsFromBusToDestination
+        .observeAsState(emptyList())
 
     val context = LocalContext.current
     var isMapLoaded by remember { mutableStateOf(false) }
     val marker = runningBus?.currentlyAt?.let { LatLng(it.latitude, it.longitude) }
+    val destinationLatLng = runningBus?.departedTo?.latlng?.toLatLng()
     var zoomLevel by rememberSaveable { mutableFloatStateOf(15f) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(23.8161532, 90.2747436), zoomLevel)
@@ -289,10 +295,17 @@ private fun MapViewContent(
                     icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_person)
                 )
             }
-            if (routePoints.isNotEmpty() && showMapRoute) {
+            if (routePointsFromMeToBus.isNotEmpty() && showMapRoute) {
                 Polyline(
-                    points = routePoints,
+                    points = routePointsFromMeToBus,
                     color = Color.Blue,
+                    width = 10f
+                )
+            }
+            if (routePointsFromBusToDestination.isNotEmpty()) {
+                Polyline(
+                    points = routePointsFromBusToDestination,
+                    color = Black,
                     width = 10f
                 )
             }
@@ -411,11 +424,17 @@ private fun MapViewContent(
         }
     }
 
-    LaunchedEffect(isMapLoaded, showMapRoute, myMarker, marker) {
+    LaunchedEffect(isMapLoaded, showMapRoute, myMarker, marker, destinationLatLng) {
         if (isMapLoaded && showMapRoute && myMarker != null && marker != null) {
-            nearbyBusLocationViewModel.fetchRoute(
+            nearbyBusLocationViewModel.fetchRouteFromMeToBus(
                 origin = myMarker!!,
                 destination = marker
+            )
+        }
+        if (isMapLoaded && marker != null && destinationLatLng != null) {
+            nearbyBusLocationViewModel.fetchRouteFromBusToDestination(
+                origin = marker,
+                destination = destinationLatLng
             )
         }
     }

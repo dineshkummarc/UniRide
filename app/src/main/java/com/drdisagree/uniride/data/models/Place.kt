@@ -10,6 +10,7 @@ import java.util.UUID
 data class Place(
     val uuid: String = UUID.randomUUID().toString(),
     val name: String,
+    val latlng: LatLngSerializable? = null
 ) : Parcelable {
     constructor() : this(
         name = ""

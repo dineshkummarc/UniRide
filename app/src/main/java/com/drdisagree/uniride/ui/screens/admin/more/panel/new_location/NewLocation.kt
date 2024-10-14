@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.LatLngSerializable
 import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
@@ -131,6 +132,8 @@ private fun NewLocationFields(
 ) {
     val context = LocalContext.current
     var placeName by remember { mutableStateOf("") }
+    var latitude by remember { mutableStateOf("") }
+    var longitude by remember { mutableStateOf("") }
 
     StyledTextField(
         placeholder = stringResource(R.string.place_name),
@@ -144,6 +147,32 @@ private fun NewLocationFields(
         singleLine = false
     )
 
+    StyledTextField(
+        placeholder = stringResource(R.string.latitude),
+        modifier = Modifier.padding(
+            start = MaterialTheme.spacing.small2,
+            end = MaterialTheme.spacing.small2,
+            top = MaterialTheme.spacing.medium1
+        ),
+        onValueChange = { latitude = it },
+        inputText = latitude,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        singleLine = true
+    )
+
+    StyledTextField(
+        placeholder = stringResource(R.string.longitude),
+        modifier = Modifier.padding(
+            start = MaterialTheme.spacing.small2,
+            end = MaterialTheme.spacing.small2,
+            top = MaterialTheme.spacing.medium1
+        ),
+        onValueChange = { longitude = it },
+        inputText = longitude,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        singleLine = true
+    )
+
     ButtonPrimary(
         modifier = Modifier
             .padding(
@@ -155,10 +184,30 @@ private fun NewLocationFields(
             .fillMaxWidth(),
         text = stringResource(R.string.submit)
     ) {
-        if (placeName.isEmpty()) {
+        if (placeName.isEmpty() ||
+            latitude.isEmpty() ||
+            longitude.isEmpty()
+        ) {
             Toast.makeText(
                 context,
-                "Please fill in place name field",
+                "Please fill all the fields",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return@ButtonPrimary
+        } else if (
+            latitude.toDoubleOrNull() == null ||
+            longitude.toDoubleOrNull() == null ||
+            latitude.toDouble() == 0.0 ||
+            longitude.toDouble() == 0.0 ||
+            latitude.toDouble() > 90.0 ||
+            latitude.toDouble() < -90.0 ||
+            longitude.toDouble() > 180.0 ||
+            longitude.toDouble() < -180.0
+        ) {
+            Toast.makeText(
+                context,
+                "Please enter valid latitude and longitude",
                 Toast.LENGTH_SHORT
             ).show()
 
@@ -167,7 +216,11 @@ private fun NewLocationFields(
 
         newLocationViewModel.saveLocation(
             Place(
-                name = placeName
+                name = placeName,
+                latlng = LatLngSerializable(
+                    latitude.toDouble(),
+                    longitude.toDouble()
+                )
             )
         )
     }
@@ -185,6 +238,8 @@ private fun NewLocationFields(
                     showLoadingDialog = false
 
                     placeName = ""
+                    latitude = ""
+                    longitude = ""
 
                     Toast.makeText(
                         context,

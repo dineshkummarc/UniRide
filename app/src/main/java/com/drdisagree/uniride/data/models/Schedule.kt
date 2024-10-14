@@ -18,8 +18,8 @@ data class Schedule(
     constructor() : this(
         bus = Bus("", ""),
         category = BusCategory("", ""),
-        from = Place("", ""),
-        to = Place("", ""),
+        from = Place(),
+        to = Place(),
         time = ""
     )
 }

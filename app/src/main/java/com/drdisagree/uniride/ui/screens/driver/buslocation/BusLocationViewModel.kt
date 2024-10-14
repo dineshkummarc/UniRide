@@ -1,12 +1,17 @@
 package com.drdisagree.uniride.ui.screens.driver.buslocation
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.drdisagree.uniride.data.api.DirectionsApi
+import com.drdisagree.uniride.data.api.Keys
 import com.drdisagree.uniride.data.enums.BusStatus
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.DriveHistory
 import com.drdisagree.uniride.data.models.LatLngSerializable
+import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.data.models.RunningBus
 import com.drdisagree.uniride.data.utils.Constant.DRIVE_HISTORY_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.RUNNING_BUS_COLLECTION
@@ -14,6 +19,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.maps.android.PolyUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,7 +34,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BusLocationViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val directionsApi: DirectionsApi
 ) : ViewModel() {
 
     private var userId: String? = null
@@ -48,6 +55,9 @@ class BusLocationViewModel @Inject constructor(
 
     private val _runningBus = MutableStateFlow<RunningBus?>(null)
     val runningBus: StateFlow<RunningBus?> = _runningBus.asStateFlow()
+
+    private val _routePoints = MutableLiveData<List<LatLng>>()
+    val routePoints: LiveData<List<LatLng>> = _routePoints
 
     init {
         userId = firebaseAuth.currentUser?.uid
@@ -342,6 +352,67 @@ class BusLocationViewModel @Inject constructor(
             )
         } finally {
             isProcessingUpdates = false
+        }
+    }
+
+    fun getDepartedTo(): LiveData<Resource<Place?>> {
+        val result = MutableLiveData<Resource<Place?>>()
+
+        viewModelScope.launch {
+            result.postValue(Resource.Loading())
+
+            if (userId == null) {
+                userId = firebaseAuth.currentUser?.uid
+
+                if (userId == null) {
+                    result.postValue(Resource.Error("User not authenticated"))
+                    return@launch
+                }
+            }
+
+            try {
+                val busDocuments = firestore.collection(RUNNING_BUS_COLLECTION)
+                    .whereEqualTo("driver.id", userId)
+                    .get()
+                    .await()
+
+                if (busDocuments.isEmpty) {
+                    result.postValue(Resource.Error("Bus not found for the current driver id $userId"))
+                    return@launch
+                }
+
+                val bus = busDocuments.documents.first().toObject(RunningBus::class.java)
+                if (bus != null) {
+                    result.postValue(Resource.Success(bus.departedTo))
+                } else {
+                    result.postValue(Resource.Error("Failed to convert bus document to RunningBus"))
+                }
+            } catch (e: Exception) {
+                result.postValue(Resource.Error(e.message.toString()))
+            }
+        }
+
+        return result
+    }
+
+    fun fetchRoute(
+        origin: LatLng,
+        destination: LatLng
+    ) {
+        viewModelScope.launch {
+            try {
+                val response = directionsApi.getDirections(
+                    origin = "${origin.latitude},${origin.longitude}",
+                    destination = "${destination.latitude},${destination.longitude}",
+                    apiKey = Keys.mapsApiKey()
+                )
+                if (response.routes.isNotEmpty()) {
+                    val polylinePoints = response.routes[0].overview_polyline.points
+                    _routePoints.postValue(PolyUtil.decode(polylinePoints))
+                }
+            } catch (e: Exception) {
+                Log.e("NearbyBusLocationViewModel", "fetchRoute: ${e.message}", e)
+            }
         }
     }
 }

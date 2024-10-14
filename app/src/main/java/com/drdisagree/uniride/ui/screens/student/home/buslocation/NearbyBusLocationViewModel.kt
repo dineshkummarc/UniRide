@@ -32,8 +32,11 @@ class NearbyBusLocationViewModel @Inject constructor(
     private val _runningBus = MutableLiveData<RunningBus?>()
     val runningBus: LiveData<RunningBus?> = _runningBus
 
-    private val _routePoints = MutableLiveData<List<LatLng>>()
-    val routePoints: LiveData<List<LatLng>> = _routePoints
+    private val _routePointsFromMeToBus = MutableLiveData<List<LatLng>>()
+    val routePointsFromMeToBus: LiveData<List<LatLng>> = _routePointsFromMeToBus
+
+    private val _routePointsFromBusToDestination = MutableLiveData<List<LatLng>>()
+    val routePointsFromBusToDestination: LiveData<List<LatLng>> = _routePointsFromBusToDestination
 
     private var listenerRegistration: ListenerRegistration? = null
 
@@ -74,7 +77,19 @@ class NearbyBusLocationViewModel @Inject constructor(
             }
     }
 
-    fun fetchRoute(origin: LatLng, destination: LatLng) {
+    fun fetchRouteFromMeToBus(origin: LatLng, destination: LatLng) {
+        fetchRoute(origin, destination, _routePointsFromMeToBus)
+    }
+
+    fun fetchRouteFromBusToDestination(origin: LatLng, destination: LatLng) {
+        fetchRoute(origin, destination, _routePointsFromBusToDestination)
+    }
+
+    private fun fetchRoute(
+        origin: LatLng,
+        destination: LatLng,
+        routePoints: MutableLiveData<List<LatLng>>
+    ) {
         viewModelScope.launch {
             try {
                 val response = directionsApi.getDirections(
@@ -84,7 +99,7 @@ class NearbyBusLocationViewModel @Inject constructor(
                 )
                 if (response.routes.isNotEmpty()) {
                     val polylinePoints = response.routes[0].overview_polyline.points
-                    _routePoints.postValue(PolyUtil.decode(polylinePoints))
+                    routePoints.postValue(PolyUtil.decode(polylinePoints))
                 }
             } catch (e: Exception) {
                 Log.e("NearbyBusLocationViewModel", "fetchRoute: ${e.message}", e)

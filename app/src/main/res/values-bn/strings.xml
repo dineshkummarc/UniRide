@@ -60,7 +60,9 @@
     <string name="bus_name">বাসের নাম</string>
     <string name="category_name">বিভাগের নাম</string>
     <string name="place_name">স্থানের নাম</string>
-    <string name="write_your_announcement_here">এখানে আপনার ঘোষণা লিখুন...</string>
+    <string name="latitude">অক্ষাংশ</string>
+    <string name="longitude">দ্রাঘিমাংশ</string>
+    <string name="write_your_announcement_here">এখানে আপনার ঘোষণা লিখুন…</string>
     <string name="category">শ্রেণী</string>
     <string name="route_no">গমনপথ নং</string>
     <string name="route_details_locations_entry"><![CDATA[রুটের বিবরণ (অবস্থানের নামগুলো <> দ্বারা পৃথক করুন)]]></string>
@@ -68,7 +70,7 @@
     <string name="to">প্রতি</string>
     <string name="time">সময়</string>
     <string name="search">অনুসন্ধান করুন</string>
-    <string name="search_driver">ড্রাইভার অনুসন্ধান করুন...</string>
+    <string name="search_driver">ড্রাইভার অনুসন্ধান করুন…</string>
     <string name="no_pending_drivers_found">কোনো মুলতুবি ড্রাইভার পাওয়া যায়নি!</string>
     <string name="phone">ফোন</string>
     <string name="email">ইমেইল</string>
@@ -109,7 +111,7 @@
     <string name="mark_as_resolved">মীমাংসিত হিসাবে চিহ্নিত করুন</string>
     <string name="mark_as_unresolved">অমীমাংসিত হিসাবে চিহ্নিত করুন</string>
     <string name="delete_issue_confirmation">এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না৷ এই সমস্যাটি মুছবেন?</string>
-    <string name="search_issue">সমস্যা অনুসন্ধান করুন...</string>
+    <string name="search_issue">সমস্যা অনুসন্ধান করুন…</string>
     <string name="no_reported_issue_found">কোন রিপোর্ট করা সমস্যা পাওয়া যায়নি!</string>
     <string name="resolved">সমাধান করা হয়েছে</string>
     <string name="unresolved">অমীমাংসিত</string>
@@ -172,11 +174,11 @@
     <string name="all_seats_occupied">সব আসন দখল</string>
     <string name="few_seats_available">কয়েকটি আসন ফাঁকা</string>
     <string name="review_ai_summarized_colon">"পর্যালোচনা (এআই দ্বারা সংক্ষিপ্ত): "</string>
-    <string name="loading">লোড হচ্ছে...</string>
+    <string name="loading">লোড হচ্ছে…</string>
     <string name="no_reviews_yet">এখনো কোনো পর্যালোচনা নেই</string>
     <string name="close">বন্ধ করুন</string>
     <string name="leave_a_review">একটি পর্যালোচনা দিন</string>
-    <string name="retrieving">পুনরুদ্ধার করা হচ্ছে...</string>
+    <string name="retrieving">পুনরুদ্ধার করা হচ্ছে…</string>
     <string name="announcement">ঘোষণা</string>
     <string name="our_resources">আমাদের সম্পদ</string>
     <string name="total_vehicles">মোট যানবাহন</string>
@@ -202,7 +204,7 @@
     <string name="no_schedules_found">কোন সময়সূচী পাওয়া যায়নি!</string>
     <string name="an_error_occurred">একটি ত্রুটি ঘটেছে</string>
     <string name="no_messages">কোনো বার্তা নেই</string>
-    <string name="type_a_message">একটি বার্তা টাইপ করুন...</string>
+    <string name="type_a_message">একটি বার্তা টাইপ করুন…</string>
     <string name="no_drivers_found">কোনো ড্রাইভার পাওয়া যায়নি</string>
     <string name="contact_details_not_available">যোগাযোগ বিশদ নেই</string>
     <string name="rating_colon">"রেটিংঃ "</string>
@@ -215,7 +217,7 @@
     <string name="other">অন্যান্য</string>
     <string name="report_issue_ques_one">১. আপনি যে ধরনের সমস্যার সম্মুখীন হচ্ছেন সেটি নিচের কোনটি সবচেয়ে ভালোভাবে বর্ণনা করে?</string>
     <string name="report_issue_ques_two">২. অনুগ্রহ করে নীচের সমস্যাটি যতটা সম্ভব বর্ণনামূলকভাবে বর্ণনা করুন, যাতে আমরা আপনাকে আমাদের দলের সঠিক চ্যানেলে নিয়ে যেতে পারি।</string>
-    <string name="describe_the_issue_here">সমস্যাটি এখানে বর্ণনা করুন...</string>
+    <string name="describe_the_issue_here">সমস্যাটি এখানে বর্ণনা করুন…</string>
     <string name="report_issue_ques_three">৩. আপনার যোগাযোগের তথ্য প্রদান করুন.</string>
     <string name="email_or_phone_number">ইমেইল বা ফোন নম্বর</string>
     <string name="uniride_support_title">UniRide সাপোর্টে স্বাগতম!</string>

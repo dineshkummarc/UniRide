@@ -8,6 +8,7 @@ import android.hardware.Sensor.TYPE_MAGNETIC_FIELD
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -28,6 +29,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -45,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.enums.BusStatus
 import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.services.LocationService
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
@@ -72,6 +75,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -125,8 +129,13 @@ private fun MapView(
 
     var isMapLoaded by remember { mutableStateOf(false) }
     var marker: LatLng? by rememberSaveable { mutableStateOf(null) }
-    val location by locationViewModel.locationFlow.collectAsState()
-    location?.let {
+    val myLocation by locationViewModel.locationFlow.collectAsState()
+    val routePoints by busLocationViewModel.routePoints.observeAsState(emptyList())
+    val departedToResource by busLocationViewModel
+        .getDepartedTo()
+        .observeAsState(Resource.Loading())
+    var destinationLatLng by remember { mutableStateOf<LatLng?>(null) }
+    myLocation?.let {
         if (marker == null || marker != LatLng(it.latitude, it.longitude)) {
             marker = LatLng(it.latitude, it.longitude)
         }
@@ -296,6 +305,21 @@ private fun MapView(
             }
     }
 
+    destinationLatLng = when (departedToResource) {
+        is Resource.Success -> {
+            ((departedToResource as Resource.Success<*>).data as Place?)?.latlng?.toLatLng()
+        }
+
+        is Resource.Error -> {
+            Log.e("BusLocation", "Error: ${departedToResource.message}")
+            null
+        }
+
+        else -> {
+            null
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -318,6 +342,13 @@ private fun MapView(
                     snippet = stringResource(R.string.my_position),
                     draggable = false,
                     icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
+                )
+            }
+            if (routePoints.isNotEmpty()) {
+                Polyline(
+                    points = routePoints,
+                    color = Color.Blue,
+                    width = 10f
                 )
             }
         }
@@ -415,6 +446,15 @@ private fun MapView(
                     openDialog = false
                 }
             )
+        }
+
+        LaunchedEffect(isMapLoaded, marker, destinationLatLng) {
+            if (isMapLoaded && marker != null && destinationLatLng != null) {
+                busLocationViewModel.fetchRoute(
+                    origin = marker!!,
+                    destination = destinationLatLng!!
+                )
+            }
         }
 
         LaunchedEffect(busLocationViewModel.updateBusStatus) {
