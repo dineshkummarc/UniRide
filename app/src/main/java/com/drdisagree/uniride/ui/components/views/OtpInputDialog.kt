@@ -42,8 +42,9 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun OtpInputDialog(
-    onDismissRequest: () -> Unit,
     onSubmit: (String) -> Unit,
+    onCancel: () -> Unit,
+    onDismissRequest: () -> Unit,
     resendOtp: () -> Unit
 ) {
     var otp by remember { mutableStateOf("") }
@@ -150,7 +151,7 @@ fun OtpInputDialog(
                     Text("Resend OTP")
                 }
             } else {
-                TextButton(onClick = onDismissRequest) {
+                TextButton(onClick = onCancel) {
                     Text("Cancel")
                 }
             }
@@ -163,8 +164,9 @@ fun OtpInputDialog(
 @Composable
 fun OtpInputDialogPreview() {
     OtpInputDialog(
-        onDismissRequest = {},
         onSubmit = {},
+        onCancel = {},
+        onDismissRequest = {},
         resendOtp = {}
     )
 }

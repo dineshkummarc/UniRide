@@ -63,6 +63,7 @@ import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.ButtonSecondary
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.DisableBackHandler
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.OtpInputDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
@@ -546,39 +547,42 @@ private fun LoginFields(
         )
     }
 
-    if (showOtpDialog) {
-        OtpInputDialog(
-            onDismissRequest = {
-                showOtpDialog = false
-                showLoadingDialog = false
-
-                Toast.makeText(
-                    context,
-                    "Login cancelled",
-                    Toast.LENGTH_LONG
-                ).show()
-            },
-            onSubmit = { otp ->
-                if (sentVerificationId.isNotEmpty() && otp.isNotEmpty()) {
-                    showOtpDialog = false
-                    loginViewModel.verifyPhoneNumberWithCode(
-                        phoneAuthCredential = PhoneAuthProvider.getCredential(
-                            sentVerificationId,
-                            otp
+    DisableBackHandler(isDisabled = showOtpDialog) {
+        if (showOtpDialog) {
+            OtpInputDialog(
+                onSubmit = { otp ->
+                    if (sentVerificationId.isNotEmpty() && otp.isNotEmpty()) {
+                        showOtpDialog = false
+                        loginViewModel.verifyPhoneNumberWithCode(
+                            phoneAuthCredential = PhoneAuthProvider.getCredential(
+                                sentVerificationId,
+                                otp
+                            )
                         )
+                    }
+                },
+                onCancel = {
+                    showOtpDialog = false
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        "Login cancelled",
+                        Toast.LENGTH_LONG
+                    ).show()
+                },
+                onDismissRequest = {},
+                resendOtp = {
+                    loginViewModel.loginWithPhoneNumber(
+                        phone = phone,
+                        activity = context as Activity,
+                        onCodeSent = { verificationId, _ ->
+                            sentVerificationId = verificationId
+                        }
                     )
                 }
-            },
-            resendOtp = {
-                loginViewModel.loginWithPhoneNumber(
-                    phone = phone,
-                    activity = context as Activity,
-                    onCodeSent = { verificationId, _ ->
-                        sentVerificationId = verificationId
-                    }
-                )
-            }
-        )
+            )
+        }
     }
 }
 

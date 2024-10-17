@@ -58,6 +58,7 @@ import com.drdisagree.uniride.data.utils.Constant.NID_CARD_FRONT
 import com.drdisagree.uniride.ui.components.transitions.SlideInOutTransition
 import com.drdisagree.uniride.ui.components.views.ButtonPrimary
 import com.drdisagree.uniride.ui.components.views.Container
+import com.drdisagree.uniride.ui.components.views.DisableBackHandler
 import com.drdisagree.uniride.ui.components.views.LoadingDialog
 import com.drdisagree.uniride.ui.components.views.OtpInputDialog
 import com.drdisagree.uniride.ui.components.views.PlantBottomCentered
@@ -657,43 +658,46 @@ private fun VerificationContent(
         LoadingDialog()
     }
 
-    if (showOtpDialog) {
-        OtpInputDialog(
-            onDismissRequest = {
-                showOtpDialog = false
-                showLoadingDialog = false
-
-                Toast.makeText(
-                    context,
-                    "Registration cancelled",
-                    Toast.LENGTH_LONG
-                ).show()
-            },
-            onSubmit = { otp ->
-                if (sentVerificationId.isNotEmpty() && otp.isNotEmpty()) {
+    DisableBackHandler(isDisabled = showOtpDialog) {
+        if (showOtpDialog) {
+            OtpInputDialog(
+                onSubmit = { otp ->
+                    if (sentVerificationId.isNotEmpty() && otp.isNotEmpty()) {
+                        showOtpDialog = false
+                        registerViewModel.verifyPhoneNumberWithCode(
+                            phoneAuthCredential = PhoneAuthProvider.getCredential(
+                                sentVerificationId,
+                                otp
+                            ),
+                            name = name,
+                            phone = phone!!,
+                            documents = documentsList
+                        )
+                    }
+                },
+                onCancel = {
                     showOtpDialog = false
-                    registerViewModel.verifyPhoneNumberWithCode(
-                        phoneAuthCredential = PhoneAuthProvider.getCredential(
-                            sentVerificationId,
-                            otp
-                        ),
+                    showLoadingDialog = false
+
+                    Toast.makeText(
+                        context,
+                        "Registration cancelled",
+                        Toast.LENGTH_LONG
+                    ).show()
+                },
+                onDismissRequest = {},
+                resendOtp = {
+                    registerViewModel.createUserWithPhoneNumber(
                         name = name,
                         phone = phone!!,
-                        documents = documentsList
+                        documents = documentsList,
+                        activity = context,
+                        onCodeSent = { verificationId, _ ->
+                            sentVerificationId = verificationId
+                        }
                     )
                 }
-            },
-            resendOtp = {
-                registerViewModel.createUserWithPhoneNumber(
-                    name = name,
-                    phone = phone!!,
-                    documents = documentsList,
-                    activity = context,
-                    onCodeSent = { verificationId, _ ->
-                        sentVerificationId = verificationId
-                    }
-                )
-            }
-        )
+            )
+        }
     }
 }
