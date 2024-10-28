@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.compose.runtime.Stable
 import com.drdisagree.uniride.data.enums.AccountStatus
 import kotlinx.parcelize.Parcelize
+import java.util.UUID
 
 @Stable
 @Parcelize
@@ -20,7 +21,7 @@ data class Driver(
     val timeStamp: Long = System.currentTimeMillis()
 ) : Parcelable {
     constructor() : this(
-        id = "",
+        id = UUID.randomUUID().toString(),
         name = "",
         documents = emptyList(),
     )
