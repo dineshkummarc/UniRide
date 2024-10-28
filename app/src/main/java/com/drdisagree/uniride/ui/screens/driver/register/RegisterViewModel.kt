@@ -210,16 +210,16 @@ class RegisterViewModel @Inject constructor(
                     documents = imagesUrls
                 )
 
-                firestore.runTransaction { transaction ->
-                    val documentRef = firestore.collection(DRIVER_COLLECTION).document(userUid)
-
-                    transaction.set(documentRef, driver)
-                }.addOnSuccessListener {
-                    _register.value = Resource.Success(driver)
-                }.addOnFailureListener {
-                    userStorageRef.delete()
-                    _register.value = Resource.Error(it.message.toString())
-                }
+                firestore.collection(DRIVER_COLLECTION)
+                    .document(userUid)
+                    .set(driver)
+                    .addOnSuccessListener {
+                        _register.value = Resource.Success(driver)
+                    }
+                    .addOnFailureListener {
+                        userStorageRef.delete()
+                        _register.value = Resource.Error(it.message.toString())
+                    }
             } catch (e: Exception) {
                 userStorageRef.delete().await()
                 _register.value = Resource.Error(e.message.toString())
