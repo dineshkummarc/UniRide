@@ -1,0 +1,14 @@
+#include <jni.h>
+#include <string>
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_drdisagree_uniride_data_api_Keys_mapsApiKey(JNIEnv *env, jobject object) {
+    std::string api_key = "YOUR_MAPS_API_KEY_HERE";
+    return env->NewStringUTF(api_key.c_str());
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_drdisagree_uniride_data_api_Keys_geminiApiKey(JNIEnv *env, jobject object) {
+    std::string api_key = "YOUR_GEMINI_API_KEY_HERE";
+    return env->NewStringUTF(api_key.c_str());
+}

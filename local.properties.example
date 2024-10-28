@@ -1,0 +1,5 @@
+sdk.dir=C\:\\Users\\Username\\AppData\\Local\\Android\\Sdk
+KEYSTORE_FILE=D\:\\AndroidStudioProjects\\Keystore.jks
+KEYSTORE_PASSWORD=YOUR_KEYSTORE_PASSWORD
+KEY_ALIAS=YOUR_KEY_ALIAS
+KEY_ALIAS_PASSWORD=YOUR_KEY_ALIAS_PASSWORD
