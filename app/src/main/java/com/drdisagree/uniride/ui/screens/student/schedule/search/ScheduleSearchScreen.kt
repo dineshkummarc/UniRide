@@ -253,7 +253,7 @@ private fun ScheduleSearchFieldsAndResult(
                         schedule.category == selectedBusCategory &&
                                 schedule.from == selectedLocationFrom &&
                                 schedule.to == selectedLocationTo
-                    }.also { filteredSchedules ->
+                    }.let { filteredSchedules ->
                         sortSchedulesByTime(
                             filteredSchedules,
                             is24HourFormat
