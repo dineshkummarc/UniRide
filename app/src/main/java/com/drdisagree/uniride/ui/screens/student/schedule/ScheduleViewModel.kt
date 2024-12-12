@@ -5,6 +5,8 @@ import android.text.format.DateFormat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.BusCategory
+import com.drdisagree.uniride.data.models.Place
 import com.drdisagree.uniride.data.models.Schedule
 import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,6 +27,9 @@ class ScheduleViewModel @Inject constructor(
 
     private val _allSchedules = MutableStateFlow<Resource<List<Schedule>>>(Resource.Unspecified())
     val allSchedules = _allSchedules.asStateFlow()
+
+    private val _filteredSchedules = MutableStateFlow<Resource<List<Schedule>>>(Resource.Unspecified())
+    val filteredSchedules = _filteredSchedules.asStateFlow()
 
     init {
         getAllSchedules()
@@ -63,5 +68,26 @@ class ScheduleViewModel @Inject constructor(
                     }
                 }
             }
+    }
+
+    fun filterSchedules(
+        selectedBusCategory: BusCategory?,
+        selectedLocationFrom: Place?,
+        selectedLocationTo: Place?
+    ) {
+        viewModelScope.launch {
+            _filteredSchedules.emit(Resource.Loading())
+
+            val schedules = (allSchedules.value as? Resource.Success)?.data.orEmpty()
+            val filteredList = withContext(Dispatchers.Default) {
+                schedules.filter { schedule ->
+                    (selectedBusCategory == null || schedule.category == selectedBusCategory) &&
+                            (selectedLocationFrom == null || schedule.from == selectedLocationFrom) &&
+                            (selectedLocationTo == null || schedule.to == selectedLocationTo)
+                }
+            }
+
+            _filteredSchedules.emit(Resource.Success(filteredList))
+        }
     }
 }

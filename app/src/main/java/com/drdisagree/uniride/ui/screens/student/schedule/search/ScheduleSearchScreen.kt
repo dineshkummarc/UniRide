@@ -1,6 +1,5 @@
 package com.drdisagree.uniride.ui.screens.student.schedule.search
 
-import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -101,8 +100,7 @@ private fun ScheduleSearchFieldsAndResult(
     val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
     val busCategoryList by listsViewModel.busCategoryModels.collectAsState()
     val placeList by listsViewModel.placeModels.collectAsState()
-    val schedules by scheduleViewModel.allSchedules.collectAsState()
-    val is24HourFormat = DateFormat.is24HourFormat(context)
+    val schedules by scheduleViewModel.filteredSchedules.collectAsState()
 
     val defaultBusCategory = BusCategory(
         name = stringResource(R.string.category)
@@ -115,9 +113,6 @@ private fun ScheduleSearchFieldsAndResult(
     )
 
     var scheduleList by rememberSaveable { mutableStateOf(emptyList<Schedule>()) }
-    var busCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
-    var locationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
-    var locationTo by rememberSaveable { mutableStateOf(defaultTo) }
     var selectedBusCategory by rememberSaveable { mutableStateOf(defaultBusCategory) }
     var selectedLocationFrom by rememberSaveable { mutableStateOf(defaultFrom) }
     var selectedLocationTo by rememberSaveable { mutableStateOf(defaultTo) }
@@ -129,12 +124,12 @@ private fun ScheduleSearchFieldsAndResult(
                 start = MaterialTheme.spacing.medium3,
                 end = MaterialTheme.spacing.medium3
             ),
-        selectedText = busCategory.name,
+        selectedText = selectedBusCategory.name,
         itemList = busCategoryList.map {
             it.name
         }.toTypedArray(),
         onItemSelected = {
-            busCategory = busCategoryList.first { category ->
+            selectedBusCategory = busCategoryList.first { category ->
                 category.name == it
             }
         },
@@ -148,12 +143,12 @@ private fun ScheduleSearchFieldsAndResult(
                 end = MaterialTheme.spacing.medium3,
                 top = MaterialTheme.spacing.medium1
             ),
-        selectedText = locationFrom.name,
+        selectedText = selectedLocationFrom.name,
         itemList = placeList.map {
             it.name
         }.toTypedArray(),
         onItemSelected = {
-            locationFrom = placeList.first { place ->
+            selectedLocationFrom = placeList.first { place ->
                 place.name == it
             }
         },
@@ -167,12 +162,12 @@ private fun ScheduleSearchFieldsAndResult(
                 end = MaterialTheme.spacing.medium3,
                 top = MaterialTheme.spacing.medium1
             ),
-        selectedText = locationTo.name,
+        selectedText = selectedLocationTo.name,
         itemList = placeList.map {
             it.name
         }.toTypedArray(),
         onItemSelected = {
-            locationTo = placeList.first { place ->
+            selectedLocationTo = placeList.first { place ->
                 place.name == it
             }
         },
@@ -192,9 +187,9 @@ private fun ScheduleSearchFieldsAndResult(
     ) {
         var hasError = false
 
-        if (busCategory.name == defaultBusCategory.name ||
-            locationFrom.name == defaultFrom.name ||
-            locationTo.name == defaultTo.name
+        if (selectedBusCategory.name == defaultBusCategory.name ||
+            selectedLocationFrom.name == defaultFrom.name ||
+            selectedLocationTo.name == defaultTo.name
         ) {
             Toast.makeText(
                 context,
@@ -203,7 +198,7 @@ private fun ScheduleSearchFieldsAndResult(
             ).show()
 
             hasError = true
-        } else if (locationFrom == locationTo) {
+        } else if (selectedLocationFrom == selectedLocationTo) {
             Toast.makeText(
                 context,
                 "Both locations cannot be the same",
@@ -221,9 +216,11 @@ private fun ScheduleSearchFieldsAndResult(
             return@ButtonPrimary
         }
 
-        selectedBusCategory = busCategory
-        selectedLocationFrom = locationFrom
-        selectedLocationTo = locationTo
+        scheduleViewModel.filterSchedules(
+            selectedBusCategory,
+            selectedLocationFrom,
+            selectedLocationTo
+        )
     }
 
     when (schedules) {
@@ -247,13 +244,7 @@ private fun ScheduleSearchFieldsAndResult(
         }
 
         is Resource.Success -> {
-            scheduleList = schedules.data?.let { thisSchedules ->
-                thisSchedules.filter { schedule ->
-                    schedule.category == selectedBusCategory &&
-                            schedule.from == selectedLocationFrom &&
-                            schedule.to == selectedLocationTo
-                }
-            } ?: emptyList()
+            scheduleList = schedules.data.orEmpty()
 
             if (scheduleList.isNotEmpty()) {
                 repeat(scheduleList.size) { index ->
