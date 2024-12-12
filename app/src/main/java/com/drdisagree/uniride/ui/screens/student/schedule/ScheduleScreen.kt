@@ -1,7 +1,6 @@
 package com.drdisagree.uniride.ui.screens.student.schedule
 
 import android.annotation.SuppressLint
-import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -118,7 +118,6 @@ private fun ScheduleContent(
     val context = LocalContext.current
     val isAdminState by accountStatusViewModel.isAdmin.collectAsState()
     val schedules by scheduleViewModel.allSchedules.collectAsState()
-    val is24HourFormat = DateFormat.is24HourFormat(context)
 
     when (schedules) {
         is Resource.Loading -> {
@@ -136,14 +135,9 @@ private fun ScheduleContent(
         }
 
         is Resource.Success -> {
-            val scheduleList = (schedules as Resource.Success<List<Schedule>>).data?.let {
-                sortSchedulesByTime(
-                    it,
-                    is24HourFormat
-                )
-            }
+            val scheduleList = schedules.data
 
-            if (scheduleList?.isNotEmpty() == true) {
+            if (!scheduleList.isNullOrEmpty()) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -175,12 +169,10 @@ private fun ScheduleContent(
         }
 
         is Resource.Error -> {
-            (schedules as Resource.Error<*>).message?.let {
-                Toast.makeText(
-                    context,
-                    it,
-                    Toast.LENGTH_LONG
-                ).show()
+            LaunchedEffect(schedules.message) {
+                schedules.message?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                }
             }
         }
 

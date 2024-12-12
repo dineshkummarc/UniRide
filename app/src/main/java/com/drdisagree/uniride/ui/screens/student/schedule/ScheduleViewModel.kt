@@ -1,5 +1,7 @@
 package com.drdisagree.uniride.ui.screens.student.schedule
 
+import android.content.Context
+import android.text.format.DateFormat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.drdisagree.uniride.data.events.Resource
@@ -7,13 +9,17 @@ import com.drdisagree.uniride.data.models.Schedule
 import com.drdisagree.uniride.data.utils.Constant.SCHEDULE_COLLECTION
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
@@ -31,22 +37,26 @@ class ScheduleViewModel @Inject constructor(
 
         firestore.collection(SCHEDULE_COLLECTION)
             .addSnapshotListener { value, error ->
-                if (error != null) {
-                    viewModelScope.launch {
+                viewModelScope.launch {
+                    if (error != null) {
                         _allSchedules.emit(
                             Resource.Error(
                                 error.message.toString()
                             )
                         )
-                    }
-                } else {
-                    value?.let {
-                        viewModelScope.launch {
+                    } else {
+                        value?.let {
+                            val schedules = withContext(Dispatchers.IO) {
+                                it.toObjects(Schedule::class.java)
+                            }
+                            val is24HourFormat = DateFormat.is24HourFormat(context)
+                            val sortedSchedules = withContext(Dispatchers.Default) {
+                                sortSchedulesByTime(schedules, is24HourFormat)
+                            }
+
                             _allSchedules.emit(
                                 Resource.Success(
-                                    it.toObjects(
-                                        Schedule::class.java
-                                    )
+                                    sortedSchedules
                                 )
                             )
                         }

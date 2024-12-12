@@ -8,9 +8,11 @@ import com.drdisagree.uniride.data.utils.Constant.ROUTE_COLLECTION
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,22 +35,22 @@ class RouteViewModel @Inject constructor(
         firestore.collection(ROUTE_COLLECTION)
             .orderBy("timeStamp", Query.Direction.ASCENDING)
             .addSnapshotListener { value, error ->
-                if (error != null) {
-                    viewModelScope.launch {
+                viewModelScope.launch {
+                    if (error != null) {
                         _routes.emit(
                             Resource.Error(
                                 error.message.toString()
                             )
                         )
-                    }
-                } else {
-                    value?.let {
-                        viewModelScope.launch {
+                    } else {
+                        value?.let {
+                            val routes = withContext(Dispatchers.IO) {
+                                it.toObjects(Route::class.java)
+                            }
+
                             _routes.emit(
                                 Resource.Success(
-                                    it.toObjects(
-                                        Route::class.java
-                                    )
+                                    routes
                                 )
                             )
                         }

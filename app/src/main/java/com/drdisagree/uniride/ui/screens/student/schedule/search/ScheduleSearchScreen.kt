@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +42,6 @@ import com.drdisagree.uniride.ui.components.views.StyledDropDownMenu
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleListItem
 import com.drdisagree.uniride.ui.screens.student.schedule.ScheduleViewModel
-import com.drdisagree.uniride.ui.screens.student.schedule.sortSchedulesByTime
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.viewmodels.AccountStatusViewModel
 import com.drdisagree.uniride.viewmodels.ListsViewModel
@@ -247,19 +247,13 @@ private fun ScheduleSearchFieldsAndResult(
         }
 
         is Resource.Success -> {
-            scheduleList =
-                (schedules as Resource.Success<List<Schedule>>).data?.let { thisSchedules ->
-                    thisSchedules.filter { schedule ->
-                        schedule.category == selectedBusCategory &&
-                                schedule.from == selectedLocationFrom &&
-                                schedule.to == selectedLocationTo
-                    }.let { filteredSchedules ->
-                        sortSchedulesByTime(
-                            filteredSchedules,
-                            is24HourFormat
-                        )
-                    }
-                } ?: emptyList()
+            scheduleList = schedules.data?.let { thisSchedules ->
+                thisSchedules.filter { schedule ->
+                    schedule.category == selectedBusCategory &&
+                            schedule.from == selectedLocationFrom &&
+                            schedule.to == selectedLocationTo
+                }
+            } ?: emptyList()
 
             if (scheduleList.isNotEmpty()) {
                 repeat(scheduleList.size) { index ->
@@ -292,12 +286,10 @@ private fun ScheduleSearchFieldsAndResult(
         }
 
         is Resource.Error -> {
-            (schedules as Resource.Error<*>).message?.let {
-                Toast.makeText(
-                    context,
-                    it,
-                    Toast.LENGTH_LONG
-                ).show()
+            LaunchedEffect(schedules.message) {
+                schedules.message?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                }
             }
         }
 
