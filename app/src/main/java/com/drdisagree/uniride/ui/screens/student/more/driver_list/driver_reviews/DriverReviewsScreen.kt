@@ -34,8 +34,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,7 +47,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -228,11 +230,29 @@ private fun ReviewListItem(
                     .width(40.dp)
             ) {
                 Text(
-                    text = if (reviewIndex != 0) "#$reviewIndex" else " AI ",
+                    text = if (reviewIndex != 0) "#$reviewIndex" else "AI",
                     color = Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    textDecoration = if (reviewIndex != 0) TextDecoration.None else TextDecoration.Underline
+                    modifier = if (reviewIndex != 0) {
+                        Modifier
+                    } else {
+                        Modifier
+                            .padding(start = 3.dp)
+                            .drawBehind {
+                            val strokeWidthPx = 2.dp.toPx()
+                            val verticalOffset = size.height - 3.sp.toPx()
+                            val lineExtension = 2.sp.toPx()
+
+                            drawLine(
+                                color = Black,
+                                strokeWidth = strokeWidthPx,
+                                start = Offset(-lineExtension, verticalOffset),
+                                end = Offset(size.width + lineExtension, verticalOffset),
+                                cap = StrokeCap.Round
+                            )
+                        }
+                    }
                 )
             }
 
