@@ -1,6 +1,7 @@
 package com.drdisagree.uniride.ui.screens.student.more.driver_list.driver_reviews
 
 import android.text.format.DateFormat
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,32 +12,49 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
+import com.drdisagree.uniride.data.events.Resource
+import com.drdisagree.uniride.data.models.Driver
 import com.drdisagree.uniride.data.models.DriverReviews
 import com.drdisagree.uniride.data.models.Review
+import com.drdisagree.uniride.data.models.Student
 import com.drdisagree.uniride.ui.components.navigation.MoreNavGraph
 import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StarRatingBar
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.screens.student.home.buslocation.ReviewSubmissionViewModel
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -44,6 +62,7 @@ import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.TimeUtils.millisToTime
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.util.UUID
 
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
@@ -66,6 +85,7 @@ fun DriverReviewsScreen(
                 DriverReviewsContent(
                     navigator = navigator,
                     paddingValues = paddingValues,
+                    driver = driverReviews.about,
                     reviews = driverReviews.reviews
                 )
             }
@@ -77,8 +97,16 @@ fun DriverReviewsScreen(
 private fun DriverReviewsContent(
     navigator: DestinationsNavigator,
     paddingValues: PaddingValues,
-    reviews: List<Review>
+    driver: Driver,
+    reviews: List<Review>,
+    reviewSubmissionViewModel: ReviewSubmissionViewModel = hiltViewModel(),
 ) {
+    val summaryState by reviewSubmissionViewModel.summary.collectAsState()
+
+    LaunchedEffect(driver.id) {
+        reviewSubmissionViewModel.fetchSummary(driver.id)
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,6 +118,25 @@ private fun DriverReviewsContent(
                     .fillMaxSize()
                     .padding(paddingValues = paddingValues)
             ) {
+                item {
+                    ReviewListItem(
+                        index = -1,
+                        review = Review(
+                            uuid = UUID.randomUUID().toString(),
+                            submittedBy = Student(),
+                            message = when (summaryState) {
+                                is Resource.Loading -> stringResource(R.string.loading)
+                                is Resource.Success -> (summaryState as Resource.Success<String>).data
+                                is Resource.Error -> (summaryState as Resource.Error).message
+                                else -> stringResource(R.string.no_reviews_yet)
+                            } ?: stringResource(R.string.loading),
+                            rating = 0,
+                            timeStamp = 0
+                        ),
+                        reviewIndex = 0
+                    )
+                }
+
                 itemsIndexed(
                     items = reviews,
                     key = { _, review -> review.uuid }
@@ -126,10 +173,9 @@ private fun ReviewListItem(
     val is24HourFormat = DateFormat.is24HourFormat(context)
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
-        if (index != 0) {
+        if (index != -1) {
             HorizontalDivider(
                 color = LightGray,
                 modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium1)
@@ -140,61 +186,114 @@ private fun ReviewListItem(
             modifier = modifier
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth()
-                .padding(
-                    horizontal = MaterialTheme.spacing.medium3,
-                    vertical = MaterialTheme.spacing.medium1
+                .then(
+                    if (index == -1) {
+                        Modifier
+                            .padding(
+                                horizontal = MaterialTheme.spacing.medium1,
+                                vertical = MaterialTheme.spacing.small2
+                            )
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0x1A4597E4),
+                                        Color(0x1AC7667C)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(MaterialTheme.spacing.small3)
+                            )
+                            .padding(MaterialTheme.spacing.small2)
+                    } else {
+                        Modifier.padding(
+                            horizontal = MaterialTheme.spacing.medium3,
+                            vertical = MaterialTheme.spacing.medium1
+                        )
+                    }
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier.align(Alignment.Top)
+                modifier = Modifier
+                    .align(Alignment.Top)
+                    .width(40.dp)
             ) {
                 Text(
-                    text = "#$reviewIndex",
+                    text = if (reviewIndex != 0) "#$reviewIndex" else "AI",
                     color = Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(end = 16.dp)
+                    textDecoration = if (reviewIndex != 0) TextDecoration.None else TextDecoration.Underline
                 )
             }
 
             Column(
-                modifier = Modifier
-                    .weight(1f),
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Top
             ) {
-                StarRatingBar(
-                    rating = review.rating,
-                    starSize = 8f,
-                    starSpacing = 0.1f,
-                    modifier = Modifier
-                        .padding(bottom = MaterialTheme.spacing.small2)
-                )
+                if (reviewIndex != 0) {
+                    StarRatingBar(
+                        rating = review.rating,
+                        starSize = 8f,
+                        starSpacing = 0.1f,
+                        modifier = Modifier
+                            .padding(bottom = MaterialTheme.spacing.small2)
+                    )
+                }
                 Text(
                     text = review.message,
                     fontSize = 15.sp,
                     textAlign = TextAlign.Justify,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(
-                            SpanStyle(
-                                color = Black,
-                                fontWeight = FontWeight.SemiBold
+                if (reviewIndex != 0) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                SpanStyle(
+                                    color = Black,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            ) {
+                                append(stringResource(R.string.submitted_on_colon))
+                            }
+                            append(review.timeStamp.millisToTime("dd/MM/yyyy - ${if (is24HourFormat) "HH:mm" else "hh:mm a"}"))
+                        },
+                        color = Dark,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .fillMaxWidth()
+                    )
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.img_gemini),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(end = 4.dp)
+                                .size(20.dp),
+                        )
+                        Text(
+                            text = stringResource(id = R.string.summarized_by_gemini),
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .fillMaxWidth(1f),
+                            style = TextStyle(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(Color(0xFF4597E4), Color(0xFFC7667C))
+                                ),
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
                             )
-                        ) {
-                            append(stringResource(R.string.submitted_on_colon))
-                            append(" ")
-                        }
-                        append(review.timeStamp.millisToTime("dd/MM/yyyy - ${if (is24HourFormat) "HH:mm" else "hh:mm a"}"))
-                    },
-                    color = Dark,
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .fillMaxWidth()
-                )
+                        )
+                    }
+                }
             }
         }
     }

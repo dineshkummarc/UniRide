@@ -255,4 +255,5 @@
     <string name="total_routes_count">১৫+</string>
     <string name="technicians_count">৫+</string>
     <string name="show_route">পথ দেখান</string>
+    <string name="summarized_by_gemini">জেমিনি দ্বারা সংক্ষিপ্ত করা হয়েছে</string>
 </resources>
