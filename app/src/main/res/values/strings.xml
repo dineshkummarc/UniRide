@@ -174,7 +174,7 @@
     <string name="seat_occupancy_colon">"Seat Occupancy: "</string>
     <string name="all_seats_occupied">All seats occupied</string>
     <string name="few_seats_available">Few seats available</string>
-    <string name="review_ai_summarized_colon">"Review (AI Summarized): "</string>
+    <string name="review">Review</string>
     <string name="loading">Loading…</string>
     <string name="no_reviews_yet">No reviews yet</string>
     <string name="close">Close</string>

@@ -173,7 +173,7 @@
     <string name="seat_occupancy_colon">"সিট দখলঃ "</string>
     <string name="all_seats_occupied">সব আসন দখল</string>
     <string name="few_seats_available">কয়েকটি আসন ফাঁকা</string>
-    <string name="review_ai_summarized_colon">"পর্যালোচনা (এআই দ্বারা সংক্ষিপ্ত): "</string>
+    <string name="review">পর্যালোচনা</string>
     <string name="loading">লোড হচ্ছে…</string>
     <string name="no_reviews_yet">এখনো কোনো পর্যালোচনা নেই</string>
     <string name="close">বন্ধ করুন</string>
