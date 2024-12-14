@@ -1,6 +1,7 @@
 package com.drdisagree.uniride.ui.screens.student.more.driver_list.driver_reviews
 
 import android.text.format.DateFormat
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,8 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -54,6 +58,7 @@ import com.drdisagree.uniride.ui.components.transitions.FadeInOutTransition
 import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.StarRatingBar
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
+import com.drdisagree.uniride.ui.components.views.shimmerBackground
 import com.drdisagree.uniride.ui.screens.student.home.buslocation.ReviewSubmissionViewModel
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Dark
@@ -171,6 +176,8 @@ private fun ReviewListItem(
 ) {
     val context = LocalContext.current
     val is24HourFormat = DateFormat.is24HourFormat(context)
+    val loadingReview = review.message == stringResource(R.string.loading)
+    val showShimmer by rememberUpdatedState(reviewIndex == 0 && loadingReview)
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -186,6 +193,7 @@ private fun ReviewListItem(
             modifier = modifier
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth()
+                .animateContentSize()
                 .then(
                     if (index == -1) {
                         Modifier
@@ -239,12 +247,18 @@ private fun ReviewListItem(
                             .padding(bottom = MaterialTheme.spacing.small2)
                     )
                 }
-                Text(
-                    text = review.message,
-                    fontSize = 15.sp,
-                    textAlign = TextAlign.Justify,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (showShimmer) {
+                    ShimmerPlaceholderReview(
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    Text(
+                        text = review.message,
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
                 if (reviewIndex != 0) {
                     Text(
                         text = buildAnnotatedString {
@@ -296,5 +310,34 @@ private fun ReviewListItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ShimmerPlaceholderReview(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.alpha(0.8f)) {
+        Text(
+            text = "",
+            fontSize = 12.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .shimmerBackground(cornerRadius = 4.dp)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "",
+            fontSize = 12.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .shimmerBackground(cornerRadius = 4.dp)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "",
+            fontSize = 12.sp,
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .shimmerBackground(cornerRadius = 4.dp)
+        )
     }
 }
