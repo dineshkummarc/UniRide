@@ -1,5 +1,7 @@
 package com.drdisagree.uniride.ui.screens.student.home
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -21,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.Person
@@ -63,6 +66,7 @@ import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.events.Resource
 import com.drdisagree.uniride.data.models.Notice
 import com.drdisagree.uniride.data.models.RunningBus
+import com.drdisagree.uniride.data.utils.Constant.RESOURCE_INFO_URL
 import com.drdisagree.uniride.data.utils.Constant.STUDENT_COLLECTION
 import com.drdisagree.uniride.data.utils.Constant.WHICH_USER_COLLECTION
 import com.drdisagree.uniride.data.utils.Prefs
@@ -556,8 +560,25 @@ private fun HandlePermissions(
 
 @Composable
 fun StatCard(modifier: Modifier = Modifier, icon: ImageVector, count: String, label: String) {
+    val context = LocalContext.current
+
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(MaterialTheme.spacing.small2))
+            .clickable {
+                try {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(RESOURCE_INFO_URL)
+                        }
+                    )
+                } catch (e: Exception) {
+                    Toast
+                        .makeText(context, e.message, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

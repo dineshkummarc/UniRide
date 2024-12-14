@@ -58,4 +58,7 @@ object Constant {
     const val REVIEW_SUMMARY_PROMPT = "Summarize the following reviews given by students for the " +
             "driver. Try to keep the review as short as possible, preferably " +
             "in 2-3 sentences. Here are the reviews:\n\n"
+
+    // Resource info url
+    const val RESOURCE_INFO_URL = "https://pd.daffodilvarsity.edu.bd/transport-1"
 }
