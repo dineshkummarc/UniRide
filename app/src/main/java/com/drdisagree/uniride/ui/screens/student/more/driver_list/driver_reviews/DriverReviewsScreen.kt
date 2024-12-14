@@ -226,7 +226,7 @@ private fun ReviewListItem(
                     .width(40.dp)
             ) {
                 Text(
-                    text = if (reviewIndex != 0) "#$reviewIndex" else "AI",
+                    text = if (reviewIndex != 0) "#$reviewIndex" else " AI ",
                     color = Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
