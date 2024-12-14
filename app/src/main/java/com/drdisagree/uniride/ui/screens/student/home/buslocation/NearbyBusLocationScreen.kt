@@ -54,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -789,35 +790,45 @@ private fun BusDetailsDialog(
                         text = buildAnnotatedString {
                             withStyle(
                                 SpanStyle(
-                                    color = Black,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.SemiBold,
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(Color(0xFF4597E4), Color(0xFFC7667C))
+                                    )
                                 )
                             ) {
-                                append(stringResource(R.string.review))
+                                append(stringResource(R.string.summarized_review))
                                 append(" ")
                             }
-                            appendInlineContent("drawable", "(AI Summarized)")
-                            withStyle(
-                                SpanStyle(
-                                    color = Black,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            ) {
-                                append(": ")
-                            }
-                            append(
-                                when (summaryState) {
-                                    is Resource.Loading -> stringResource(R.string.loading)
-                                    is Resource.Success -> (summaryState as Resource.Success<String>).data
-                                    is Resource.Error -> (summaryState as Resource.Error).message
-                                    else -> stringResource(R.string.no_reviews_yet)
-                                }
-                            )
+                            appendInlineContent("drawable", "(Gemini)")
                         },
                         fontSize = 15.sp,
-                        modifier = Modifier.padding(top = 4.dp),
-                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.padding(top = MaterialTheme.spacing.small2),
                         inlineContent = inlineContent
+                    )
+                    Text(
+                        text = when (summaryState) {
+                            is Resource.Loading -> stringResource(R.string.loading)
+                            is Resource.Success -> (summaryState as Resource.Success<String>).data
+                            is Resource.Error -> (summaryState as Resource.Error).message
+                            else -> stringResource(R.string.no_reviews_yet)
+                        } ?: stringResource(R.string.loading),
+                        fontSize = 15.sp,
+                        modifier = Modifier
+                            .padding(top = MaterialTheme.spacing.extraSmall2)
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0x1A4597E4),
+                                        Color(0x1AC7667C)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(MaterialTheme.spacing.small3)
+                            )
+                            .padding(
+                                horizontal = MaterialTheme.spacing.small3,
+                                vertical = MaterialTheme.spacing.small2
+                            ),
+                        textAlign = TextAlign.Justify
                     )
                 }
             },
