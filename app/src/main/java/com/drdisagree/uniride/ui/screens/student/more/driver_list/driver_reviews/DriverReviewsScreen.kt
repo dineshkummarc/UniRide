@@ -28,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +62,7 @@ import com.drdisagree.uniride.ui.components.views.StarRatingBar
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.shimmerBackground
 import com.drdisagree.uniride.ui.screens.student.home.buslocation.ReviewSubmissionViewModel
+import com.drdisagree.uniride.ui.screens.student.more.driver_list.getAverageRating
 import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Dark
 import com.drdisagree.uniride.ui.theme.LightGray
@@ -88,7 +91,6 @@ fun DriverReviewsScreen(
             },
             content = { paddingValues ->
                 DriverReviewsContent(
-                    navigator = navigator,
                     paddingValues = paddingValues,
                     driver = driverReviews.about,
                     reviews = driverReviews.reviews
@@ -100,13 +102,13 @@ fun DriverReviewsScreen(
 
 @Composable
 private fun DriverReviewsContent(
-    navigator: DestinationsNavigator,
     paddingValues: PaddingValues,
     driver: Driver,
     reviews: List<Review>,
     reviewSubmissionViewModel: ReviewSubmissionViewModel = hiltViewModel(),
 ) {
     val summaryState by reviewSubmissionViewModel.summary.collectAsState()
+    val avgRating by remember { mutableStateOf(getAverageRating(reviews)) }
 
     LaunchedEffect(driver.id) {
         reviewSubmissionViewModel.fetchSummary(driver.id)
@@ -135,7 +137,7 @@ private fun DriverReviewsContent(
                                 is Resource.Error -> (summaryState as Resource.Error).message
                                 else -> stringResource(R.string.no_reviews_yet)
                             } ?: stringResource(R.string.loading),
-                            rating = 0,
+                            rating = if (avgRating == "N/A") 0 else avgRating.split("/")[0].toInt(),
                             timeStamp = 0
                         ),
                         reviewIndex = 0
@@ -238,7 +240,7 @@ private fun ReviewListItem(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Top
             ) {
-                if (reviewIndex != 0) {
+                if (index != 0 || review.rating != 0) {
                     StarRatingBar(
                         rating = review.rating,
                         starSize = 8f,

@@ -178,6 +178,7 @@ private fun DriverListItem(
     val context = LocalContext.current
     val placeholder by remember { mutableIntStateOf(R.drawable.img_profile_pic_default) }
     val imageUrl by remember { mutableStateOf(driverReviews.about.profileImage) }
+    val avgRating by remember { mutableStateOf(getAverageRating(driverReviews.reviews)) }
 
     val imageRequest = ImageRequest.Builder(context)
         .data(imageUrl)
@@ -271,7 +272,7 @@ private fun DriverListItem(
                         ) {
                             append(stringResource(R.string.rating_colon))
                         }
-                        append(getAverageRating(driverReviews.reviews))
+                        append(avgRating)
                     },
                     fontSize = 14.sp,
                     modifier = Modifier.fillMaxWidth()
@@ -282,7 +283,7 @@ private fun DriverListItem(
 }
 
 @SuppressLint("DefaultLocale")
-private fun getAverageRating(reviews: List<Review>): String {
+fun getAverageRating(reviews: List<Review>): String {
     if (reviews.isEmpty()) {
         return "N/A"
     }
