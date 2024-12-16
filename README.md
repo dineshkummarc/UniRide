@@ -1,8 +1,8 @@
-# UniRide
+# UniRide 🚍
 
 UniRide is a comprehensive transportation management app developed to provide students and drivers with real-time access to bus schedules, routes, live tracking, and communication. It features an issue reporting system, emergency contact options, live chat, driver reviews with AI-based summaries, dual language support (English and Bengali), and a fully functional admin panel.
 
-## Table of Contents
+## Table of Contents 📑
 
 - [Features](#features)
 - [Getting Started](#getting-started)
@@ -10,7 +10,7 @@ UniRide is a comprehensive transportation management app developed to provide st
   - [API Keys Configuration](#api-keys-configuration)
 - [Firestore Security Rules](#firestore-security-rules)
 
-## Features
+## Features ⭐
 
 - **Live Location Tracking**: Real-time GPS tracking for currently running buses, allowing students to view live bus locations.
 - **Route and Schedule Management**: Easily view bus routes and schedules.
@@ -22,9 +22,9 @@ UniRide is a comprehensive transportation management app developed to provide st
 - **Dual Language Support**: English and Bengali language support.
 - **Admin Panel**: Full control panel for managing routes, buses, schedules, and handling driver accounts.
 
-## Getting Started
+## Getting Started 🚀
 
-### Firebase Setup
+### Firebase Setup 🔧
 
 1. **Create a Firebase Project**: Go to the [Firebase Console](https://console.firebase.google.com/) and create a new project.
 
@@ -42,7 +42,7 @@ UniRide is a comprehensive transportation management app developed to provide st
 
 5. **Enable Cloud Messaging**: Set up Firebase Cloud Messaging (FCM) for notifications to students and drivers.
 
-### API Keys Configuration
+### API Keys Configuration 🔑
 
 1. Rename `native-lib.cpp.example` to `native-lib.cpp` and open it.
    - Add your **Google Maps API Key** and **Gemini API Key** in the file for location services and AI-based features.
@@ -50,7 +50,7 @@ UniRide is a comprehensive transportation management app developed to provide st
 2. Rename `local.properties.example` to `local.properties` and open it.
    - Add your keystore information for secure app distribution.
 
-## Firestore Security Rules
+## Firestore Security Rules 🔒
 
 To secure data access and permissions, use the following Firestore security rules:
 
@@ -165,7 +165,7 @@ service cloud.firestore {
 }
 ```
 
-## Contact
+## Contact 📬
 
 Wanna reach out to me? DM me at
 
