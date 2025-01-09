@@ -1,5 +1,10 @@
 package com.drdisagree.uniride.ui.screens.student.more.chatbox
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +34,7 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +55,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,7 +75,6 @@ import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-
 
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
@@ -104,7 +112,7 @@ private fun ChatBoxContent(
     chatBoxViewModel: ChatBoxViewModel = hiltViewModel()
 ) {
     val messagesState by chatBoxViewModel.messagesState.collectAsState()
-    val newMessageState by chatBoxViewModel.newMessageState.collectAsState()
+    val messageSendingState by chatBoxViewModel.messageSendingState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -166,7 +174,9 @@ private fun ChatBoxContent(
                         contentPadding = PaddingValues(bottom = 16.dp),
                         reverseLayout = true
                     ) {
-                        itemsIndexed(messages) { _, chatMessage ->
+                        itemsIndexed(
+                            messages,
+                            key = { _, chatMessage -> chatMessage.timeStamp }) { _, chatMessage ->
                             ChatBubble(chatMessage = chatMessage, currentUserId = student.userId)
                         }
                     }
@@ -237,9 +247,10 @@ private fun ChatBoxContent(
 
             Button(
                 onClick = { onSendMessage() },
-                modifier = Modifier.height(56.dp)
+                modifier = Modifier.height(56.dp),
+                enabled = messageSendingState !is Resource.Loading
             ) {
-                when (newMessageState) {
+                when (messageSendingState) {
                     is Resource.Loading -> {
                         CircularProgressIndicator(
                             modifier = Modifier.size(28.dp),
@@ -260,80 +271,101 @@ private fun ChatBoxContent(
 }
 
 @Composable
-fun ChatBubble(chatMessage: ChatMessage, currentUserId: String) {
+fun ChatBubble(chatMessage: ChatMessage, currentUserId: String, modifier: Modifier = Modifier) {
+    var isTimestampVisible by remember { mutableStateOf(false) }
     val isOwnChat by remember { mutableStateOf(chatMessage.sender.userId == currentUserId) }
 
-    val alignment = if (isOwnChat) {
+    val boxAlignment = if (isOwnChat) {
         Arrangement.End
     } else {
         Arrangement.Start
     }
 
-    Row(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = MaterialTheme.spacing.small2),
-        horizontalArrangement = alignment
+            .padding(bottom = MaterialTheme.spacing.small2)
     ) {
-        Spacer(modifier = Modifier.weight(if (isOwnChat) 1f else 0.001f))
         Row(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .wrapContentWidth(),
-            horizontalArrangement = alignment
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = boxAlignment
         ) {
             Spacer(modifier = Modifier.weight(if (isOwnChat) 1f else 0.001f))
-            Surface(
+            Row(
                 modifier = Modifier
+                    .fillMaxWidth(0.8f)
                     .wrapContentWidth(),
-                shape = MaterialTheme.shapes.large,
-                color = if (isOwnChat) {
-                    Blue
-                } else {
-                    LightGray
-                }
+                horizontalArrangement = boxAlignment
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(
-                            vertical = 8.dp,
-                            horizontal = 16.dp
-                        )
+                Spacer(modifier = Modifier.weight(if (isOwnChat) 1f else 0.001f))
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentSize provides Dp.Unspecified
                 ) {
-                    if (!isOwnChat) {
-                        Text(
-                            text = chatMessage.sender.userName
-                                ?: chatMessage.sender.email
-                                ?: chatMessage.sender.userId,
-                            color = Black,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp
-                        )
+                    Surface(
+                        modifier = Modifier.wrapContentWidth(),
+                        shape = MaterialTheme.shapes.large,
+                        color = if (isOwnChat) {
+                            Blue
+                        } else {
+                            LightGray
+                        },
+                        onClick = {
+                            isTimestampVisible = !isTimestampVisible
+                        }
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(
+                                    vertical = MaterialTheme.spacing.small2,
+                                    horizontal = MaterialTheme.spacing.medium1
+                                )
+                        ) {
+                            if (!isOwnChat) {
+                                Text(
+                                    text = chatMessage.sender.userName
+                                        ?: chatMessage.sender.email
+                                        ?: chatMessage.sender.userId,
+                                    color = Black,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.sp
+                                )
+                            }
+                            Text(
+                                text = chatMessage.message,
+                                color = if (isOwnChat) {
+                                    Color.White
+                                } else {
+                                    Black
+                                }.copy(alpha = 0.9f),
+                                fontSize = 14.sp
+                            )
+                        }
                     }
-                    Text(
-                        text = chatMessage.message,
-                        color = if (isOwnChat) {
-                            Color.White
-                        } else {
-                            Black
-                        }.copy(alpha = 0.9f),
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        text = formatTimeAgo(chatMessage.timeStamp),
-                        color = if (isOwnChat) {
-                            Color.White
-                        } else {
-                            Black
-                        }.copy(alpha = 0.7f),
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 12.sp
-                    )
                 }
+                Spacer(modifier = Modifier.weight(if (isOwnChat) 0.001f else 1f))
             }
             Spacer(modifier = Modifier.weight(if (isOwnChat) 0.001f else 1f))
         }
-        Spacer(modifier = Modifier.weight(if (isOwnChat) 0.001f else 1f))
+        AnimatedVisibility(
+            visible = isTimestampVisible,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Text(
+                text = formatTimeAgo(chatMessage.timeStamp),
+                color = Black.copy(alpha = 0.7f),
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                textAlign = if (isOwnChat) {
+                    TextAlign.End
+                } else {
+                    TextAlign.Start
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.spacing.small1)
+            )
+        }
     }
 }
 

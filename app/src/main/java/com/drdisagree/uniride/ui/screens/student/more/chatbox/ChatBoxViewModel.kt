@@ -21,7 +21,7 @@ class ChatBoxViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _newMessageState = MutableStateFlow<Resource<Unit>>(Resource.Unspecified())
-    val newMessageState: StateFlow<Resource<Unit>> = _newMessageState.asStateFlow()
+    val messageSendingState: StateFlow<Resource<Unit>> = _newMessageState.asStateFlow()
 
     private val _messagesState =
         MutableStateFlow<Resource<List<ChatMessage>>>(Resource.Unspecified())
