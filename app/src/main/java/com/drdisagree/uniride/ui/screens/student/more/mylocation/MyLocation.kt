@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -43,6 +44,7 @@ import com.drdisagree.uniride.ui.components.views.Container
 import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
+import com.drdisagree.uniride.utils.AnimationQueue
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -53,8 +55,8 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlin.math.roundToInt
@@ -273,12 +275,25 @@ private fun MapView(
         }
     ) {
         if (marker != null) {
+            val scope = rememberCoroutineScope()
+            val markerState = rememberMarkerState(position = marker!!)
+            val updatePosition = { pos: LatLng -> markerState.position = pos }
+            val animationQueue = AnimationQueue(markerState.position, scope, updatePosition)
+
+            LaunchedEffect(marker) {
+                animationQueue.addToQueue(marker!!, 0f)
+            }
+
+            val markerBitmap = remember {
+                toBitmapDescriptor(context, R.drawable.ic_pin_map_person)
+            }
+
             Marker(
-                state = MarkerState(position = marker!!),
+                state = markerState,
                 title = stringResource(R.string.me),
                 snippet = stringResource(R.string.my_position),
                 draggable = false,
-                icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_person)
+                icon = markerBitmap
             )
         }
     }

@@ -48,6 +48,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -94,6 +95,7 @@ import com.drdisagree.uniride.ui.theme.Black
 import com.drdisagree.uniride.ui.theme.Gray
 import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.AnimationQueue
 import com.drdisagree.uniride.utils.ColorUtils.getSchedulePillColors
 import com.drdisagree.uniride.utils.Formatter.getFormattedTime
 import com.drdisagree.uniride.utils.MathUtils
@@ -108,9 +110,9 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
@@ -291,12 +293,21 @@ private fun MapViewContent(
             val thresholdLatLng = 0.00001
 
             if (marker != null) {
+                val scope = rememberCoroutineScope()
+                val markerState = rememberMarkerState(position = marker)
+                val updatePosition = { pos: LatLng -> markerState.position = pos }
+                val animationQueue = AnimationQueue(markerState.position, scope, updatePosition)
+
+                LaunchedEffect(marker) {
+                    animationQueue.addToQueue(marker, 0f)
+                }
+
                 val rotationAngle = if (previousLatLng != null &&
                     previousLatLng != marker &&
-                    (abs(previousLatLng!!.latitude - marker!!.latitude) > thresholdLatLng ||
-                            abs(previousLatLng!!.longitude - marker!!.longitude) > thresholdLatLng)
+                    (abs(previousLatLng!!.latitude - marker.latitude) > thresholdLatLng ||
+                            abs(previousLatLng!!.longitude - marker.longitude) > thresholdLatLng)
                 ) {
-                    val newRotation = MathUtils.calculateDegrees(previousLatLng!!, marker!!)
+                    val newRotation = MathUtils.calculateDegrees(previousLatLng!!, marker)
                     previousRotation = newRotation
                     vehicleHasMoved = true
                     newRotation
@@ -307,28 +318,45 @@ private fun MapViewContent(
                     previousLatLng = marker
                 }
 
+                val busMarkerBitmap = remember(vehicleHasMoved) {
+                    if (!vehicleHasMoved) {
+                        toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
+                    } else {
+                        toBitmapDescriptor(context, R.drawable.img_bus_top_view, 16.dp)
+                    }
+                }
+
                 Marker(
-                    state = MarkerState(position = marker),
+                    state = markerState,
                     title = runningBus?.bus?.name ?: stringResource(R.string.unknown_name),
                     snippet = runningBus?.category?.name
                         ?: stringResource(R.string.unknown_category),
                     draggable = false,
-                    icon = if (!vehicleHasMoved) {
-                        toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
-                    } else {
-                        toBitmapDescriptor(context, R.drawable.img_bus_top_view, 16.dp)
-                    },
+                    icon = busMarkerBitmap,
                     rotation = rotationAngle.toFloat(),
                     anchor = Offset(0.5f, 0.5f)
                 )
             }
             if (myMarker != null) {
+                val scope = rememberCoroutineScope()
+                val markerState = rememberMarkerState(position = myMarker!!)
+                val updatePosition = { pos: LatLng -> markerState.position = pos }
+                val animationQueue = AnimationQueue(markerState.position, scope, updatePosition)
+
+                LaunchedEffect(marker) {
+                    animationQueue.addToQueue(myMarker!!, 0f)
+                }
+
+                val myMarkerBitmap = remember {
+                    toBitmapDescriptor(context, R.drawable.ic_pin_map_person)
+                }
+
                 Marker(
-                    state = MarkerState(position = myMarker!!),
+                    state = markerState,
                     title = stringResource(R.string.me),
                     snippet = stringResource(R.string.my_position),
                     draggable = false,
-                    icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_person)
+                    icon = myMarkerBitmap
                 )
             }
             if (routePointsFromMeToBus.isNotEmpty() && showMapRoute) {
