@@ -1,12 +1,5 @@
 package com.drdisagree.uniride.ui.screens.student.more.mylocation
 
-import android.content.Context.SENSOR_SERVICE
-import android.hardware.Sensor
-import android.hardware.Sensor.TYPE_ACCELEROMETER
-import android.hardware.Sensor.TYPE_MAGNETIC_FIELD
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -19,13 +12,10 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,6 +35,7 @@ import com.drdisagree.uniride.ui.components.views.TopAppBarWithBackButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.utils.AnimationQueue
+import com.drdisagree.uniride.utils.sensorRotationEffect
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -59,7 +50,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlin.math.roundToInt
 
 @MoreNavGraph
 @Destination(style = FadeInOutTransition::class)
@@ -126,91 +116,8 @@ private fun MapView(
         )
     }
 
-    val sensorManager = remember { context.getSystemService(SENSOR_SERVICE) as SensorManager }
-    val isMagneticFieldSensorPresent = remember {
-        sensorManager.getDefaultSensor(TYPE_MAGNETIC_FIELD) != null
-    }
-    val accelerometerReading = FloatArray(3)
-    val magnetometerReading = FloatArray(3)
-    val rotationMatrix = FloatArray(9)
-    val mOrientationAngles = FloatArray(3)
-    var degrees by rememberSaveable { mutableIntStateOf(0) }
-    var currentTime by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
+    val degrees = sensorRotationEffect(context)
     var zoomLevel by rememberSaveable { mutableFloatStateOf(15f) }
-
-    val sensorEventListener = remember {
-        object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent) {
-                if (event.sensor.type == TYPE_ACCELEROMETER) {
-                    System.arraycopy(
-                        event.values,
-                        0,
-                        accelerometerReading,
-                        0,
-                        accelerometerReading.size
-                    )
-                } else if (event.sensor.type == TYPE_MAGNETIC_FIELD) {
-                    System.arraycopy(
-                        event.values,
-                        0,
-                        magnetometerReading,
-                        0,
-                        magnetometerReading.size
-                    )
-                }
-                val azimuthInRadians = mOrientationAngles[0]
-
-                val azimuthInDegrees = Math.toDegrees(azimuthInRadians.toDouble()).roundToInt()
-
-                if (currentTime + 1000 < System.currentTimeMillis()) {
-                    degrees = if (azimuthInDegrees < 0) {
-                        azimuthInDegrees + 360
-                    } else {
-                        azimuthInDegrees
-                    }
-                    currentTime = System.currentTimeMillis()
-                }
-
-                SensorManager.getRotationMatrix(
-                    rotationMatrix,
-                    null,
-                    accelerometerReading,
-                    magnetometerReading
-                )
-
-                SensorManager.getOrientation(rotationMatrix, mOrientationAngles)
-            }
-
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-        }
-    }
-
-    DisposableEffect(Unit) {
-        if (isMagneticFieldSensorPresent) {
-            sensorManager.getDefaultSensor(TYPE_ACCELEROMETER)?.also { accelerometer ->
-                sensorManager.registerListener(
-                    sensorEventListener,
-                    accelerometer,
-                    SensorManager.SENSOR_DELAY_GAME,
-                    SensorManager.SENSOR_DELAY_GAME
-                )
-            }
-            sensorManager.getDefaultSensor(TYPE_MAGNETIC_FIELD)?.also { magneticField ->
-                sensorManager.registerListener(
-                    sensorEventListener,
-                    magneticField,
-                    SensorManager.SENSOR_DELAY_GAME,
-                    SensorManager.SENSOR_DELAY_GAME
-                )
-            }
-        }
-
-        onDispose {
-            if (isMagneticFieldSensorPresent) {
-                sensorManager.unregisterListener(sensorEventListener)
-            }
-        }
-    }
 
     LaunchedEffect(
         key1 = true
