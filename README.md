@@ -47,7 +47,10 @@ UniRide is a comprehensive transportation management app developed to provide st
 1. Rename `native-lib.cpp.example` to `native-lib.cpp` and open it.
    - Add your **Google Maps API Key** and **Gemini API Key** in the file for location services and AI-based features.
 
-2. Rename `local.properties.example` to `local.properties` and open it.
+2. Open `AndroidManifest.xml`.
+   - Add your **Google Maps API Key** under the value of **com.google.android.geo.API_KEY**.
+
+3. Rename `local.properties.example` to `local.properties` and open it.
    - Add your keystore information for secure app distribution.
 
 ## Firestore Security Rules 🔒
