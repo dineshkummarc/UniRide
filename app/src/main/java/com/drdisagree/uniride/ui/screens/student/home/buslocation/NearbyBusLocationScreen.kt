@@ -43,6 +43,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -94,6 +96,7 @@ import com.drdisagree.uniride.ui.theme.LightGray
 import com.drdisagree.uniride.ui.theme.spacing
 import com.drdisagree.uniride.utils.ColorUtils.getSchedulePillColors
 import com.drdisagree.uniride.utils.Formatter.getFormattedTime
+import com.drdisagree.uniride.utils.MathUtils
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -111,6 +114,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.Dispatchers
+import kotlin.math.abs
 
 @HomeNavGraph
 @Destination(style = FadeInOutTransition::class)
@@ -281,14 +285,41 @@ private fun MapViewContent(
                 isMapLoaded = true
             }
         ) {
+            var previousLatLng by remember { mutableStateOf<LatLng?>(null) }
+            var previousRotation by remember { mutableDoubleStateOf(0.0) }
+            var vehicleHasMoved by remember { mutableStateOf(false) }
+            val thresholdLatLng = 0.00001
+
             if (marker != null) {
+                val rotationAngle = if (previousLatLng != null &&
+                    previousLatLng != marker &&
+                    (abs(previousLatLng!!.latitude - marker!!.latitude) > thresholdLatLng ||
+                            abs(previousLatLng!!.longitude - marker!!.longitude) > thresholdLatLng)
+                ) {
+                    val newRotation = MathUtils.calculateDegrees(previousLatLng!!, marker!!)
+                    previousRotation = newRotation
+                    vehicleHasMoved = true
+                    newRotation
+                } else {
+                    previousRotation
+                }
+                LaunchedEffect(marker) {
+                    previousLatLng = marker
+                }
+
                 Marker(
                     state = MarkerState(position = marker),
                     title = runningBus?.bus?.name ?: stringResource(R.string.unknown_name),
                     snippet = runningBus?.category?.name
                         ?: stringResource(R.string.unknown_category),
                     draggable = false,
-                    icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus_colored)
+                    icon = if (!vehicleHasMoved) {
+                        toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
+                    } else {
+                        toBitmapDescriptor(context, R.drawable.img_bus_top_view, 16.dp)
+                    },
+                    rotation = rotationAngle.toFloat(),
+                    anchor = Offset(0.5f, 0.5f)
                 )
             }
             if (myMarker != null) {

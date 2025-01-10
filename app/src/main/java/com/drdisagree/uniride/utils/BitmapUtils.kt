@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -25,6 +26,26 @@ fun toBitmapDescriptor(
         drawable.intrinsicHeight,
         Bitmap.Config.ARGB_8888
     )
+
+    val canvas = Canvas(bm)
+    drawable.draw(canvas)
+    return BitmapDescriptorFactory.fromBitmap(bm)
+}
+
+fun toBitmapDescriptor(
+    context: Context,
+    vectorResId: Int,
+    size: Dp
+): BitmapDescriptor? {
+    val drawable = ContextCompat.getDrawable(context, vectorResId) ?: return null
+    val density = context.resources.displayMetrics.density
+    val targetSizePx = (size.value * density).toInt()
+
+    val aspectRatio = drawable.intrinsicWidth.toFloat() / drawable.intrinsicHeight
+    val height = (targetSizePx / aspectRatio).toInt()
+
+    drawable.setBounds(0, 0, targetSizePx, height)
+    val bm = Bitmap.createBitmap(targetSizePx, height, Bitmap.Config.ARGB_8888)
 
     val canvas = Canvas(bm)
     drawable.draw(canvas)

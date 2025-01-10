@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -39,9 +40,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.drdisagree.uniride.R
 import com.drdisagree.uniride.data.enums.BusStatus
@@ -61,6 +64,7 @@ import com.drdisagree.uniride.ui.components.views.TopAppBarNoButton
 import com.drdisagree.uniride.ui.components.views.areLocationPermissionsGranted
 import com.drdisagree.uniride.ui.components.views.isGpsEnabled
 import com.drdisagree.uniride.ui.theme.spacing
+import com.drdisagree.uniride.utils.MathUtils
 import com.drdisagree.uniride.utils.SystemUtils.isInternetAvailable
 import com.drdisagree.uniride.utils.toBitmapDescriptor
 import com.drdisagree.uniride.viewmodels.LocationSharingViewModel
@@ -79,6 +83,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @RootNavGraph
@@ -309,8 +314,8 @@ private fun MapView(
             .padding(paddingValues = paddingValues)
     ) {
         GoogleMap(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
+
             cameraPositionState = cameraPositionState,
             uiSettings = uiSettings,
             properties = mapProperties,
@@ -318,13 +323,40 @@ private fun MapView(
                 isMapLoaded = true
             }
         ) {
+            var previousLatLng by remember { mutableStateOf<LatLng?>(null) }
+            var previousRotation by remember { mutableDoubleStateOf(0.0) }
+            var vehicleHasMoved by remember { mutableStateOf(false) }
+            val thresholdLatLng = 0.00001
+
             if (marker != null) {
+                val rotationAngle = if (previousLatLng != null &&
+                    previousLatLng != marker &&
+                    (abs(previousLatLng!!.latitude - marker!!.latitude) > thresholdLatLng ||
+                            abs(previousLatLng!!.longitude - marker!!.longitude) > thresholdLatLng)
+                ) {
+                    val newRotation = MathUtils.calculateDegrees(previousLatLng!!, marker!!)
+                    previousRotation = newRotation
+                    vehicleHasMoved = true
+                    newRotation
+                } else {
+                    previousRotation
+                }
+                LaunchedEffect(marker) {
+                    previousLatLng = marker
+                }
+
                 Marker(
                     state = MarkerState(position = marker!!),
                     title = stringResource(R.string.me),
                     snippet = stringResource(R.string.my_position),
                     draggable = false,
-                    icon = toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
+                    icon = if (!vehicleHasMoved) {
+                        toBitmapDescriptor(context, R.drawable.ic_pin_map_bus)
+                    } else {
+                        toBitmapDescriptor(context, R.drawable.img_bus_top_view, 16.dp)
+                    },
+                    rotation = rotationAngle.toFloat(),
+                    anchor = Offset(0.5f, 0.5f)
                 )
             }
             if (routePoints.isNotEmpty()) {
