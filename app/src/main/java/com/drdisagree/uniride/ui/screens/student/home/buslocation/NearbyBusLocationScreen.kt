@@ -198,9 +198,12 @@ private fun MapViewContent(
 
     var myMarker: LatLng? by rememberSaveable { mutableStateOf(null) }
     val myLocation by locationViewModel.locationFlow.collectAsState()
-    myLocation?.let {
-        if (myMarker == null || myMarker != LatLng(it.latitude, it.longitude)) {
-            myMarker = LatLng(it.latitude, it.longitude)
+
+    LaunchedEffect(myLocation) {
+        myLocation?.let {
+            if (myMarker == null || myMarker != LatLng(it.latitude, it.longitude)) {
+                myMarker = LatLng(it.latitude, it.longitude)
+            }
         }
     }
 
@@ -343,7 +346,7 @@ private fun MapViewContent(
                 val updatePosition = { pos: LatLng -> markerState.position = pos }
                 val animationQueue = AnimationQueue(markerState.position, scope, updatePosition)
 
-                LaunchedEffect(marker) {
+                LaunchedEffect(myMarker) {
                     animationQueue.addToQueue(myMarker!!, 0f)
                 }
 
