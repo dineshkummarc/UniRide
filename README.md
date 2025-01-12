@@ -62,84 +62,84 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /admin_list/{adminId} {
+  	match /admin_list/{adminId} {
       allow read: if request.auth != null;
-      allow write: if false;
+			allow write: if false;
     }
     
-    match /driver_list/{driverId} {
-      allow read: if (request.auth != null && request.auth.uid == driverId) || isUserAdmin();
+  	match /driver_list/{driverId} {
+      allow read: if request.auth != null;
       allow write: if (request.auth != null &&
                       request.auth.uid == driverId &&
                       isDriverRegisteringOrUpdatingProfile()) ||
                       isUserAdmin();
     }
     
-    match /running_bus_list/{busId} {
+  	match /running_bus_list/{busId} {
       allow read: if request.auth != null;
       allow write: if request.auth != null && isDriverAuthorized(request.auth.uid, resource.data);
     }
     
-    match /drive_history_list/{busId} {
+  	match /drive_history_list/{busId} {
       allow read: if request.auth != null;
       allow write: if request.auth != null && isDriverAuthorized(request.auth.uid, resource.data);
     }
     
-    match /student_list/{studentId} {
+  	match /student_list/{studentId} {
       allow read, write: if request.auth.uid == studentId;
     }
     
-    match /route_list/{adminId} {
+  	match /route_list/{adminId} {
       allow read: if request.auth != null;
       allow write: if isUserAdmin();
     }
     
-    match /bus_list/{adminId} {
+  	match /bus_list/{adminId} {
       allow read: if request.auth != null;
       allow write: if isUserAdmin();
     }
     
-    match /bus_category_list/{adminId} {
+  	match /bus_category_list/{adminId} {
       allow read: if request.auth != null;
       allow write: if isUserAdmin();
     }
     
-    match /route_category_list/{adminId} {
+  	match /route_category_list/{adminId} {
       allow read: if request.auth != null;
       allow write: if isUserAdmin();
     }
     
-    match /schedule_list/{adminId} {
+  	match /schedule_list/{adminId} {
       allow read: if request.auth != null;
       allow write: if isUserAdmin();
     }
     
-    match /place_list/{adminId} {
+  	match /place_list/{adminId} {
       allow read: if request.auth != null;
       allow write: if isUserAdmin();
     }
     
-    match /announcement_list/{adminId} {
+  	match /announcement_list/{adminId} {
       allow read: if request.auth != null;
       allow write: if isUserAdmin();
     }
     
-    match /issue_list/{issueId} {
+  	match /issue_list/{issueId} {
       allow read: if isUserAdmin();
       allow write: if isAddingNewIssue() || isUserAdmin();
     }
     
-    match /driver_review_list/{driverId} {
+  	match /driver_review_list/{driverId} {
       allow read, write: if request.auth != null;
     }
     
-    match /chat_list/{chatId} {
+  	match /chat_list/{chatId} {
       allow read, write: if request.auth != null;
     }
     
     function isUserAdmin() {
       return request.auth != null &&
-             get(/databases/$(database)/documents/admin_list/$(request.auth.uid)).data != null;
+      			 get(/databases/$(database)/documents/admin_list/$(request.auth.uid)).data != null;
     }
     
     function isDriverAuthorized(driverId, busData) {
@@ -152,16 +152,17 @@ service cloud.firestore {
     }
 		
     function isDriverRegisteringOrUpdatingProfile() {
-      return ((resource == null || resource.data.accountStatus == null) &&
-             request.resource.data.accountStatus == 'PENDING') ||
-             (resource != null &&
-             resource.data.accountStatus != null &&
-             request.resource.data.accountStatus == resource.data.accountStatus);
-    }
+    return (
+        (resource == null || resource.data.accountStatus == null) &&
+        request.resource.data.accountStatus == 'PENDING') ||
+        (resource != null &&
+        resource.data.accountStatus != null &&
+        request.resource.data.accountStatus == resource.data.accountStatus);
+		}
 		
     function isAddingNewIssue() {
       return request.auth != null &&
-             resource.data.resolved == null &&
+      			 resource.data.resolved == null &&
              request.resource.data.resolved == false;
     }
   }
