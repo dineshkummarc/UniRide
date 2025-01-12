@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -113,9 +112,7 @@ class ReviewSubmissionViewModel @Inject constructor(
     fun fetchSummary(driverId: String?) {
         viewModelScope.launch {
             if (driverId == null) {
-                _summary.emit(
-                    Resource.Error("No reviews yet")
-                )
+                _summary.value = Resource.Error("No reviews yet")
                 return@launch
             } else {
                 _summary.emit(
@@ -123,25 +120,32 @@ class ReviewSubmissionViewModel @Inject constructor(
                 )
             }
 
-            try {
-                val driverReviewsRef =
-                    firestore.collection(DRIVER_REVIEW_COLLECTION).document(driverId)
-                val driverReviewsSnapshot = driverReviewsRef.get().await()
-                val driverReviews = driverReviewsSnapshot.toObject(DriverReviews::class.java)
+            val driverReviewsRef = firestore.collection(DRIVER_REVIEW_COLLECTION).document(driverId)
 
-                if (driverReviews != null) {
-                    _summary.emit(
-                        Resource.Success(driverReviews.summarization ?: "No reviews yet")
-                    )
-                } else {
-                    _summary.emit(
-                        Resource.Error("No reviews yet")
-                    )
+            driverReviewsRef.addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    viewModelScope.launch {
+                        _summary.emit(
+                            Resource.Error(exception.message.toString())
+                        )
+                    }
+                    return@addSnapshotListener
                 }
-            } catch (exception: Exception) {
-                _summary.emit(
-                    Resource.Error(exception.message.toString())
-                )
+
+                viewModelScope.launch {
+                    if (snapshot != null && snapshot.exists()) {
+                        val driverReviews = snapshot.toObject(DriverReviews::class.java)
+                        _summary.emit(
+                            Resource.Success(
+                                driverReviews?.summarization ?: "No reviews yet"
+                            )
+                        )
+                    } else {
+                        _summary.emit(
+                            Resource.Error("No reviews yet")
+                        )
+                    }
+                }
             }
         }
     }
