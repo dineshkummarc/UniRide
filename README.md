@@ -4,11 +4,12 @@ UniRide is a comprehensive transportation management app developed to provide st
 
 ## Table of Contents 📑
 
-- [Features](#features)
-- [Getting Started](#getting-started)
-  - [Firebase Setup](#firebase-setup)
-  - [API Keys Configuration](#api-keys-configuration)
-- [Firestore Security Rules](#firestore-security-rules)
+- [Features](#features-)
+- [Getting Started](#getting-started-)
+  - [Firebase Setup](#firebase-setup-)
+  - [API Keys Configuration](#api-keys-configuration-)
+- [Firestore Security Rules](#firestore-security-rules-)
+- [How to Promote a User to Admin](#how-to-promote-a-user-to-admin-%EF%B8%8F)
 
 ## Features ⭐
 
@@ -168,6 +169,20 @@ service cloud.firestore {
   }
 }
 ```
+
+## How to Promote a User to Admin 🎖️
+
+To make a user an admin, follow these steps:
+
+1. Go to the **Authentication** tab in the Firebase Console and locate the user you want to promote. Copy the UID of the user.
+
+2. Navigate to the **Firestore Database** section.
+
+3. Expand the **admin_list** collection in Firestore. Click on Add Document.
+
+4. In the Document ID field, paste the UID of the user. Save the document.
+
+Congratulations! The user is now an admin and has access to admin-specific functionalities in the app.
 
 ## Contact 📬
 
