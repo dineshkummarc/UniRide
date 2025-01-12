@@ -148,7 +148,7 @@ private fun DriverReviewsContent(
 
                 itemsIndexed(
                     items = reviews,
-                    key = { _, review -> review.uuid }
+                    key = { index, _ -> reviews.size - index }
                 ) { index, review ->
                     ReviewListItem(
                         index = index,
@@ -240,18 +240,18 @@ private fun ReviewListItem(
                         Modifier
                             .padding(start = 3.dp)
                             .drawBehind {
-                            val strokeWidthPx = 2.dp.toPx()
-                            val verticalOffset = size.height - 3.sp.toPx()
-                            val lineExtension = 2.sp.toPx()
+                                val strokeWidthPx = 2.dp.toPx()
+                                val verticalOffset = size.height - 3.sp.toPx()
+                                val lineExtension = 2.sp.toPx()
 
-                            drawLine(
-                                color = Black,
-                                strokeWidth = strokeWidthPx,
-                                start = Offset(-lineExtension, verticalOffset),
-                                end = Offset(size.width + lineExtension, verticalOffset),
-                                cap = StrokeCap.Round
-                            )
-                        }
+                                drawLine(
+                                    color = Black,
+                                    strokeWidth = strokeWidthPx,
+                                    start = Offset(-lineExtension, verticalOffset),
+                                    end = Offset(size.width + lineExtension, verticalOffset),
+                                    cap = StrokeCap.Round
+                                )
+                            }
                     }
                 )
             }
