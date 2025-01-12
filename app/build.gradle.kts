@@ -14,7 +14,7 @@ plugins {
 
 android {
     namespace = "com.drdisagree.uniride"
-    compileSdk = 34
+    compileSdk = 35
 
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId = "com.drdisagree.uniride"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0.0-alpha01"
 
