@@ -3,8 +3,7 @@ package com.drdisagree.uniride.data.utils
 object Constant {
 
     // Google Sign In
-    const val WEB_CLIENT_ID =
-        "228240041465-ul73jd983ueobdu081ub29aa3b7q2unn.apps.googleusercontent.com"
+    const val WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID"
 
     // Firebase Collections
     const val ADMIN_COLLECTION = "admin_list"
