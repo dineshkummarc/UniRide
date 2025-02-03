@@ -2,7 +2,16 @@
 
 UniRide is a comprehensive transportation management app developed to provide students and drivers with real-time access to bus schedules, routes, live tracking, and communication. It features an issue reporting system, emergency contact options, live chat, driver reviews with AI-based summaries, dual language support (English and Bengali), and a fully functional admin panel.
 
-## Table of Contents 📑
+This project was developed as part of my final year project for my university. The project report is available in the `docs` folder.
+
+## Screenshots 📱
+
+| Screenshot 1 | Screenshot 2 | Screenshot 3 | Screenshot 4 |
+|-------------|-------------|-------------|-------------|
+| <div align="center"><img src="https://github.com/Mahmud0808/UniRide/blob/master/docs/previews/1.png" width="85%" /></div> | <div align="center"><img src="https://github.com/Mahmud0808/UniRide/blob/master/docs/previews/2.png" width="85%" /></div> | <div align="center"><img src="https://github.com/Mahmud0808/UniRide/blob/master/docs/previews/3.png" width="85%" /></div> | <div align="center"><img src="https://github.com/Mahmud0808/UniRide/blob/master/docs/previews/4.png" width="85%" /></div> |
+| <div align="center"><img src="https://github.com/Mahmud0808/UniRide/blob/master/docs/previews/5.png" width="85%" /></div> | <div align="center"><img src="https://github.com/Mahmud0808/UniRide/blob/master/docs/previews/6.png" width="85%" /></div> | <div align="center"><img src="https://github.com/Mahmud0808/UniRide/blob/master/docs/previews/7.png" width="85%" /></div> | <div align="center"><img src="https://github.com/Mahmud0808/UniRide/blob/master/docs/previews/8.png" width="85%" /></div> |
+
+## Table of Contents 📁
 
 - [Features](#features-)
 - [Getting Started](#getting-started-)
@@ -43,6 +52,10 @@ UniRide is a comprehensive transportation management app developed to provide st
 
 5. **Enable Cloud Messaging**: Set up Firebase Cloud Messaging (FCM) for notifications to students and drivers.
 
+6. **Set Up Google OAuth Client ID**:
+   - Follow this [proccess](https://stackoverflow.com/questions/50507877/where-do-i-get-the-web-client-secret-in-firebase-google-login-for-android).
+   - Obtain the **WEB_CLIENT_ID** and set it in [data/utils/Constant.kt](https://github.com/Mahmud0808/UniRide/blob/master/app/src/main/java/com/drdisagree/uniride/data/utils/Constant.kt) to enable Google OAuth sign-in.
+
 ### API Keys Configuration 🔑
 
 1. Rename `native-lib.cpp.example` to `native-lib.cpp` and open it.
@@ -53,6 +66,13 @@ UniRide is a comprehensive transportation management app developed to provide st
 
 3. Rename `local.properties.example` to `local.properties` and open it.
    - Add your keystore information for secure app distribution.
+
+4. **Update [data/utils/Constant.kt](https://github.com/Mahmud0808/UniRide/blob/master/app/src/main/java/com/drdisagree/uniride/data/utils/Constant.kt) with relevant constants:**
+   - `STUDENT_MAIL_SUFFIX`
+   - `PHONE_NUMBER_PREFIX`
+   - `EMERGENCY_PHONE_NUMBERS`
+   - `DRIVER_PRIVACY_POLICY_URL`
+   - `ROAD_TRANSPORT_ACT_URL`
 
 ## Firestore Security Rules 🔒
 
@@ -184,7 +204,7 @@ To make a user an admin, follow these steps:
 
 Congratulations! The user is now an admin and has access to admin-specific functionalities in the app.
 
-## Contact 📬
+## Contact 📩
 
 Wanna reach out to me? DM me at
 
